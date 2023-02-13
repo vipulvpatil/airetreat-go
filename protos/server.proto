@@ -1,0 +1,23 @@
+syntax = "proto3";
+package protos;
+
+option go_package = "github.com/vipulvpatil/airetreat-go/protos";
+
+message TestRequest {
+  string test = 1;
+}
+
+message TestResponse {
+  string test = 1;
+}
+
+service AiRetreatGo {
+  rpc Test(TestRequest) returns (TestResponse) {}
+}
+
+message CheckRequest {}
+message CheckResponse {}
+
+service AiRetreatGoHealth {
+  rpc Check(CheckRequest) returns (CheckResponse) {}
+}
