@@ -9,7 +9,6 @@ import (
 
 type StorageAccessor interface {
 	UserRetriever
-	InstagramAccountAccessor
 }
 
 type Storage struct {

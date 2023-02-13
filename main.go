@@ -9,19 +9,14 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/gomodule/redigo/redis"
-	"github.com/vipulvpatil/airetreat-go/internal/clients/instagram"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/health"
 	"github.com/vipulvpatil/airetreat-go/internal/server"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	"github.com/vipulvpatil/airetreat-go/internal/tls"
-	"github.com/vipulvpatil/airetreat-go/internal/workers"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc"
 )
-
-const WORKER_NAMESPACE = "socialmine_go"
 
 func main() {
 	fmt.Println("Starting Service")
@@ -48,22 +43,8 @@ func main() {
 		log.Fatalf("Unable to initialize storage: %v", err)
 	}
 
-	redisPool := &redis.Pool{
-		MaxActive: 5,
-		MaxIdle:   5,
-		Wait:      true,
-		Dial: func() (redis.Conn, error) {
-			return redis.DialURL(cfg.RedisUrl)
-		},
-	}
-	jobStarter := workers.NewJobStarter(WORKER_NAMESPACE, redisPool)
-
-	instagramClient := instagram.NewInstagramClient(cfg)
-
 	serverDeps := server.ServerDependencies{
-		JobStarter:      jobStarter,
-		Storage:         dbStorage,
-		InstagramClient: instagramClient,
+		Storage: dbStorage,
 	}
 
 	s, err := server.NewServer(serverDeps)
@@ -75,17 +56,8 @@ func main() {
 	hs := &health.AiRetreatGoHealthService{}
 	grpcHealthServer := setupGrpcHealthServer(hs, cfg)
 
-	workerPooldeps := workers.PoolDependencies{
-		RedisPool:       redisPool,
-		Namespace:       WORKER_NAMESPACE,
-		Storage:         dbStorage,
-		InstagramClient: instagramClient,
-	}
-	workerPool := workers.NewPool(workerPooldeps)
-	workerPool.Start()
-
 	var wg sync.WaitGroup
-	startGrpcServerAsync("social mine go", &wg, grpcServer, "9000")
+	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000")
 	startGrpcServerAsync("health", &wg, grpcHealthServer, "9090")
 
 	osTermSig := make(chan os.Signal, 1)
@@ -97,7 +69,6 @@ func main() {
 
 	grpcHealthServer.GracefulStop()
 	grpcServer.GracefulStop()
-	workerPool.Stop()
 	wg.Wait()
 	fmt.Println("Stopping Service")
 }

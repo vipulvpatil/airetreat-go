@@ -2,7 +2,6 @@ package storage
 
 type StorageAccessorMock struct {
 	UserRetriever
-	InstagramAccountAccessor
 }
 
 type StorageAccessorMockOption func(*StorageAccessorMock)
@@ -14,10 +13,4 @@ func NewStorageAccessorMock(opts ...StorageAccessorMockOption) *StorageAccessorM
 	}
 
 	return mock
-}
-
-func WithInstagramAccountAccessorMock(mock InstagramAccountAccessor) StorageAccessorMockOption {
-	return func(s *StorageAccessorMock) {
-		s.InstagramAccountAccessor = mock
-	}
 }

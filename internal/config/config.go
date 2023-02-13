@@ -47,7 +47,6 @@ func NewConfigFromEnvVars() (*Config, []error) {
 
 	c.EnableTls = envVarLoaderBool("ENABLE_TLS", true, &errs)
 	c.RedisUrl = envVarLoaderString("REDIS_URL", true, &errs)
-	c.InstagramAppSecret = envVarLoaderString("INSTAGRAM_APP_SECRET", true, &errs)
 	c.TestDbUrl = envVarLoaderString("TEST_DB_URL", false, &errs)
 	c.DbUrl = envVarLoaderString("DB_URL", true, &errs)
 	c.CaCertBase64 = envVarLoaderString("CA_CERT_BASE64", true, &errs)

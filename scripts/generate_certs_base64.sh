@@ -32,12 +32,12 @@ printBase64 () {
 # Delete old certs and keys if any
 rm -rf ./out
 
-caName=SocialMineCA
-serverName=api.socialmine.io
+caName=AiRetreatCA
+serverName=api.airetreat.io
 # for local use the below line
-# serverName=socialminego
-serverIp=$SOCIAL_MINE_GO_RESERVED_IP
-clientName=socialmine
+# serverName=airetreat
+serverIp=$AI_RETREAT_GO_RESERVED_IP
+clientName=airetreat
 
 echo "using Server IP"
 echo $serverIp
@@ -68,7 +68,7 @@ else
   rm -rf ./tmp
   mkdir ./tmp
 
-  saveFile $caName "crt" "./tmp/SocialMineCA.crt"
+  saveFile $caName "crt" "./tmp/AiRetreatCA.crt"
   saveFile $clientName "crt" "./tmp/client.crt"
   saveFile $clientName "key" "./tmp/client.key"
   echo "---server-env---"

@@ -4,30 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/vipulvpatil/airetreat-go/internal/clients/instagram"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
-	"github.com/vipulvpatil/airetreat-go/internal/workers"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
 
 type AiRetreatGoService struct {
 	pb.UnsafeAiRetreatGoServer
-	JobStarter      workers.JobStarter
-	storage         storage.StorageAccessor
-	instagramClient instagram.InstagramClient
+	storage storage.StorageAccessor
 }
 
 type ServerDependencies struct {
-	JobStarter      workers.JobStarter
-	Storage         storage.StorageAccessor
-	InstagramClient instagram.InstagramClient
+	Storage storage.StorageAccessor
 }
 
 func NewServer(deps ServerDependencies) (*AiRetreatGoService, error) {
 	return &AiRetreatGoService{
-		JobStarter:      deps.JobStarter,
-		storage:         deps.Storage,
-		instagramClient: deps.InstagramClient,
+		storage: deps.Storage,
 	}, nil
 }
 
