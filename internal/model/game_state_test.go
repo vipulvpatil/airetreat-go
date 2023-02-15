@@ -112,13 +112,13 @@ func Test_GameState_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			accountTypeString := tt.input.String()
-			assert.Equal(t, accountTypeString, tt.expectedOutput)
+			gameStateString := tt.input.String()
+			assert.Equal(t, gameStateString, tt.expectedOutput)
 		})
 	}
 }
 
-func Test_Valid(t *testing.T) {
+func Test_GameState_Valid(t *testing.T) {
 	t.Run("returns true for a valid account type", func(t *testing.T) {
 		assert.True(t, started.Valid())
 	})

@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/health"
@@ -20,6 +22,7 @@ import (
 
 func main() {
 	fmt.Println("Starting Service")
+	rand.Seed(time.Now().UTC().UnixNano())
 
 	cfg, errs := config.NewConfigFromEnvVars()
 	if len(errs) > 0 {

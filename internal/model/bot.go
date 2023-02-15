@@ -10,13 +10,15 @@ import (
 const totalNumberOfBotsPerGame = 5
 
 type Bot struct {
-	id   string
-	name string
+	id        string
+	name      string
+	typeOfBot botType
 }
 
 type BotOptions struct {
-	Id   string
-	Name string
+	Id        string
+	Name      string
+	TypeOfBot string
 }
 
 func NewBot(opts BotOptions) (*Bot, error) {
@@ -26,17 +28,27 @@ func NewBot(opts BotOptions) (*Bot, error) {
 	if utilities.IsBlank(opts.Name) {
 		return nil, errors.New("cannot create bot with an empty name")
 	}
+
+	defaultBotType := ai
+	if utilities.IsBlank(opts.TypeOfBot) {
+		opts.TypeOfBot = defaultBotType.String()
+	}
+	typeOfBot := BotType(opts.TypeOfBot)
+	if !typeOfBot.Valid() {
+		return nil, errors.New("cannot create bot with an invalid botType")
+	}
+
 	return &Bot{
-		id:   opts.Id,
-		name: opts.Name,
+		id:        opts.Id,
+		name:      opts.Name,
+		typeOfBot: typeOfBot,
 	}, nil
 }
 
-func RandomBotNames(randomSeed int64) []string {
+func RandomBotNames() []string {
 	botNames := []string{
 		"C-21PO", "R4-D4", "Gart", "HAL 9999", "Avis", "ED-I", "T-5000", "Davide", "B.O.B.Z", "The Machy-ne", "GLaDOODLES", "JARV-EESE", "The Hivey-five", "T-3PO", "InfoData", "Sort", "Electronic Device-209", "T-800X", "RoboCupp", "EVE-a-L", "GLaDOSE",
 	}
-	rand.Seed(randomSeed)
 	rand.Shuffle(len(botNames), func(i, j int) {
 		botNames[i], botNames[j] = botNames[j], botNames[i]
 	})

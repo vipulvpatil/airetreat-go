@@ -1,6 +1,7 @@
 package model
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,14 +30,37 @@ func Test_NewBot(t *testing.T) {
 			errorString:    "cannot create bot with an empty name",
 		},
 		{
-			name: "Bot gets created successfully",
+			name:           "botType is invalid",
+			input:          BotOptions{Id: "1", Name: "botname", TypeOfBot: "CHAT"},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot create bot with an invalid botType",
+		},
+		{
+			name: "Bot gets created successfully with provided botType",
+			input: BotOptions{
+				Id:        "123",
+				Name:      "some name",
+				TypeOfBot: "HUMAN",
+			},
+			expectedOutput: &Bot{
+				id:        "123",
+				name:      "some name",
+				typeOfBot: human,
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "Bot gets created successfully with default botType",
 			input: BotOptions{
 				Id:   "123",
 				Name: "some name",
 			},
 			expectedOutput: &Bot{
-				id:   "123",
-				name: "some name",
+				id:        "123",
+				name:      "some name",
+				typeOfBot: ai,
 			},
 			errorExpected: false,
 			errorString:   "",
@@ -71,7 +95,8 @@ func Test_RandomBotNames(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := RandomBotNames(tt.input)
+			rand.Seed(tt.input)
+			result := RandomBotNames()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
