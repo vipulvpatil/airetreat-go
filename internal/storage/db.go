@@ -25,23 +25,5 @@ func InitDb(cfg *config.Config) (*sql.DB, error) {
 	}
 	// this will be printed in the terminal, confirming the connection to the database
 	fmt.Println("The database is connected")
-
-	// TODO: Delete once database connectivity can be verified by other means.
-	rows, err := db.Query(`SELECT id, email FROM public."User"`)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var id string
-		var email string
-
-		rows.Scan(&id, &email)
-
-		fmt.Println(id, email)
-	}
-	fmt.Println("finished printing result")
-
 	return db, nil
 }
