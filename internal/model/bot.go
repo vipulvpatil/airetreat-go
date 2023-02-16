@@ -13,12 +13,14 @@ type Bot struct {
 	id        string
 	name      string
 	typeOfBot botType
+	player    *Player
 }
 
 type BotOptions struct {
-	Id        string
-	Name      string
-	TypeOfBot string
+	Id              string
+	Name            string
+	TypeOfBot       string
+	ConnectedPlayer *Player
 }
 
 func NewBot(opts BotOptions) (*Bot, error) {
@@ -38,10 +40,19 @@ func NewBot(opts BotOptions) (*Bot, error) {
 		return nil, errors.New("cannot create bot with an invalid botType")
 	}
 
+	if opts.ConnectedPlayer != nil && typeOfBot != human {
+		return nil, errors.New("cannot create a bot of non-human type with a connected Player")
+	}
+
+	if opts.ConnectedPlayer == nil && typeOfBot == human {
+		return nil, errors.New("cannot create a bot of human type without a connected Player")
+	}
+
 	return &Bot{
 		id:        opts.Id,
 		name:      opts.Name,
 		typeOfBot: typeOfBot,
+		player:    opts.ConnectedPlayer,
 	}, nil
 }
 

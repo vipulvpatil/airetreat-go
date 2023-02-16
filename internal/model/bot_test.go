@@ -8,6 +8,7 @@ import (
 )
 
 func Test_NewBot(t *testing.T) {
+	player := Player{id: "p_id"}
 	tests := []struct {
 		name           string
 		input          BotOptions
@@ -37,16 +38,56 @@ func Test_NewBot(t *testing.T) {
 			errorString:    "cannot create bot with an invalid botType",
 		},
 		{
-			name: "Bot gets created successfully with provided botType",
+			name: "errors when botType is not human but a connected Player is provided",
+			input: BotOptions{
+				Id:              "123",
+				Name:            "some name",
+				TypeOfBot:       "AI",
+				ConnectedPlayer: &player,
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot create a bot of non-human type with a connected Player",
+		},
+		{
+			name: "errors when botType is human but a connected Player is not provided",
 			input: BotOptions{
 				Id:        "123",
 				Name:      "some name",
 				TypeOfBot: "HUMAN",
 			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot create a bot of human type without a connected Player",
+		},
+		{
+			name: "Bot gets created successfully with provided botType",
+			input: BotOptions{
+				Id:        "123",
+				Name:      "some name",
+				TypeOfBot: "AI",
+			},
+			expectedOutput: &Bot{
+				id:        "123",
+				name:      "some name",
+				typeOfBot: ai,
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "Bot gets created successfully with human botType",
+			input: BotOptions{
+				Id:              "123",
+				Name:            "some name",
+				TypeOfBot:       "HUMAN",
+				ConnectedPlayer: &player,
+			},
 			expectedOutput: &Bot{
 				id:        "123",
 				name:      "some name",
 				typeOfBot: human,
+				player:    &player,
 			},
 			errorExpected: false,
 			errorString:   "",
