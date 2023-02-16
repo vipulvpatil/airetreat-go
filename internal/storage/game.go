@@ -1,9 +1,12 @@
 package storage
 
-import "github.com/vipulvpatil/airetreat-go/internal/model"
+import (
+	"github.com/lib/pq"
+	"github.com/vipulvpatil/airetreat-go/internal/model"
+)
 
 type GameAccessor interface {
-	CreateGame() model.Game
+	CreateGame() error
 }
 
 func (s *Storage) CreateGame() error {
@@ -55,7 +58,7 @@ func (s *Storage) CreateGame() error {
 			$1, $2, $3, $4, $5
 		)
 		`,
-		gameOption.Id, gameOption.State, gameOption.CurrentTurnIndex, gameOption.TurnOrder, gameOption.StateHandled,
+		gameOption.Id, gameOption.State, gameOption.CurrentTurnIndex, pq.Array(gameOption.TurnOrder), gameOption.StateHandled,
 	)
 	if err != nil {
 		return err
@@ -78,6 +81,5 @@ func (s *Storage) CreateGame() error {
 	}
 
 	err = tx.Commit()
-
 	return err
 }

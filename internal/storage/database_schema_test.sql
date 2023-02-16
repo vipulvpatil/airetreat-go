@@ -37,11 +37,11 @@ CREATE TABLE "games" (
     "turn_order" TEXT[],
     "state_handled" BOOLEAN NOT NULL,
     "state_handled_at" TIMESTAMP(3),
-    "current_state_total_time" INTEGER NOT NULL,
     "last_question" TEXT,
     "last_question_target_bot_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "state_total_time" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "games_pkey" PRIMARY KEY ("id")
 );
@@ -113,3 +113,4 @@ ALTER TABLE "messages" ADD CONSTRAINT "messages_botId_fkey" FOREIGN KEY ("botId"
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

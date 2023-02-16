@@ -9,6 +9,7 @@ import (
 
 type StorageAccessor interface {
 	UserRetriever
+	GameAccessor
 }
 
 type Storage struct {
