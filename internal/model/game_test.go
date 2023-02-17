@@ -83,3 +83,34 @@ func Test_NewGame(t *testing.T) {
 		})
 	}
 }
+
+func Test_Game_HasJustStarted(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name:           "returns true if game has just started",
+			input:          &Game{state: started},
+			expectedOutput: true,
+		},
+		{
+			name:           "returns false if game has moved to another state",
+			input:          &Game{state: playersJoined},
+			expectedOutput: false,
+		},
+		{
+			name:           "returns false if game is nil",
+			input:          nil,
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.HasJustStarted()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}

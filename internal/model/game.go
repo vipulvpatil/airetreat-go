@@ -30,7 +30,7 @@ type GameOptions struct {
 	TurnOrder               []string
 	StateHandled            bool
 	StateHandledAt          *time.Time
-	stateTotalTime          int64
+	StateTotalTime          int64
 	LastQuestion            string
 	LastQuestionTargetBotId string
 	CreatedAt               time.Time
@@ -64,7 +64,7 @@ func NewGame(opts GameOptions) (*Game, error) {
 		turnOrder:               opts.TurnOrder,
 		stateHandled:            opts.StateHandled,
 		stateHandledAt:          opts.StateHandledAt,
-		stateTotalTime:          opts.stateTotalTime,
+		stateTotalTime:          opts.StateTotalTime,
 		lastQuestion:            opts.LastQuestion,
 		lastQuestionTargetBotId: opts.LastQuestionTargetBotId,
 		createdAt:               opts.CreatedAt,
@@ -72,4 +72,11 @@ func NewGame(opts GameOptions) (*Game, error) {
 		bots:                    opts.Bots,
 		lastQuestionTargetBot:   opts.LastQuestionTargetBot,
 	}, nil
+}
+
+func (game *Game) HasJustStarted() bool {
+	if game == nil {
+		return false
+	}
+	return game.state == started
 }
