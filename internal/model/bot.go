@@ -56,6 +56,34 @@ func NewBot(opts BotOptions) (*Bot, error) {
 	}, nil
 }
 
+func (b *Bot) Id() string {
+	if b != nil {
+		return b.id
+	}
+	return ""
+}
+
+func (b *Bot) ConnectPlayer(player *Player) error {
+	if b == nil {
+		return errors.New("Cannot conect to an empty bot")
+	}
+	if player == nil {
+		return errors.New("Cannot connect an empty player")
+	}
+
+	if b.typeOfBot == human && b.player.id != player.id {
+		return errors.New("Cannot replace the connected player")
+	}
+
+	if b.typeOfBot != ai {
+		return errors.New("Can only conect to bot that is currently ai")
+	}
+
+	b.typeOfBot = human
+	b.player = player
+	return nil
+}
+
 func RandomBotNames() []string {
 	botNames := []string{
 		"C-21PO", "R4-D4", "Gart", "HAL 9999", "Avis", "ED-I", "T-5000", "Davide", "B.O.B.Z", "The Machy-ne", "GLaDOODLES", "JARV-EESE", "The Hivey-five", "T-3PO", "InfoData", "Sort", "Electronic Device-209", "T-800X", "RoboCupp", "EVE-a-L", "GLaDOSE",

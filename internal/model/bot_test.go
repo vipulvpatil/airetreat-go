@@ -121,6 +121,146 @@ func Test_NewBot(t *testing.T) {
 	}
 }
 
+func Test_Bot_Id(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Bot
+		expectedOutput string
+	}{
+		{
+			name:           "returns empty if bot is empty",
+			input:          nil,
+			expectedOutput: "",
+		},
+		{
+			name:           "returns Id successfully",
+			input:          &Bot{id: "id1"},
+			expectedOutput: "id1",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.Id()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Bot_ConectPlayer(t *testing.T) {
+	tests := []struct {
+		name  string
+		input struct {
+			bot    *Bot
+			player *Player
+		}
+		expectedOutput *Bot
+		errorExpected  bool
+		errorString    string
+	}{
+		{
+			name: "conects player to bot",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    &Bot{id: "b1", typeOfBot: ai},
+				player: &Player{id: "p1"},
+			},
+			expectedOutput: &Bot{
+				id:        "b1",
+				typeOfBot: human,
+				player:    &Player{id: "p1"},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "errors when conecting player to an empty bot",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    nil,
+				player: &Player{id: "p1"},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "Cannot conect to an empty bot",
+		},
+		{
+			name: "errors when conecting empty player to a bot",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    &Bot{id: "b1", typeOfBot: ai},
+				player: nil,
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "Cannot connect an empty player",
+		},
+		{
+			name: "errors when conecting a new player to a bot already connected to a different player",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    &Bot{id: "b1", typeOfBot: human, player: &Player{id: "p2"}},
+				player: &Player{id: "p1"},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "Cannot replace the connected player",
+		},
+		{
+			name: "errors when conecting a player to a non ai bot",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    &Bot{id: "b1", typeOfBot: undefinedBotType},
+				player: &Player{id: "p1"},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "Can only conect to bot that is currently ai",
+		},
+		{
+			name: "does not error when the same player is connected to the bot",
+			input: struct {
+				bot    *Bot
+				player *Player
+			}{
+				bot:    &Bot{id: "b1", typeOfBot: human, player: &Player{id: "p1"}},
+				player: &Player{id: "p1"},
+			},
+			expectedOutput: &Bot{
+				id:        "b1",
+				typeOfBot: human,
+				player:    &Player{id: "p1"},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.input.bot.ConnectPlayer(tt.input.player)
+			if tt.errorExpected {
+				assert.EqualError(t, err, tt.errorString)
+			} else {
+				assert.EqualValues(t, tt.expectedOutput.id, tt.input.bot.id)
+				assert.EqualValues(t, tt.expectedOutput.name, tt.input.bot.name)
+				assert.EqualValues(t, tt.expectedOutput.typeOfBot, tt.input.bot.typeOfBot)
+				assert.EqualValues(t, tt.expectedOutput.player, tt.input.bot.player)
+			}
+		})
+	}
+}
+
 func Test_RandomBotNames(t *testing.T) {
 	tests := []struct {
 		name           string
