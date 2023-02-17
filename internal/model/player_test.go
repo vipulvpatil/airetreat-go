@@ -46,3 +46,29 @@ func Test_NewPlayer(t *testing.T) {
 		})
 	}
 }
+
+func Test_Player_Id(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Player
+		expectedOutput string
+	}{
+		{
+			name:           "returns empty if player is empty",
+			input:          nil,
+			expectedOutput: "",
+		},
+		{
+			name:           "returns Id successfully",
+			input:          &Player{id: "id1"},
+			expectedOutput: "id1",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.Id()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}

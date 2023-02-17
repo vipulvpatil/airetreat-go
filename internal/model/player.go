@@ -21,3 +21,10 @@ func NewPlayer(opts PlayerOptions) (*Player, error) {
 		id: opts.Id,
 	}, nil
 }
+
+func (p *Player) Id() string {
+	if p != nil {
+		return p.id
+	}
+	return ""
+}
