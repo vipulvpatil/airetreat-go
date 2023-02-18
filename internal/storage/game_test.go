@@ -1,160 +1,107 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 
-	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
-	"github.com/vipulvpatil/airetreat-go/internal/utilities"
+	"github.com/vipulvpatil/airetreat-go/internal/model"
 )
 
-func Test_CreateGame(t *testing.T) {
+func Test_getGame(t *testing.T) {
 	tests := []struct {
 		name            string
+		input           string
+		outputFunc      func() *model.Game
 		setupSqlStmts   []string
 		cleanupSqlStmts []string
-		idGenerator     utilities.CuidGenerator
-		dbUpdateCheck   func(*sql.DB) bool
 		errorExpected   bool
 		errorString     string
 	}{
 		{
-			name:          "creates game successfully",
-			setupSqlStmts: []string{},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
-			},
-			idGenerator: &utilities.IdGeneratorMockSeries{Series: []string{"game_id1", "bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"}},
-			dbUpdateCheck: func(db *sql.DB) bool {
-				var (
-					id                      string
-					state                   string
-					currentTurnIndex        int
-					turnOrder               []string
-					stateHandled            bool
-					stateHandledAt          pq.NullTime
-					stateTotalTime          int
-					lastQuestion            sql.NullString
-					lastQuestionTargetBotId sql.NullString
-					createdAt               pq.NullTime
-					updatedAt               pq.NullTime
+			name:  "gets a game successfully",
+			input: "game_id1",
+			outputFunc: func() *model.Game {
+				player, _ := model.NewPlayer(
+					model.PlayerOptions{
+						Id: "player_id1",
+					},
 				)
-				err := db.QueryRow(
-					`SELECT "id", "state", "current_turn_index", "turn_order", "state_handled", "state_handled_at", "state_total_time", "last_question", "last_question_target_bot_id", "created_at", "updated_at"
-					FROM public."games" WHERE "id" = 'game_id1'`,
-				).Scan(&id, &state, &currentTurnIndex, pq.Array(&turnOrder), &stateHandled, &stateHandledAt, &stateTotalTime, &lastQuestion, &lastQuestionTargetBotId, &createdAt, &updatedAt)
-				assert.NoError(t, err)
-				assert.Equal(t, "game_id1", id)
-				assert.Equal(t, "STARTED", state)
-				assert.Equal(t, 0, currentTurnIndex)
-				assert.EqualValues(t, []string{"b", "p1", "b", "p2"}, turnOrder)
-				assert.False(t, stateHandled)
-				assert.False(t, stateHandledAt.Valid)
-				assert.Equal(t, 0, stateTotalTime)
-				assert.False(t, lastQuestion.Valid)
-				assert.False(t, lastQuestionTargetBotId.Valid)
-				assert.True(t, createdAt.Valid)
-				assert.True(t, updatedAt.Valid)
-
-				rows, err := db.Query(
-					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
-					FROM public."bots" WHERE "game_id" = 'game_id1'`,
-				)
-				assert.NoError(t, err)
-				defer rows.Close()
-
-				botIndex := 0
-				expectedBotNames := []string{"Electronic Device-209", "ED-I", "B.O.B.Z", "T-800X", "GLaDOODLES"}
-
-				for rows.Next() {
-					var (
-						id            string
-						name          string
-						typeOfBot     string
-						playerId      sql.NullString
-						questionCount int
-						createdAt     pq.NullTime
+				bots := []*model.Bot{}
+				for i := 0; i < 5; i++ {
+					bot, _ := model.NewBot(
+						model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						},
 					)
-					err = rows.Scan(&id, &name, &typeOfBot, &playerId, &questionCount, &createdAt)
-					assert.NoError(t, err)
-					assert.Equal(t, fmt.Sprintf("bot_id%d", botIndex+1), id)
-					assert.Equal(t, expectedBotNames[botIndex], name)
-					assert.Equal(t, "AI", typeOfBot)
-					assert.False(t, playerId.Valid)
-					assert.Equal(t, 0, questionCount)
-					assert.NotNil(t, createdAt)
-					botIndex++
+					bots = append(bots, bot)
 				}
-				assert.Equal(t, 5, botIndex)
-				return true
+				bots[4].ConnectPlayer(player)
+				game, _ := model.NewGame(
+					model.GameOptions{
+						Id:               "game_id1",
+						State:            "STARTED",
+						CurrentTurnIndex: 0,
+						TurnOrder:        []string{"b", "p1", "b", "p2"},
+						StateHandled:     false,
+						StateTotalTime:   0,
+						CreatedAt:        time.Now(),
+						UpdatedAt:        time.Now(),
+						Bots:             bots,
+					},
+				)
+				return game
 			},
-			errorExpected: false,
-			errorString:   "",
-		},
-		{
-			name: "errors and does not update anything, if Game ID already exists in DB",
 			setupSqlStmts: []string{
 				`INSERT INTO public."games" (
 					"id", "state", "current_turn_index", "turn_order", "state_handled"
 				)
 				VALUES (
-					'id1', 'STARTED', 0, ARRAY['b', 'p1', 'b', 'p2'], false
+					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
 				)
-				`,
+				VALUES (
+					'bot_id1', 'bot1', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id2', 'bot2', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id3', 'bot3', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id4', 'bot4', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id5', 'bot5', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."players" ("id") VALUES ('player_id1')`,
+				`UPDATE public."bots" SET "player_id" = 'player_id1' WHERE id = 'bot_id5'`,
 			},
 			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'id1'`,
+				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+				`DELETE FROM public."players" WHERE id = 'player_id1'`,
 			},
-			idGenerator: &utilities.IdGeneratorMockConstant{Id: "id1"},
-			dbUpdateCheck: func(db *sql.DB) bool {
-				var id string
-				err := db.QueryRow(
-					`SELECT id FROM public."games" WHERE "id" = 'id1'`,
-				).Scan(&id)
-				assert.NoError(t, err)
-				assert.Equal(t, "id1", id)
-
-				rows, err := db.Query(
-					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
-					FROM public."bots" WHERE "game_id" = 'id1'`,
-				)
-				assert.NoError(t, err)
-				defer rows.Close()
-				assert.False(t, rows.Next())
-				return true
-			},
-			errorExpected: true,
-			errorString:   "pq: duplicate key value violates unique constraint \"games_pkey\"",
-		},
-		{
-			name:            "errors and does not update anything, if Bot ID already exists in DB",
-			setupSqlStmts:   []string{},
-			cleanupSqlStmts: []string{},
-			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "id1"},
-			dbUpdateCheck: func(db *sql.DB) bool {
-				var id string
-				err := db.QueryRow(
-					`SELECT id FROM public."games" WHERE "id" = 'id1'`,
-				).Scan(&id)
-				assert.Error(t, err, "some error")
-
-				rows, err := db.Query(
-					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
-					FROM public."bots" WHERE "game_id" = 'id1'`,
-				)
-				assert.NoError(t, err)
-				defer rows.Close()
-				assert.False(t, rows.Next())
-				return true
-			},
-			errorExpected: true,
-			errorString:   "pq: duplicate key value violates unique constraint \"bots_pkey\"",
+			errorExpected: false,
+			errorString:   "",
 		},
 	}
 
@@ -162,8 +109,7 @@ func Test_CreateGame(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s, _ := NewDbStorage(
 				StorageOptions{
-					Db:          testDb,
-					IdGenerator: tt.idGenerator,
+					Db: testDb,
 				},
 			)
 
@@ -171,15 +117,14 @@ func Test_CreateGame(t *testing.T) {
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
-			err := s.CreateGame()
+			result, err := getGame(s.db, tt.input)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
+				output := tt.outputFunc()
+				model.AssertEqualGame(t, output, result)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
-			}
-			if tt.dbUpdateCheck != nil {
-				assert.True(t, tt.dbUpdateCheck(s.db))
 			}
 		})
 	}
