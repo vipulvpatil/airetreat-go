@@ -3,6 +3,7 @@ package storage
 import (
 	"github.com/lib/pq"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 func (s *Storage) CreateGame() error {
@@ -21,7 +22,7 @@ func (s *Storage) CreateGame() error {
 		botOptionsList = append(botOptionsList, botOpts)
 		bot, err := model.NewBot(botOpts)
 		if err != nil {
-			return err
+			return utilities.WrapBadError(err, "failed to create bot")
 		}
 		bots = append(bots, bot)
 	}
@@ -37,12 +38,12 @@ func (s *Storage) CreateGame() error {
 
 	_, err := model.NewGame(gameOption)
 	if err != nil {
-		return err
+		return utilities.WrapBadError(err, "failed to create game")
 	}
 
 	tx, err := s.db.Begin()
 	if err != nil {
-		return err
+		return utilities.WrapBadError(err, "failed to start db transaction")
 	}
 	defer tx.Rollback()
 

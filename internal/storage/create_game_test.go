@@ -64,8 +64,8 @@ func Test_CreateGame(t *testing.T) {
 					"id", "name", "type", "player_id", "question_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'game_id1'`,
 				)
-				defer rows.Close()
 				assert.NoError(t, err)
+				defer rows.Close()
 
 				botIndex := 0
 				expectedBotNames := []string{"Electronic Device-209", "ED-I", "B.O.B.Z", "T-800X", "GLaDOODLES"}
@@ -123,8 +123,8 @@ func Test_CreateGame(t *testing.T) {
 					"id", "name", "type", "player_id", "question_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'id1'`,
 				)
-				defer rows.Close()
 				assert.NoError(t, err)
+				defer rows.Close()
 				assert.False(t, rows.Next())
 				return true
 			},
@@ -148,8 +148,8 @@ func Test_CreateGame(t *testing.T) {
 					"id", "name", "type", "player_id", "question_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'id1'`,
 				)
-				defer rows.Close()
 				assert.NoError(t, err)
+				defer rows.Close()
 				assert.False(t, rows.Next())
 				return true
 			},
