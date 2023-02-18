@@ -24,7 +24,7 @@ CREATE TABLE "bots" (
     "player_id" TEXT,
     "game_id" TEXT NOT NULL,
     "question_count" INTEGER NOT NULL DEFAULT 0,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "bots_pkey" PRIMARY KEY ("id")
 );
@@ -36,11 +36,11 @@ CREATE TABLE "games" (
     "current_turn_index" INTEGER NOT NULL,
     "turn_order" TEXT[],
     "state_handled" BOOLEAN NOT NULL,
-    "state_handled_at" TIMESTAMP(3),
+    "state_handled_at" TIMESTAMPTZ(3),
     "last_question" TEXT,
     "last_question_target_bot_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "state_total_time" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "games_pkey" PRIMARY KEY ("id")
@@ -50,7 +50,7 @@ CREATE TABLE "games" (
 CREATE TABLE "messages" (
     "id" TEXT NOT NULL,
     "botId" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "messages_pkey" PRIMARY KEY ("id")
 );
@@ -58,7 +58,7 @@ CREATE TABLE "messages" (
 -- CreateTable
 CREATE TABLE "players" (
     "id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "players_pkey" PRIMARY KEY ("id")
 );
@@ -113,4 +113,3 @@ ALTER TABLE "messages" ADD CONSTRAINT "messages_botId_fkey" FOREIGN KEY ("botId"
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
