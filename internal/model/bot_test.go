@@ -147,6 +147,32 @@ func Test_Bot_Id(t *testing.T) {
 	}
 }
 
+func Test_Bot_IsAi(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Bot
+		expectedOutput bool
+	}{
+		{
+			name:           "returns false empty if bot is empty",
+			input:          nil,
+			expectedOutput: false,
+		},
+		{
+			name:           "returns Id successfully",
+			input:          &Bot{id: "id1", typeOfBot: ai},
+			expectedOutput: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsAi()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
 func Test_Bot_ConectPlayer(t *testing.T) {
 	tests := []struct {
 		name  string
