@@ -21,6 +21,103 @@ func Test_getGame(t *testing.T) {
 		errorString     string
 	}{
 		{
+			name:  "errors when gameId is blank",
+			input: "",
+			outputFunc: func() *model.Game {
+				return nil
+			},
+			setupSqlStmts:   []string{},
+			cleanupSqlStmts: []string{},
+			errorExpected:   true,
+			errorString:     "cannot getGame for a blank gameId",
+		},
+		{
+			name:  "errors nicely if no game found",
+			input: "game_id1",
+			outputFunc: func() *model.Game {
+				return nil
+			},
+			setupSqlStmts:   []string{},
+			cleanupSqlStmts: []string{},
+			errorExpected:   true,
+			errorString:     "game not found: game_id1",
+		},
+		{
+			name:  "bad error when found game with bad rows",
+			input: "game_id1",
+			outputFunc: func() *model.Game {
+				return nil
+			},
+			setupSqlStmts: []string{
+				`INSERT INTO public."games" (
+					"id", "state", "current_turn_index", "turn_order", "state_handled"
+				)
+				VALUES (
+					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], 'false'
+				)`,
+			},
+			cleanupSqlStmts: []string{
+				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			},
+			errorExpected: true,
+			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 9, name \"id\": converting NULL to string is unsupported",
+		},
+		{
+			name:  "error when found bot with bad data",
+			input: "game_id1",
+			outputFunc: func() *model.Game {
+				return nil
+			},
+			setupSqlStmts: []string{
+				`INSERT INTO public."games" (
+					"id", "state", "current_turn_index", "turn_order", "state_handled"
+				)
+				VALUES (
+					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id1', 'bot1', 'WHAT', 'game_id1'
+				)`,
+			},
+			cleanupSqlStmts: []string{
+				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			},
+			errorExpected: true,
+			errorString:   "THIS IS BAD: failed to create bot: cannot create bot with an invalid botType",
+		},
+		{
+			name:  "error when found game with bad data",
+			input: "game_id1",
+			outputFunc: func() *model.Game {
+				return nil
+			},
+			setupSqlStmts: []string{
+				`INSERT INTO public."games" (
+					"id", "state", "current_turn_index", "turn_order", "state_handled"
+				)
+				VALUES (
+					'game_id1', 'NOTSTARTED', 0, Array['b','p1','b','p2'], false
+				)`,
+				`INSERT INTO public."bots" (
+					"id", "name", "type", "game_id"
+				)
+				VALUES (
+					'bot_id1', 'bot1', 'AI', 'game_id1'
+				)`,
+				`INSERT INTO public."players" ("id") VALUES ('player_id1')`,
+				`UPDATE public."bots" SET "player_id" = 'player_id1' WHERE id = 'bot_id1'`,
+			},
+			cleanupSqlStmts: []string{
+				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+				`DELETE FROM public."players" WHERE id = 'player_id1'`,
+			},
+			errorExpected: true,
+			errorString:   "THIS IS BAD: failed to create game: cannot create game with an invalid state",
+		},
+		{
 			name:  "gets a game successfully",
 			input: "game_id1",
 			outputFunc: func() *model.Game {
@@ -58,10 +155,10 @@ func Test_getGame(t *testing.T) {
 			},
 			setupSqlStmts: []string{
 				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
+					"id", "state", "current_turn_index", "turn_order", "state_handled", "state_handled_at"
 				)
 				VALUES (
-					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false, current_timestamp
 				)`,
 				`INSERT INTO public."bots" (
 					"id", "name", "type", "game_id"

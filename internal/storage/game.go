@@ -18,7 +18,7 @@ type GameAccessor interface {
 
 func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 	if utilities.IsBlank(gameId) {
-		return nil, errors.New("Cannot getGame for a blank gameId")
+		return nil, errors.New("cannot getGame for a blank gameId")
 	}
 
 	var (
@@ -36,7 +36,7 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 		WHERE g.id = $1`, gameId,
 	)
 	if err != nil {
-		return nil, err
+		return nil, utilities.WrapBadError(err, "failed to select game")
 	}
 	defer rows.Close()
 
@@ -60,7 +60,7 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, utilities.WrapBadError(err, "failed while scanning rows")
 		}
 
 		if !utilities.IsBlank(botOpts.Id) {
@@ -73,25 +73,31 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 				if err != nil {
 					return nil, utilities.WrapBadError(err, "failed to create player")
 				}
-				bot.ConnectPlayer(player)
+				err = bot.ConnectPlayer(player)
+				if err != nil {
+					return nil, utilities.WrapBadError(err, "failed to connect player")
+				}
 			}
 			opts.Bots = append(opts.Bots, bot)
 		}
 	}
 	err = rows.Err()
 	if err != nil {
-		return nil, err
+		return nil, utilities.WrapBadError(err, "failed to correctly go through bot rows")
 	}
 
 	if stateHandledAt.Valid {
 		opts.StateHandledAt = &stateHandledAt.Time
 	}
 
-	fmt.Println(opts.CreatedAt)
+	if utilities.IsBlank(opts.Id) {
+		return nil, errors.Errorf("game not found: %s", gameId)
+	}
 
 	game, err := model.NewGame(opts)
+	fmt.Println(err)
 	if err != nil {
-		return nil, err
+		return nil, utilities.WrapBadError(err, "failed to create game")
 	}
 	return game, nil
 }
