@@ -1,6 +1,7 @@
 package model
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/pkg/errors"
@@ -79,4 +80,35 @@ func (game *Game) HasJustStarted() bool {
 		return false
 	}
 	return game.state == started
+}
+
+func (game *Game) GetOneRandomAiBot() (*Bot, error) {
+	if game == nil {
+		return nil, errors.New("attempting to get bots from a nil game")
+	}
+
+	aiBots := []*Bot{}
+	for _, bot := range game.bots {
+		if bot.IsAi() {
+			aiBots = append(aiBots, bot)
+		}
+	}
+
+	if len(aiBots) <= 0 {
+		return nil, errors.New("no AI bots in the game game")
+	}
+
+	return getRandomBot(aiBots)
+}
+
+func getRandomBot(bots []*Bot) (*Bot, error) {
+	if len(bots) == 0 {
+		return nil, errors.Errorf("Cannot get random bot from an empty list")
+	}
+
+	rand.Shuffle(len(bots), func(i, j int) {
+		bots[i], bots[j] = bots[j], bots[i]
+	})
+
+	return bots[0], nil
 }

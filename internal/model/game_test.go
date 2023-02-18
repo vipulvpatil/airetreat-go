@@ -1,6 +1,7 @@
 package model
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -111,6 +112,101 @@ func Test_Game_HasJustStarted(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.HasJustStarted()
 			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Game_GetOneRandomAiBot(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput *Bot
+		errorExpected  bool
+		errorString    string
+	}{
+		{
+			name:           "errors if game is nil",
+			input:          nil,
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "attempting to get bots from a nil game",
+		},
+		{
+			name: "errors if game has no ai bots",
+			input: &Game{state: started, bots: []*Bot{
+				{
+					id:        "bot_id1",
+					name:      "bot1",
+					typeOfBot: human,
+				},
+			},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "no AI bots in the game game",
+		},
+		{
+			name: "returns an ai bot if game has only 1 ai bot",
+			input: &Game{state: started, bots: []*Bot{
+				{
+					id:        "bot_id1",
+					name:      "bot1",
+					typeOfBot: human,
+				},
+				{
+					id:        "bot_id2",
+					name:      "bot2",
+					typeOfBot: ai,
+				},
+			}},
+			expectedOutput: &Bot{
+				id:        "bot_id2",
+				name:      "bot2",
+				typeOfBot: ai,
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns a ai random bot if game has multiple ai bots",
+			input: &Game{state: started, bots: []*Bot{
+				{
+					id:        "bot_id1",
+					name:      "bot1",
+					typeOfBot: ai,
+				},
+				{
+					id:        "bot_id2",
+					name:      "bot2",
+					typeOfBot: ai,
+				},
+				{
+					id:        "bot_id3",
+					name:      "bot3",
+					typeOfBot: human,
+				},
+			}},
+			expectedOutput: &Bot{
+				id:        "bot_id1",
+				name:      "bot1",
+				typeOfBot: ai,
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(0)
+			result, err := tt.input.GetOneRandomAiBot()
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedOutput, result)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
 		})
 	}
 }
