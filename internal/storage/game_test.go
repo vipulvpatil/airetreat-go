@@ -108,7 +108,10 @@ func Test_getGame(t *testing.T) {
 					'bot_id1', 'bot1', 'AI', 'game_id1'
 				)`,
 				`INSERT INTO public."players" ("id") VALUES ('player_id1')`,
-				`UPDATE public."bots" SET "player_id" = 'player_id1' WHERE id = 'bot_id1'`,
+				`UPDATE public."bots" SET
+				"player_id" = 'player_id1',
+				"type" = 'HUMAN'
+				WHERE id = 'bot_id1'`,
 			},
 			cleanupSqlStmts: []string{
 				`DELETE FROM public."games" WHERE id = 'game_id1'`,
@@ -191,7 +194,10 @@ func Test_getGame(t *testing.T) {
 					'bot_id5', 'bot5', 'AI', 'game_id1'
 				)`,
 				`INSERT INTO public."players" ("id") VALUES ('player_id1')`,
-				`UPDATE public."bots" SET "player_id" = 'player_id1' WHERE id = 'bot_id5'`,
+				`UPDATE public."bots" SET
+				"player_id" = 'player_id1',
+				"type" = 'HUMAN'
+				WHERE id = 'bot_id5'`,
 			},
 			cleanupSqlStmts: []string{
 				`DELETE FROM public."games" WHERE id = 'game_id1'`,

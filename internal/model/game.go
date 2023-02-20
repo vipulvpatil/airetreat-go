@@ -95,7 +95,7 @@ func (game *Game) GetOneRandomAiBot() (*Bot, error) {
 	}
 
 	if len(aiBots) <= 0 {
-		return nil, errors.New("no AI bots in the game game")
+		return nil, errors.New("no AI bots in the game")
 	}
 
 	return getRandomBot(aiBots)

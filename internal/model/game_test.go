@@ -143,7 +143,7 @@ func Test_Game_GetOneRandomAiBot(t *testing.T) {
 			},
 			expectedOutput: nil,
 			errorExpected:  true,
-			errorString:    "no AI bots in the game game",
+			errorString:    "no AI bots in the game",
 		},
 		{
 			name: "returns an ai bot if game has only 1 ai bot",

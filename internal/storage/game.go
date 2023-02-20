@@ -3,7 +3,6 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
 
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -13,7 +12,7 @@ import (
 
 type GameAccessor interface {
 	CreateGame() error
-	JoinGame(gameId string, player *model.Player) error
+	JoinGame(gameId, playerId string) error
 }
 
 func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
@@ -64,19 +63,16 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 		}
 
 		if !utilities.IsBlank(botOpts.Id) {
-			bot, err := model.NewBot(botOpts)
-			if err != nil {
-				return nil, utilities.WrapBadError(err, "failed to create bot")
-			}
 			if playerId.Valid {
 				player, err := model.NewPlayer(model.PlayerOptions{Id: playerId.String})
 				if err != nil {
 					return nil, utilities.WrapBadError(err, "failed to create player")
 				}
-				err = bot.ConnectPlayer(player)
-				if err != nil {
-					return nil, utilities.WrapBadError(err, "failed to connect player")
-				}
+				botOpts.ConnectedPlayer = player
+			}
+			bot, err := model.NewBot(botOpts)
+			if err != nil {
+				return nil, utilities.WrapBadError(err, "failed to create bot")
 			}
 			opts.Bots = append(opts.Bots, bot)
 		}
@@ -95,63 +91,10 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 	}
 
 	game, err := model.NewGame(opts)
-	fmt.Println(err)
 	if err != nil {
 		return nil, utilities.WrapBadError(err, "failed to create game")
 	}
 	return game, nil
-}
-
-func getRandomBot(bots []*model.Bot) (*model.Bot, error) {
-	if len(bots) == 0 {
-		return nil, errors.Errorf("Cannot get random bot from an empty list")
-	}
-
-	rand.Shuffle(len(bots), func(i, j int) {
-		bots[i], bots[j] = bots[j], bots[i]
-	})
-
-	return bots[0], nil
-}
-
-func getAllAiBots(customDb customDbHandler, gameId string) ([]*model.Bot, error) {
-	if utilities.IsBlank(gameId) {
-		return nil, errors.New("gameId cannot be blank")
-	}
-
-	rows, err := customDb.Query(
-		`SELECT id, name, type, player_id FROM public."bots" WHERE game_id = $1`, gameId,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.Errorf("GetAIBots %s: no bots for game", gameId)
-		}
-		return nil, utilities.WrapBadError(err, fmt.Sprintf("dbError %s", gameId))
-	}
-	defer rows.Close()
-
-	bots := []*model.Bot{}
-	for rows.Next() {
-		var (
-			botOptions model.BotOptions
-			player     sql.NullString
-		)
-		err := rows.Scan(&botOptions.Id, &botOptions.Name, &botOptions.TypeOfBot, player)
-		if err != nil {
-			return nil, utilities.WrapBadError(err, fmt.Sprintf("dbError while scanning row of bots for game: %s", gameId))
-		}
-		if player.Valid {
-			return nil, utilities.NewBadError(fmt.Sprintf("AI bot has connected player for bot: %v", botOptions.Id))
-		}
-
-		bot, err := model.NewBot(botOptions)
-		if err != nil {
-			return nil, utilities.WrapBadError(err, fmt.Sprintf("bot returned by db was inconsistent :%s", botOptions.Id))
-		}
-		bots = append(bots, bot)
-	}
-
-	return bots, nil
 }
 
 func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error {
@@ -164,7 +107,7 @@ func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error 
 	}
 
 	result, err := customDb.Exec(
-		`UPDATE public."bots" (player_id) VALUES ($1) WHERE id = $2`, playerId, botId,
+		`UPDATE public."bots" SET "player_id" = $1, "type" = 'HUMAN' WHERE id = $2`, playerId, botId,
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while connecting player to bot: %s %s", playerId, botId))
@@ -177,6 +120,43 @@ func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error 
 
 	if rowsAffected != 1 {
 		return utilities.NewBadError("No rows were affected when player was connected to Bot. This is highly unexpected.")
+	}
+
+	return nil
+}
+
+func updateGameStateToPlayersJoined(customDb customDbHandler, gameId string) error {
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId cannot be blank")
+	}
+
+	result, err := customDb.Exec(
+		`UPDATE public."games"
+		SET state = 'PLAYERS_JOINED'
+		FROM public."games" AS g
+		JOIN (
+			SELECT count(id) AS human_bot_count, game_id
+			FROM public."bots"
+			WHERE game_id = $1
+			AND type = 'HUMAN'
+			GROUP BY game_id
+			) AS b
+		ON g.id = b.game_id
+		WHERE g.id = $1
+		AND
+		b.human_bot_count = 2`, gameId,
+	)
+	if err != nil {
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while updating game state: %s", gameId))
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while checking affected row after updating game state: %s", gameId))
+	}
+
+	if rowsAffected > 1 {
+		return utilities.NewBadError("More than one row was affected when game state was updated. This is highly unexpected.")
 	}
 
 	return nil
