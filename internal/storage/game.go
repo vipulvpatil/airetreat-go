@@ -32,12 +32,16 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 		b.id, b.name, b.type, b.player_id
 		FROM public."games" AS g
 		LEFT JOIN public."bots" AS b ON b.game_id = g.id
-		WHERE g.id = $1`, gameId,
+		WHERE g.id = $1
+		ORDER BY b.created_at ASC`, gameId,
 	)
 	if err != nil {
 		return nil, utilities.WrapBadError(err, "failed to select game")
 	}
 	defer rows.Close()
+
+	botOptsMap := map[string]model.BotOptions{}
+	botOptsOrderedIds := []string{}
 
 	for rows.Next() {
 		var botOpts model.BotOptions
@@ -70,16 +74,28 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 				}
 				botOpts.ConnectedPlayer = player
 			}
-			bot, err := model.NewBot(botOpts)
-			if err != nil {
-				return nil, utilities.WrapBadError(err, "failed to create bot")
+			_, ok := botOptsMap[botOpts.Id]
+			if !ok {
+				botOptsOrderedIds = append(botOptsOrderedIds, botOpts.Id)
+				botOptsMap[botOpts.Id] = botOpts
+			} else {
+				// TODO: Add messages here.
 			}
-			opts.Bots = append(opts.Bots, bot)
 		}
 	}
+
 	err = rows.Err()
 	if err != nil {
 		return nil, utilities.WrapBadError(err, "failed to correctly go through bot rows")
+	}
+
+	for _, botOptsId := range botOptsOrderedIds {
+		fmt.Println(botOptsId)
+		bot, err := model.NewBot(botOptsMap[botOptsId])
+		if err != nil {
+			return nil, utilities.WrapBadError(err, "failed to create bot")
+		}
+		opts.Bots = append(opts.Bots, bot)
 	}
 
 	if stateHandledAt.Valid {
