@@ -29,11 +29,12 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 		g.id, g.state, g.current_turn_index, g.turn_order,
 		g.state_handled, g.state_handled_at, g.state_total_time,
 		g.created_at, g.updated_at,
-		b.id, b.name, b.type, b.player_id
+		b.id, b.name, b.type, b.player_id, m.text
 		FROM public."games" AS g
 		LEFT JOIN public."bots" AS b ON b.game_id = g.id
+		LEFT JOIN public."messages" AS m ON m.bot_id = b.id
 		WHERE g.id = $1
-		ORDER BY b.created_at ASC`, gameId,
+		ORDER BY b.created_at ASC, b.id, m.created_at, m.id`, gameId,
 	)
 	if err != nil {
 		return nil, utilities.WrapBadError(err, "failed to select game")
@@ -46,6 +47,7 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 	for rows.Next() {
 		var botOpts model.BotOptions
 		var playerId sql.NullString
+		var message sql.NullString
 		err := rows.Scan(
 			&opts.Id,
 			&opts.State,
@@ -60,6 +62,7 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 			&botOpts.Name,
 			&botOpts.TypeOfBot,
 			&playerId,
+			&message,
 		)
 
 		if err != nil {
@@ -78,8 +81,11 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 			if !ok {
 				botOptsOrderedIds = append(botOptsOrderedIds, botOpts.Id)
 				botOptsMap[botOpts.Id] = botOpts
-			} else {
-				// TODO: Add messages here.
+			}
+			if message.Valid {
+				botOpts = botOptsMap[botOpts.Id]
+				botOpts.Messages = append(botOpts.Messages, message.String)
+				botOptsMap[botOpts.Id] = botOpts
 			}
 		}
 	}
