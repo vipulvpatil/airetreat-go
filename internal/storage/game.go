@@ -90,7 +90,6 @@ func getGame(customDb customDbHandler, gameId string) (*model.Game, error) {
 	}
 
 	for _, botOptsId := range botOptsOrderedIds {
-		fmt.Println(botOptsId)
 		bot, err := model.NewBot(botOptsMap[botOptsId])
 		if err != nil {
 			return nil, utilities.WrapBadError(err, "failed to create bot")
