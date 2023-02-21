@@ -30,3 +30,16 @@ func (s *AiRetreatGoService) Test(ctx context.Context, req *pb.TestRequest) (*pb
 		Test: response,
 	}, nil
 }
+
+func (s *AiRetreatGoService) GetPlayerId(ctx context.Context, req *pb.GetPlayerIdRequest) (*pb.GetPlayerIdResponse, error) {
+	return nil, nil
+}
+func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
+	return nil, nil
+}
+func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameRequest) (*pb.JoinGameResponse, error) {
+	return nil, nil
+}
+func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
+	return nil, nil
+}
