@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"fmt"
+
 	"github.com/lib/pq"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
@@ -47,7 +49,7 @@ func (s *Storage) CreateGame() error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec(
+	result, err := tx.Exec(
 		`INSERT INTO public."games" (
 			"id", "state", "current_turn_index", "turn_order", "state_handled"
 		)
@@ -61,8 +63,17 @@ func (s *Storage) CreateGame() error {
 		return err
 	}
 
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while inserting game and changing db")
+	}
+
+	if rowsAffected != 1 {
+		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting game in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+	}
+
 	for _, botOpts := range botOptionsList {
-		_, err = tx.Exec(
+		result, err := tx.Exec(
 			`INSERT INTO public."bots" (
 				"id", "name", "type", "game_id"
 			)
@@ -74,6 +85,15 @@ func (s *Storage) CreateGame() error {
 		)
 		if err != nil {
 			return err
+		}
+
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return utilities.WrapBadError(err, "dbError while inserting bot and changing db")
+		}
+
+		if rowsAffected != 1 {
+			return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting bot in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
 		}
 	}
 
