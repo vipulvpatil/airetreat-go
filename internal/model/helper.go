@@ -15,8 +15,12 @@ func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.turnOrder, actual.turnOrder, "game turnOrder is not equal")
 	assert.Equal(t, expected.stateHandled, actual.stateHandled, "game stateHandled is not equal")
 	assert.Equal(t, expected.stateTotalTime, actual.stateTotalTime, "game id is not equal")
-	assert.EqualValues(t, expected.bots, actual.bots, "game bots is not equal")
 	assert.Equal(t, expected.id, actual.id, "game id is not equal")
+
+	for i, expectedBot := range expected.bots {
+		actualBot := actual.bots[i]
+		assert.Equal(t, expectedBot, actualBot, "bots did not match")
+	}
 
 	// Since we cannot mock postgres time operations. We just check that the updated times are near expected times.
 	delta := 5 * time.Second

@@ -131,13 +131,26 @@ func Test_getGame(t *testing.T) {
 				)
 				bots := []*model.Bot{}
 				for i := 0; i < 5; i++ {
-					bot, _ := model.NewBot(
-						model.BotOptions{
-							Id:        fmt.Sprintf("bot_id%d", i+1),
-							Name:      fmt.Sprintf("bot%d", i+1),
-							TypeOfBot: "AI",
-						},
-					)
+					botOpts := model.BotOptions{
+						Id:        fmt.Sprintf("bot_id%d", i+1),
+						Name:      fmt.Sprintf("bot%d", i+1),
+						TypeOfBot: "AI",
+					}
+					switch botOpts.Id {
+					case "bot_id1":
+						botOpts.Messages = []string{
+							"Q1: what is your name?",
+							"A1: My name is Antony Gonsalvez",
+							"Q2: Where is the gold?",
+							"A2: what gold!",
+						}
+					case "bot_id2":
+						botOpts.Messages = []string{
+							"Q1: What is your name?",
+							"A1: Bot 2 Dot 2",
+						}
+					}
+					bot, _ := model.NewBot(botOpts)
 					bots = append(bots, bot)
 				}
 				bots[4].ConnectPlayer(player)
@@ -198,6 +211,12 @@ func Test_getGame(t *testing.T) {
 				"player_id" = 'player_id1',
 				"type" = 'HUMAN'
 				WHERE id = 'bot_id5'`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id1', 'bot_id1', 'Q1: what is your name?')`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id2', 'bot_id1', 'A1: My name is Antony Gonsalvez')`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id3', 'bot_id2', 'Q1: What is your name?')`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id4', 'bot_id2', 'A1: Bot 2 Dot 2')`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id5', 'bot_id1', 'Q2: Where is the gold?')`,
+				`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id6', 'bot_id1', 'A2: what gold!')`,
 			},
 			cleanupSqlStmts: []string{
 				`DELETE FROM public."games" WHERE id = 'game_id1'`,
