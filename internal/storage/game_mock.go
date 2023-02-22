@@ -18,3 +18,19 @@ type GameCreatorMockFailure struct {
 func (g *GameCreatorMockFailure) CreateGame() (string, error) {
 	return "", errors.New("unable to create game")
 }
+
+type GameJoinerMockSuccess struct {
+	GameAccessor
+}
+
+func (g *GameJoinerMockSuccess) JoinGame(string, string) error {
+	return nil
+}
+
+type GameJoinerMockFailure struct {
+	GameAccessor
+}
+
+func (g *GameJoinerMockFailure) JoinGame(string, string) error {
+	return errors.New("unable to join game")
+}
