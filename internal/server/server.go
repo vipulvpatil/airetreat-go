@@ -32,7 +32,11 @@ func (s *AiRetreatGoService) Test(ctx context.Context, req *pb.TestRequest) (*pb
 }
 
 func (s *AiRetreatGoService) GetPlayerId(ctx context.Context, req *pb.GetPlayerIdRequest) (*pb.GetPlayerIdResponse, error) {
-	return nil, nil
+	playerId, err := s.storage.CreatePlayer()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetPlayerIdResponse{PlayerId: playerId}, nil
 }
 func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
 	return nil, nil

@@ -2,7 +2,6 @@ package storage
 
 import (
 	"database/sql"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,7 +77,6 @@ func Test_CreatePlayer(t *testing.T) {
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			rand.Seed(0)
 			playerId, err := s.CreatePlayer()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
