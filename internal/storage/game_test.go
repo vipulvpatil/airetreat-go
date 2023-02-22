@@ -10,7 +10,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 )
 
-func Test_getGame(t *testing.T) {
+func Test_GetGame(t *testing.T) {
 	tests := []struct {
 		name            string
 		input           string
@@ -239,7 +239,7 @@ func Test_getGame(t *testing.T) {
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
-			result, err := getGame(s.db, tt.input)
+			result, err := s.GetGame(tt.input)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 				output := tt.outputFunc()

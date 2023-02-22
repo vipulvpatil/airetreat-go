@@ -66,3 +66,11 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 	}
 	return &pb.SendMessageResponse{}, nil
 }
+
+func (s *AiRetreatGoService) GetGame(ctx context.Context, req *pb.GetGameRequest) (*pb.GetGameResponse, error) {
+	_, err := s.storage.GetGame(req.GetGameId())
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetGameResponse{}, nil
+}
