@@ -1,13 +1,14 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 type GameView struct {
-	State          string
+	State          gameViewState
 	DisplayMessage string
 	StateStartedAt *time.Time
 	StateTotalTime int64
@@ -16,7 +17,7 @@ type GameView struct {
 	Bots           []BotView
 }
 
-func (g *Game) ForPlayer(playerId string) *GameView {
+func (g *Game) GameViewForPlayer(playerId string) *GameView {
 	if g == nil {
 		return nil
 	}
@@ -25,24 +26,28 @@ func (g *Game) ForPlayer(playerId string) *GameView {
 		return nil
 	}
 
-	myBotId, bots := prepareBotsAndReturnMyBotId(g.bots, playerId)
-	if myBotId == nil {
+	myBot := g.botWithPlayerId(playerId)
+	if myBot == nil {
 		return nil
 	}
 
+	myBotId := myBot.id
+	bots := prepareBotViews(g.bots)
+
+	state, displayMessage := convertGameStateToGameViewStateWithMessage(g, myBotId)
+
 	return &GameView{
-		State:          "Game STATE",
-		DisplayMessage: "Game is in this state",
+		State:          state,
+		DisplayMessage: displayMessage,
 		StateStartedAt: g.stateHandledAt,
 		StateTotalTime: 60,
 		LastQuestion:   "no question",
-		MyBotId:        *myBotId,
+		MyBotId:        myBotId,
 		Bots:           bots,
 	}
 }
 
-func prepareBotsAndReturnMyBotId(bots []*Bot, playerId string) (*string, []BotView) {
-	var myBotId string
+func prepareBotViews(bots []*Bot) []BotView {
 	botViews := []BotView{}
 	for _, bot := range bots {
 		botViews = append(botViews, BotView{
@@ -50,10 +55,37 @@ func prepareBotsAndReturnMyBotId(bots []*Bot, playerId string) (*string, []BotVi
 			Name:    bot.name,
 			Message: bot.messages,
 		})
-		if bot.player.id == playerId {
-			myBotId = bot.id
-		}
 	}
 
-	return &myBotId, botViews
+	return botViews
+}
+
+func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameViewState, string) {
+	targetBot := g.getTargetBot()
+	switch g.state {
+	case started, playersJoined:
+		return waitingForPlayersToJoin, "Please wait as players join in"
+	case waitingForBotQuestion:
+		return waitingOnBotToAnswer, "Please wait as someone is asking a question"
+	case waitingForBotAnswer:
+		return waitingOnBotToAnswer,
+			fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
+	case waitingForPlayerQuestion:
+		if g.turnOrder[g.currentTurnIndex] == myBotId {
+			return waitingOnYouToAskAQuestion, "Please type a question. OR Click suggest for help!"
+		} else {
+			return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
+		}
+	case waitingForPlayerAnswer:
+		if g.lastQuestionTargetBotId == myBotId {
+			return waitingOnYouToAnswer, "Please answer the question. OR Click suggest for help!"
+		} else {
+			return waitingOnBotToAnswer,
+				fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
+		}
+	case finished:
+		return timeUp, "Time ran out"
+	default:
+		return undefinedGameViewState, "This is not supposed to happen. What did happen?"
+	}
 }

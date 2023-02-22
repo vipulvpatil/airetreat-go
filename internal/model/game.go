@@ -112,3 +112,32 @@ func getRandomBot(bots []*Bot) (*Bot, error) {
 
 	return bots[0], nil
 }
+
+func (game *Game) botWithId(botId string) *Bot {
+	for _, bot := range game.bots {
+		if bot.id == botId {
+			return bot
+		}
+	}
+	return nil
+}
+
+func (game *Game) botWithPlayerId(playerId string) *Bot {
+	for _, bot := range game.bots {
+		if bot.player != nil && bot.player.id == playerId {
+			return bot
+		}
+	}
+	return nil
+}
+
+func (game *Game) getTargetBot() *Bot {
+	switch game.state {
+	case waitingForBotQuestion, waitingForPlayerQuestion:
+		return game.botWithId(game.turnOrder[game.currentTurnIndex])
+	case waitingForBotAnswer, waitingForPlayerAnswer:
+		return game.botWithId(game.lastQuestionTargetBotId)
+	default:
+		return nil
+	}
+}
