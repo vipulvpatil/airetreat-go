@@ -23,3 +23,9 @@ func WithPlayerCreatorMock(mock PlayerCreator) StorageAccessorMockOption {
 		s.PlayerCreator = mock
 	}
 }
+
+func WithGameAccessorMock(mock GameAccessor) StorageAccessorMockOption {
+	return func(s *StorageAccessorMock) {
+		s.GameAccessor = mock
+	}
+}

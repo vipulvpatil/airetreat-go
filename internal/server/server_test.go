@@ -81,3 +81,52 @@ func Test_GetPlayerId(t *testing.T) {
 		})
 	}
 }
+
+func Test_CreateGame(t *testing.T) {
+	tests := []struct {
+		name            string
+		output          *pb.CreateGameResponse
+		gameCreatorMock storage.GameAccessor
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "test runs successfully",
+			output:          &pb.CreateGameResponse{GameId: "game_id1"},
+			gameCreatorMock: &storage.GameCreatorMockSuccess{GameId: "game_id1"},
+			errorExpected:   false,
+			errorString:     "",
+		},
+		{
+			name:            "errors if player creation fails",
+			output:          nil,
+			gameCreatorMock: &storage.GameCreatorMockFailure{},
+			errorExpected:   true,
+			errorString:     "unable to create game",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server, _ := NewServer(ServerDependencies{
+				Storage: storage.NewStorageAccessorMock(
+					storage.WithGameAccessorMock(
+						tt.gameCreatorMock,
+					),
+				),
+			})
+
+			response, err := server.CreateGame(
+				context.Background(),
+				&pb.CreateGameRequest{},
+			)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.EqualValues(t, response, tt.output)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}

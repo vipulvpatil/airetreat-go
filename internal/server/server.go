@@ -43,7 +43,11 @@ func (s *AiRetreatGoService) GetPlayerId(ctx context.Context, req *pb.GetPlayerI
 	return &pb.GetPlayerIdResponse{PlayerId: playerId}, nil
 }
 func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
-	return nil, nil
+	gameId, err := s.storage.CreateGame()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateGameResponse{GameId: gameId}, nil
 }
 func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameRequest) (*pb.JoinGameResponse, error) {
 	return nil, nil
