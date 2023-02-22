@@ -8,7 +8,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
-func (s *Storage) CreateGame() error {
+func (s *Storage) CreateGame() (string, error) {
 	id := s.IdGenerator.Generate()
 
 	botNames := model.RandomBotNames()
@@ -24,7 +24,7 @@ func (s *Storage) CreateGame() error {
 		botOptionsList = append(botOptionsList, botOpts)
 		bot, err := model.NewBot(botOpts)
 		if err != nil {
-			return utilities.WrapBadError(err, "failed to create bot")
+			return "", utilities.WrapBadError(err, "failed to create bot")
 		}
 		bots = append(bots, bot)
 	}
@@ -40,12 +40,12 @@ func (s *Storage) CreateGame() error {
 
 	_, err := model.NewGame(gameOption)
 	if err != nil {
-		return utilities.WrapBadError(err, "failed to create game")
+		return "", utilities.WrapBadError(err, "failed to create game")
 	}
 
 	tx, err := s.db.Begin()
 	if err != nil {
-		return utilities.WrapBadError(err, "failed to start db transaction")
+		return "", utilities.WrapBadError(err, "failed to start db transaction")
 	}
 	defer tx.Rollback()
 
@@ -60,16 +60,16 @@ func (s *Storage) CreateGame() error {
 		gameOption.Id, gameOption.State, gameOption.CurrentTurnIndex, pq.Array(gameOption.TurnOrder), gameOption.StateHandled,
 	)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return utilities.WrapBadError(err, "dbError while inserting game and changing db")
+		return "", utilities.WrapBadError(err, "dbError while inserting game and changing db")
 	}
 
 	if rowsAffected != 1 {
-		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting game in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+		return "", utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting game in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
 	}
 
 	for _, botOpts := range botOptionsList {
@@ -84,19 +84,22 @@ func (s *Storage) CreateGame() error {
 			botOpts.Id, botOpts.Name, botOpts.TypeOfBot, gameOption.Id,
 		)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		rowsAffected, err := result.RowsAffected()
 		if err != nil {
-			return utilities.WrapBadError(err, "dbError while inserting bot and changing db")
+			return "", utilities.WrapBadError(err, "dbError while inserting bot and changing db")
 		}
 
 		if rowsAffected != 1 {
-			return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting bot in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+			return "", utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting bot in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
 		}
 	}
 
 	err = tx.Commit()
-	return err
+	if err != nil {
+		return "", utilities.WrapBadError(err, "dbError while commiting create game tx")
+	}
+	return gameOption.Id, nil
 }

@@ -12,6 +12,7 @@ import (
 func Test_CreatePlayer(t *testing.T) {
 	tests := []struct {
 		name            string
+		output          string
 		setupSqlStmts   []string
 		cleanupSqlStmts []string
 		idGenerator     utilities.CuidGenerator
@@ -21,6 +22,7 @@ func Test_CreatePlayer(t *testing.T) {
 	}{
 		{
 			name:          "creates player successfully",
+			output:        "player_id1",
 			setupSqlStmts: []string{},
 			cleanupSqlStmts: []string{
 				`DELETE FROM public."players" WHERE id = 'player_id1'`,
@@ -41,7 +43,8 @@ func Test_CreatePlayer(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "errors and does not update anything, if Player ID already exists in DB",
+			name:   "errors and does not update anything, if Player ID already exists in DB",
+			output: "",
 			setupSqlStmts: []string{
 				`INSERT INTO public."players" ("id") VALUES ('id1')`,
 			},
@@ -76,9 +79,10 @@ func Test_CreatePlayer(t *testing.T) {
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
-			err := s.CreatePlayer()
+			playerId, err := s.CreatePlayer()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
+				assert.Equal(t, tt.output, playerId)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)

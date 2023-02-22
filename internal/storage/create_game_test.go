@@ -14,6 +14,7 @@ import (
 func Test_CreateGame(t *testing.T) {
 	tests := []struct {
 		name            string
+		output          string
 		setupSqlStmts   []string
 		cleanupSqlStmts []string
 		idGenerator     utilities.CuidGenerator
@@ -23,6 +24,7 @@ func Test_CreateGame(t *testing.T) {
 	}{
 		{
 			name:          "creates game successfully",
+			output:        "game_id1",
 			setupSqlStmts: []string{},
 			cleanupSqlStmts: []string{
 				`DELETE FROM public."games" WHERE id = 'game_id1'`,
@@ -96,7 +98,8 @@ func Test_CreateGame(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "errors and does not update anything, if Game ID already exists in DB",
+			name:   "errors and does not update anything, if Game ID already exists in DB",
+			output: "",
 			setupSqlStmts: []string{
 				`INSERT INTO public."games" (
 					"id", "state", "current_turn_index", "turn_order", "state_handled"
@@ -133,6 +136,7 @@ func Test_CreateGame(t *testing.T) {
 		},
 		{
 			name:            "errors and does not update anything, if Bot ID already exists in DB",
+			output:          "",
 			setupSqlStmts:   []string{},
 			cleanupSqlStmts: []string{},
 			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "id1"},
@@ -171,9 +175,10 @@ func Test_CreateGame(t *testing.T) {
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
-			err := s.CreateGame()
+			gameId, err := s.CreateGame()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
+				assert.Equal(t, tt.output, gameId)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
