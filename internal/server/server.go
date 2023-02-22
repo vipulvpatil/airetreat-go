@@ -42,6 +42,7 @@ func (s *AiRetreatGoService) GetPlayerId(ctx context.Context, req *pb.GetPlayerI
 	}
 	return &pb.GetPlayerIdResponse{PlayerId: playerId}, nil
 }
+
 func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
 	gameId, err := s.storage.CreateGame()
 	if err != nil {
@@ -49,13 +50,19 @@ func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameR
 	}
 	return &pb.CreateGameResponse{GameId: gameId}, nil
 }
+
 func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameRequest) (*pb.JoinGameResponse, error) {
-	err := s.storage.JoinGame(req.GameId, req.PlayerId)
+	err := s.storage.JoinGame(req.GetGameId(), req.GetPlayerId())
 	if err != nil {
 		return nil, err
 	}
 	return &pb.JoinGameResponse{}, nil
 }
+
 func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
-	return nil, nil
+	err := s.storage.AddMessage(req.GetBotId(), req.GetText())
+	if err != nil {
+		return nil, err
+	}
+	return &pb.SendMessageResponse{}, nil
 }
