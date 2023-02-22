@@ -71,6 +71,7 @@ service AiRetreatGo {
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+  rpc GetGame(GetGameRequest) returns (GetGameResponse) {}
 }
 
 message CheckRequest {}

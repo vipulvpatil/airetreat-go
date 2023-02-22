@@ -27,6 +27,7 @@ type AiRetreatGoClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
+	GetGame(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*GetGameResponse, error)
 }
 
 type aiRetreatGoClient struct {
@@ -82,6 +83,15 @@ func (c *aiRetreatGoClient) SendMessage(ctx context.Context, in *SendMessageRequ
 	return out, nil
 }
 
+func (c *aiRetreatGoClient) GetGame(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*GetGameResponse, error) {
+	out := new(GetGameResponse)
+	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/GetGame", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AiRetreatGoServer is the server API for AiRetreatGo service.
 // All implementations must embed UnimplementedAiRetreatGoServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type AiRetreatGoServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
+	GetGame(context.Context, *GetGameRequest) (*GetGameResponse, error)
 	mustEmbedUnimplementedAiRetreatGoServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedAiRetreatGoServer) JoinGame(context.Context, *JoinGameRequest
 }
 func (UnimplementedAiRetreatGoServer) SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedAiRetreatGoServer) GetGame(context.Context, *GetGameRequest) (*GetGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGame not implemented")
 }
 func (UnimplementedAiRetreatGoServer) mustEmbedUnimplementedAiRetreatGoServer() {}
 
@@ -216,6 +230,24 @@ func _AiRetreatGo_SendMessage_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AiRetreatGo_GetGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiRetreatGoServer).GetGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.AiRetreatGo/GetGame",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiRetreatGoServer).GetGame(ctx, req.(*GetGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AiRetreatGo_ServiceDesc is the grpc.ServiceDesc for AiRetreatGo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendMessage",
 			Handler:    _AiRetreatGo_SendMessage_Handler,
+		},
+		{
+			MethodName: "GetGame",
+			Handler:    _AiRetreatGo_GetGame_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
