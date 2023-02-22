@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc/metadata"
@@ -233,6 +234,64 @@ func Test_SendMessage(t *testing.T) {
 			})
 
 			response, err := server.SendMessage(
+				context.Background(),
+				tt.input,
+			)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.EqualValues(t, response, tt.output)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}
+
+func Test_GetGame(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *pb.GetGameRequest
+		output         *pb.GetGameResponse
+		gameGetterMock storage.GameAccessor
+		errorExpected  bool
+		errorString    string
+	}{
+		{
+			name: "test runs successfully",
+			input: &pb.GetGameRequest{
+				GameId: "game_id1",
+			},
+			output: &pb.GetGameResponse{},
+			gameGetterMock: &storage.GameGetterMockSuccess{
+				Game: &model.Game{},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "errors if joining game fails",
+			input: &pb.GetGameRequest{
+				GameId: "game_id1",
+			},
+			output:         nil,
+			gameGetterMock: &storage.GameGetterMockFailure{},
+			errorExpected:  true,
+			errorString:    "unable to join game",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server, _ := NewServer(ServerDependencies{
+				Storage: storage.NewStorageAccessorMock(
+					storage.WithGameAccessorMock(
+						tt.gameGetterMock,
+					),
+				),
+			})
+
+			response, err := server.GetGame(
 				context.Background(),
 				tt.input,
 			)

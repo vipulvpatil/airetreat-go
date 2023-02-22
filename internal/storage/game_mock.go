@@ -1,6 +1,9 @@
 package storage
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+	"github.com/vipulvpatil/airetreat-go/internal/model"
+)
 
 type GameCreatorMockSuccess struct {
 	GameAccessor
@@ -33,4 +36,21 @@ type GameJoinerMockFailure struct {
 
 func (g *GameJoinerMockFailure) JoinGame(string, string) error {
 	return errors.New("unable to join game")
+}
+
+type GameGetterMockSuccess struct {
+	GameAccessor
+	Game *model.Game
+}
+
+func (g *GameGetterMockSuccess) GetGame(string) (*model.Game, error) {
+	return g.Game, nil
+}
+
+type GameGetterMockFailure struct {
+	GameAccessor
+}
+
+func (g *GameGetterMockFailure) GetGame(string) (*model.Game, error) {
+	return nil, errors.New("unable to get game")
 }
