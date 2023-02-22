@@ -60,7 +60,7 @@ func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameReque
 }
 
 func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
-	err := s.storage.AddMessage(req.GetBotId(), req.GetText())
+	err := s.storage.CreateMessage(req.GetBotId(), req.GetText())
 	if err != nil {
 		return nil, err
 	}

@@ -8,10 +8,10 @@ import (
 )
 
 type MessageCreator interface {
-	AddMessage(botId, text string) error
+	CreateMessage(botId, text string) error
 }
 
-func (s *Storage) AddMessage(botId, text string) error {
+func (s *Storage) CreateMessage(botId, text string) error {
 	if utilities.IsBlank(botId) {
 		return errors.New("botId cannot be blank")
 	}

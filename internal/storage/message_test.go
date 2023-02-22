@@ -10,7 +10,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
-func Test_AddMessage(t *testing.T) {
+func Test_CreateMessage(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
@@ -143,7 +143,7 @@ func Test_AddMessage(t *testing.T) {
 
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
-			err := s.AddMessage(tt.input.botId, tt.input.text)
+			err := s.CreateMessage(tt.input.botId, tt.input.text)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 			} else {
