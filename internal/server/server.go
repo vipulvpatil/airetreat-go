@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
@@ -11,15 +12,18 @@ import (
 type AiRetreatGoService struct {
 	pb.UnsafeAiRetreatGoServer
 	storage storage.StorageAccessor
+	config  *config.Config
 }
 
 type ServerDependencies struct {
 	Storage storage.StorageAccessor
+	Config  *config.Config
 }
 
 func NewServer(deps ServerDependencies) (*AiRetreatGoService, error) {
 	return &AiRetreatGoService{
 		storage: deps.Storage,
+		config:  deps.Config,
 	}, nil
 }
 

@@ -15,6 +15,7 @@ type Config struct {
 	CaCertBase64     string
 	ServerCertBase64 string
 	ServerKeyBase64  string
+	AllowUnauthed    bool
 }
 
 func envVarLoaderBool(envVarName string, required bool, errorCollector *[]error) bool {
@@ -52,6 +53,7 @@ func NewConfigFromEnvVars() (*Config, []error) {
 	c.CaCertBase64 = envVarLoaderString("CA_CERT_BASE64", true, &errs)
 	c.ServerCertBase64 = envVarLoaderString("SERVER_CERT_BASE64", true, &errs)
 	c.ServerKeyBase64 = envVarLoaderString("SERVER_KEY_BASE64", true, &errs)
+	c.AllowUnauthed = envVarLoaderBool("ALLOW_UNAUTHED", true, &errs)
 
 	return &c, errs
 }

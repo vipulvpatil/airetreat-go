@@ -48,6 +48,7 @@ func main() {
 
 	serverDeps := server.ServerDependencies{
 		Storage: dbStorage,
+		Config:  cfg,
 	}
 
 	s, err := server.NewServer(serverDeps)
@@ -122,6 +123,7 @@ func tlsGrpcServerOptions(cfg *config.Config) grpc.ServerOption {
 		if err != nil {
 			log.Fatal("cannot load TLS credentials: ", err)
 		}
+		fmt.Println("using TLS")
 		return grpc.Creds(tlsCredentials)
 	}
 	return nil
