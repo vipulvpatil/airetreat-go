@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
@@ -249,6 +251,49 @@ func Test_SendMessage(t *testing.T) {
 }
 
 func Test_GetGame(t *testing.T) {
+	player, _ := model.NewPlayer(
+		model.PlayerOptions{
+			Id: "player_id1",
+		},
+	)
+	bots := []*model.Bot{}
+	for i := 0; i < 5; i++ {
+		botOpts := model.BotOptions{
+			Id:        fmt.Sprintf("bot_id%d", i+1),
+			Name:      fmt.Sprintf("bot%d", i+1),
+			TypeOfBot: "AI",
+		}
+		switch botOpts.Id {
+		case "bot_id1":
+			botOpts.Messages = []string{
+				"Q1: what is your name?",
+				"A1: My name is Antony Gonsalvez",
+				"Q2: Where is the gold?",
+				"A2: what gold!",
+			}
+		case "bot_id2":
+			botOpts.Messages = []string{
+				"Q1: What is your name?",
+				"A1: Bot 2 Dot 2",
+			}
+		}
+		bot, _ := model.NewBot(botOpts)
+		bots = append(bots, bot)
+	}
+	bots[4].ConnectPlayer(player)
+	game, _ := model.NewGame(
+		model.GameOptions{
+			Id:               "game_id1",
+			State:            "STARTED",
+			CurrentTurnIndex: 0,
+			TurnOrder:        []string{"b", "p1", "b", "p2"},
+			StateHandled:     false,
+			StateTotalTime:   0,
+			CreatedAt:        time.Now(),
+			UpdatedAt:        time.Now(),
+			Bots:             bots,
+		},
+	)
 	tests := []struct {
 		name           string
 		input          *pb.GetGameRequest
@@ -264,20 +309,20 @@ func Test_GetGame(t *testing.T) {
 			},
 			output: &pb.GetGameResponse{},
 			gameGetterMock: &storage.GameGetterMockSuccess{
-				Game: &model.Game{},
+				Game: game,
 			},
 			errorExpected: false,
 			errorString:   "",
 		},
 		{
-			name: "errors if joining game fails",
+			name: "errors if get game fails",
 			input: &pb.GetGameRequest{
 				GameId: "game_id1",
 			},
 			output:         nil,
 			gameGetterMock: &storage.GameGetterMockFailure{},
 			errorExpected:  true,
-			errorString:    "unable to join game",
+			errorString:    "unable to get game",
 		},
 	}
 
