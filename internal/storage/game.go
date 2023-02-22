@@ -11,7 +11,7 @@ import (
 )
 
 type GameAccessor interface {
-	CreateGame() error
+	CreateGame() (string, error)
 	JoinGame(gameId, playerId string) error
 }
 

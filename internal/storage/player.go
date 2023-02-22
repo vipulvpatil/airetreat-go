@@ -7,6 +7,10 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
+type PlayerCreator interface {
+	CreatePlayer() (string, error)
+}
+
 func (s *Storage) CreatePlayer() (string, error) {
 	id := s.IdGenerator.Generate()
 

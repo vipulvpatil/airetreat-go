@@ -10,6 +10,8 @@ import (
 type StorageAccessor interface {
 	UserRetriever
 	GameAccessor
+	PlayerCreator
+	MessageCreator
 }
 
 type Storage struct {

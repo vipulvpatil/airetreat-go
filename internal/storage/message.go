@@ -7,6 +7,10 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
+type MessageCreator interface {
+	AddMessage(botId, text string) error
+}
+
 func (s *Storage) AddMessage(botId, text string) error {
 	if utilities.IsBlank(botId) {
 		return errors.New("botId cannot be blank")
