@@ -14,6 +14,7 @@ func (s *Storage) CreateGame() (string, error) {
 	botNames := model.RandomBotNames()
 	botOptionsList := []model.BotOptions{}
 	bots := []*model.Bot{}
+	nonRandomTurnOrder := []string{}
 
 	for _, name := range botNames {
 		botOpts := model.BotOptions{
@@ -27,13 +28,14 @@ func (s *Storage) CreateGame() (string, error) {
 			return "", utilities.WrapBadError(err, "failed to create bot")
 		}
 		bots = append(bots, bot)
+		nonRandomTurnOrder = append(nonRandomTurnOrder, botOpts.Id)
 	}
 
 	gameOption := model.GameOptions{
 		Id:               id,
 		State:            "STARTED",
 		CurrentTurnIndex: 0,
-		TurnOrder:        []string{"b", "p1", "b", "p2"},
+		TurnOrder:        nonRandomTurnOrder,
 		StateHandled:     false,
 		Bots:             bots,
 	}

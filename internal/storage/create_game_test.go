@@ -52,7 +52,7 @@ func Test_CreateGame(t *testing.T) {
 				assert.Equal(t, "game_id1", id)
 				assert.Equal(t, "STARTED", state)
 				assert.Equal(t, 0, currentTurnIndex)
-				assert.EqualValues(t, []string{"b", "p1", "b", "p2"}, turnOrder)
+				assert.EqualValues(t, []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"}, turnOrder)
 				assert.False(t, stateHandled)
 				assert.False(t, stateHandledAt.Valid)
 				assert.Equal(t, 0, stateTotalTime)
