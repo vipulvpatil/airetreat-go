@@ -36,7 +36,6 @@ caName=AiRetreatCA
 serverName=api.airetreat.io
 # for local use the below line
 # serverName=airetreat
-serverIp=$AI_RETREAT_GO_RESERVED_IP
 clientName=airetreat
 
 echo "using Server IP"
@@ -47,13 +46,11 @@ certstrap init --passphrase "" --common-name $caName
 
 # Create the certificates for the client and servers
 certstrap request-cert --passphrase "" --domain $serverName
-# for local use the below line
-#certstrap request-cert --passphrase "" --domain $serverName --ip $serverIp
 certstrap request-cert --passphrase "" --domain $clientName
 
 # Sign the certificates for the client and servers
-certstrap sign $serverName --CA $caName  
-certstrap sign $clientName --CA $caName   
+certstrap sign $serverName --CA $caName
+certstrap sign $clientName --CA $caName
 
 if [[ $1 = "debug" ]]
 then
