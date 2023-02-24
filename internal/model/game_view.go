@@ -66,7 +66,7 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 	case started, playersJoined:
 		return waitingForPlayersToJoin, "Please wait as players join in"
 	case waitingForBotQuestion:
-		return waitingOnBotToAnswer, "Please wait as someone is asking a question"
+		return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
 	case waitingForBotAnswer:
 		return waitingOnBotToAnswer,
 			fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
