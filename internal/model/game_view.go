@@ -71,7 +71,7 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 		return waitingOnBotToAnswer,
 			fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
 	case waitingForPlayerQuestion:
-		if g.turnOrder[g.currentTurnIndex] == myBotId {
+		if g.getCurrentTurnBotId() == myBotId {
 			return waitingOnYouToAskAQuestion, "Please type a question. OR Click suggest for help!"
 		} else {
 			return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"

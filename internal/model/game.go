@@ -134,10 +134,15 @@ func (game *Game) botWithPlayerId(playerId string) *Bot {
 func (game *Game) getTargetBot() *Bot {
 	switch game.state {
 	case waitingForBotQuestion, waitingForPlayerQuestion:
-		return game.botWithId(game.turnOrder[game.currentTurnIndex])
+		return game.botWithId(game.getCurrentTurnBotId())
 	case waitingForBotAnswer, waitingForPlayerAnswer:
 		return game.botWithId(game.lastQuestionTargetBotId)
 	default:
 		return nil
 	}
+}
+
+func (game *Game) getCurrentTurnBotId() string {
+	turnIndex := game.currentTurnIndex % int64(len(game.turnOrder))
+	return game.turnOrder[turnIndex]
 }
