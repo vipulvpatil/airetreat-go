@@ -40,7 +40,7 @@ func (g *Game) GameViewForPlayer(playerId string) *GameView {
 		State:          state,
 		DisplayMessage: displayMessage,
 		StateStartedAt: g.stateHandledAt,
-		StateTotalTime: 60,
+		StateTotalTime: g.stateTotalTime,
 		LastQuestion:   "no question",
 		MyBotId:        myBotId,
 		Bots:           bots,
@@ -51,9 +51,9 @@ func prepareBotViews(bots []*Bot) []BotView {
 	botViews := []BotView{}
 	for _, bot := range bots {
 		botViews = append(botViews, BotView{
-			Id:      bot.id,
-			Name:    bot.name,
-			Message: bot.messages,
+			Id:       bot.id,
+			Name:     bot.name,
+			Messages: bot.messages,
 		})
 	}
 

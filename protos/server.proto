@@ -42,17 +42,17 @@ message SendMessageRequest {
 
 message SendMessageResponse {}
 
-message GetGameRequest {
+message GetGameForPlayerRequest {
   string gameId = 1;
+  string playerId = 2;
 }
 
-message GetGameResponse {
+message GetGameForPlayerResponse {
   string state = 1;
-	string stateMessage = 2;
+	string displayMessage = 2;
 	google.protobuf.Timestamp stateStartedAt = 3;
-	string stateTotalTime = 4;
+	int64 stateTotalTime = 4;
 	string lastQuestion = 5;
-	string lastQuestionTargetBotId = 6;
 	string myBotId = 7;
 	repeated Bot bots = 8;
 }
@@ -73,7 +73,7 @@ service AiRetreatGo {
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
-  rpc GetGame(GetGameRequest) returns (GetGameResponse) {}
+  rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
 }
 
 message CheckRequest {}

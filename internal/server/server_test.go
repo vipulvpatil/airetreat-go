@@ -11,6 +11,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func contextWithPrefilledRequestingUser() context.Context {
@@ -250,10 +251,15 @@ func Test_SendMessage(t *testing.T) {
 	}
 }
 
-func Test_GetGame(t *testing.T) {
-	player, _ := model.NewPlayer(
+func Test_GetGameForPlayer(t *testing.T) {
+	player1, _ := model.NewPlayer(
 		model.PlayerOptions{
 			Id: "player_id1",
+		},
+	)
+	player2, _ := model.NewPlayer(
+		model.PlayerOptions{
+			Id: "player_id2",
 		},
 	)
 	bots := []*model.Bot{}
@@ -280,15 +286,18 @@ func Test_GetGame(t *testing.T) {
 		bot, _ := model.NewBot(botOpts)
 		bots = append(bots, bot)
 	}
-	bots[4].ConnectPlayer(player)
+	bots[4].ConnectPlayer(player1)
+	bots[3].ConnectPlayer(player2)
+	stateHandledTime := time.Now()
 	game, _ := model.NewGame(
 		model.GameOptions{
 			Id:               "game_id1",
-			State:            "STARTED",
-			CurrentTurnIndex: 0,
-			TurnOrder:        []string{"b", "p1", "b", "p2"},
+			State:            "WAITING_FOR_PLAYER_QUESTION",
+			CurrentTurnIndex: 1,
+			TurnOrder:        []string{"bot_id4", "bot_id5", "bot_id3", "bot_id2"},
 			StateHandled:     false,
-			StateTotalTime:   0,
+			StateHandledAt:   &stateHandledTime,
+			StateTotalTime:   30,
 			CreatedAt:        time.Now(),
 			UpdatedAt:        time.Now(),
 			Bots:             bots,
@@ -296,33 +305,138 @@ func Test_GetGame(t *testing.T) {
 	)
 	tests := []struct {
 		name           string
-		input          *pb.GetGameRequest
-		output         *pb.GetGameResponse
+		input          *pb.GetGameForPlayerRequest
+		output         *pb.GetGameForPlayerResponse
 		gameGetterMock storage.GameAccessor
 		errorExpected  bool
 		errorString    string
 	}{
 		{
-			name: "test runs successfully",
-			input: &pb.GetGameRequest{
-				GameId: "game_id1",
-			},
-			output: &pb.GetGameResponse{},
-			gameGetterMock: &storage.GameGetterMockSuccess{
-				Game: game,
-			},
-			errorExpected: false,
-			errorString:   "",
-		},
-		{
 			name: "errors if get game fails",
-			input: &pb.GetGameRequest{
+			input: &pb.GetGameForPlayerRequest{
 				GameId: "game_id1",
 			},
 			output:         nil,
 			gameGetterMock: &storage.GameGetterMockFailure{},
 			errorExpected:  true,
 			errorString:    "unable to get game",
+		},
+		{
+			name: "errors if player is not in the game",
+			input: &pb.GetGameForPlayerRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id3",
+			},
+			output:         nil,
+			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
+			errorExpected:  true,
+			errorString:    "Unable to get game game_id1 for player player_id3",
+		},
+		{
+			name: "returns correct game view for player 1",
+			input: &pb.GetGameForPlayerRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id1",
+			},
+			output: &pb.GetGameForPlayerResponse{
+				State:          "WAITING_ON_YOU_TO_ASK_A_QUESTION",
+				DisplayMessage: "Please type a question. OR Click suggest for help!",
+				StateStartedAt: timestamppb.New(stateHandledTime),
+				StateTotalTime: 30,
+				LastQuestion:   "no question",
+				MyBotId:        "bot_id5",
+				Bots: []*pb.Bot{
+					{
+						Id:   "bot_id1",
+						Name: "bot1",
+						BotMessages: []*pb.BotMessage{
+							{Text: "Q1: what is your name?"},
+							{Text: "A1: My name is Antony Gonsalvez"},
+							{Text: "Q2: Where is the gold?"},
+							{Text: "A2: what gold!"},
+						},
+					},
+					{
+						Id:   "bot_id2",
+						Name: "bot2",
+						BotMessages: []*pb.BotMessage{
+							{Text: "Q1: What is your name?"},
+							{Text: "A1: Bot 2 Dot 2"},
+						},
+					},
+					{
+						Id:          "bot_id3",
+						Name:        "bot3",
+						BotMessages: []*pb.BotMessage{},
+					},
+					{
+						Id:          "bot_id4",
+						Name:        "bot4",
+						BotMessages: []*pb.BotMessage{},
+					},
+					{
+						Id:          "bot_id5",
+						Name:        "bot5",
+						BotMessages: []*pb.BotMessage{},
+					},
+				},
+			},
+			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
+			errorExpected:  false,
+			errorString:    "",
+		},
+		{
+			name: "returns correct game view for player 2",
+			input: &pb.GetGameForPlayerRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id2",
+			},
+			output: &pb.GetGameForPlayerResponse{
+				State:          "WAITING_ON_BOT_TO_ASK_A_QUESTION",
+				DisplayMessage: "Please wait as someone is asking a question",
+				StateStartedAt: timestamppb.New(stateHandledTime),
+				StateTotalTime: 30,
+				LastQuestion:   "no question",
+				MyBotId:        "bot_id5",
+				Bots: []*pb.Bot{
+					{
+						Id:   "bot_id1",
+						Name: "bot1",
+						BotMessages: []*pb.BotMessage{
+							{Text: "Q1: what is your name?"},
+							{Text: "A1: My name is Antony Gonsalvez"},
+							{Text: "Q2: Where is the gold?"},
+							{Text: "A2: what gold!"},
+						},
+					},
+					{
+						Id:   "bot_id2",
+						Name: "bot2",
+						BotMessages: []*pb.BotMessage{
+							{Text: "Q1: What is your name?"},
+							{Text: "A1: Bot 2 Dot 2"},
+						},
+					},
+					{
+						Id:          "bot_id3",
+						Name:        "bot3",
+						BotMessages: []*pb.BotMessage{},
+					},
+					{
+						Id:          "bot_id4",
+						Name:        "bot4",
+						BotMessages: []*pb.BotMessage{},
+					},
+					{
+						Id:          "bot_id5",
+						Name:        "bot5",
+						BotMessages: []*pb.BotMessage{},
+					},
+				},
+			},
+			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
+			errorExpected:  false,
+			errorString:    "",
 		},
 	}
 
@@ -336,7 +450,7 @@ func Test_GetGame(t *testing.T) {
 				),
 			})
 
-			response, err := server.GetGame(
+			response, err := server.GetGameForPlayer(
 				context.Background(),
 				tt.input,
 			)
