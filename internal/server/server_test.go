@@ -397,7 +397,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 				StateStartedAt: timestamppb.New(stateHandledTime),
 				StateTotalTime: 30,
 				LastQuestion:   "no question",
-				MyBotId:        "bot_id5",
+				MyBotId:        "bot_id4",
 				Bots: []*pb.Bot{
 					{
 						Id:   "bot_id1",
