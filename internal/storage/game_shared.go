@@ -147,19 +147,19 @@ func updateGameStateToPlayersJoined(customDb customDbHandler, gameId string) err
 	}
 
 	result, err := customDb.Exec(
-		`UPDATE public."games"
+		`WITH selected_games AS (
+			SELECT g.id, count(b.id) AS human_bot_count
+			FROM public."games" AS g
+			JOIN public."bots" AS b ON g.id = b.game_id
+			WHERE g.id = $1
+			AND b.type = 'HUMAN'
+			GROUP BY g.id
+		)
+		UPDATE public."games" AS games
 		SET state = 'PLAYERS_JOINED'
-		FROM public."games" AS g
-		JOIN (
-			SELECT count(id) AS human_bot_count, game_id
-			FROM public."bots"
-			WHERE game_id = $1
-			AND type = 'HUMAN'
-			GROUP BY game_id
-			) AS b
-		ON g.id = b.game_id
-		AND
-		b.human_bot_count = 2`, gameId,
+		FROM selected_games
+		WHERE games.id = selected_games.id
+		AND human_bot_count = 2`, gameId,
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while updating game state: %s", gameId))
