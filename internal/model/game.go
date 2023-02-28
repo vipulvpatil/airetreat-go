@@ -146,3 +146,7 @@ func (game *Game) getCurrentTurnBotId() string {
 	turnIndex := game.currentTurnIndex % int64(len(game.turnOrder))
 	return game.turnOrder[turnIndex]
 }
+
+func (game *Game) HasPlayer(playerId string) bool {
+	return game.botWithPlayerId(playerId) != nil
+}

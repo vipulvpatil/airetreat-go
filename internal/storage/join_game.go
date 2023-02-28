@@ -29,6 +29,10 @@ func (s *Storage) JoinGame(gameId, playerId string) error {
 		return errors.Errorf("Cannot join this game: %v", gameId)
 	}
 
+	if game.HasPlayer(playerId) {
+		return nil
+	}
+
 	aiBot, err := game.GetOneRandomAiBot()
 	if err != nil {
 		return err

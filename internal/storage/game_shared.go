@@ -158,7 +158,6 @@ func updateGameStateToPlayersJoined(customDb customDbHandler, gameId string) err
 			GROUP BY game_id
 			) AS b
 		ON g.id = b.game_id
-		WHERE g.id = $1
 		AND
 		b.human_bot_count = 2`, gameId,
 	)
@@ -172,7 +171,7 @@ func updateGameStateToPlayersJoined(customDb customDbHandler, gameId string) err
 	}
 
 	if rowsAffected > 1 {
-		return utilities.NewBadError("More than one row was affected when game state was updated. This is highly unexpected.")
+		return utilities.NewBadError(fmt.Sprintf("More than one row (%d) was affected when game state was updated. This is highly unexpected.", rowsAffected))
 	}
 
 	return nil
