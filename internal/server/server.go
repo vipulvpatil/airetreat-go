@@ -110,3 +110,12 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 		Bots:           bots,
 	}, nil
 }
+
+func (s *AiRetreatGoService) GetGamesForPlayer(ctx context.Context, req *pb.GetGamesForPlayerRequest) (*pb.GetGamesForPlayerResponse, error) {
+	gameIds, err := s.storage.GetGames(req.GetPlayerId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetGamesForPlayerResponse{GameIds: gameIds}, nil
+}

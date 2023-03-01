@@ -54,3 +54,20 @@ type GameGetterMockFailure struct {
 func (g *GameGetterMockFailure) GetGame(string) (*model.Game, error) {
 	return nil, errors.New("unable to get game")
 }
+
+type GamesGetterMockSuccess struct {
+	GameAccessor
+	GameIds []string
+}
+
+func (g *GamesGetterMockSuccess) GetGames(string) ([]string, error) {
+	return g.GameIds, nil
+}
+
+type GamesGetterMockFailure struct {
+	GameAccessor
+}
+
+func (g *GamesGetterMockFailure) GetGames(string) ([]string, error) {
+	return nil, errors.New("unable to get games")
+}

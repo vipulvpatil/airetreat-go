@@ -67,6 +67,14 @@ message BotMessage {
   string text = 1;
 }
 
+message GetGamesForPlayerRequest {
+  string playerId = 1;
+}
+
+message GetGamesForPlayerResponse {
+  repeated string gameIds = 1;
+}
+
 service AiRetreatGo {
   rpc Test(TestRequest) returns (TestResponse) {}
   rpc GetPlayerId(GetPlayerIdRequest) returns (GetPlayerIdResponse) {}
@@ -74,6 +82,7 @@ service AiRetreatGo {
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
   rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
+  rpc GetGamesForPlayer(GetGamesForPlayerRequest) returns (GetGamesForPlayerResponse) {}
 }
 
 message CheckRequest {}

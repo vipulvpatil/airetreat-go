@@ -77,7 +77,7 @@ func Test_GetPlayerId(t *testing.T) {
 			)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.EqualValues(t, response, tt.output)
+				assert.EqualValues(t, tt.output, response)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
@@ -126,7 +126,7 @@ func Test_CreateGame(t *testing.T) {
 			)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.EqualValues(t, response, tt.output)
+				assert.EqualValues(t, tt.output, response)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
@@ -184,7 +184,7 @@ func Test_JoinGame(t *testing.T) {
 			)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.EqualValues(t, response, tt.output)
+				assert.EqualValues(t, tt.output, response)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
@@ -242,7 +242,7 @@ func Test_SendMessage(t *testing.T) {
 			)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.EqualValues(t, response, tt.output)
+				assert.EqualValues(t, tt.output, response)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
@@ -456,7 +456,59 @@ func Test_GetGameForPlayer(t *testing.T) {
 			)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.EqualValues(t, response, tt.output)
+				assert.EqualValues(t, tt.output, response)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}
+
+func Test_GetGamesForPlayer(t *testing.T) {
+	tests := []struct {
+		name             string
+		input            *pb.GetGamesForPlayerRequest
+		output           *pb.GetGamesForPlayerResponse
+		gameAccessorMock storage.GameAccessor
+		errorExpected    bool
+		errorString      string
+	}{
+		{
+			name:             "test runs successfully",
+			input:            &pb.GetGamesForPlayerRequest{PlayerId: "player_id1"},
+			output:           &pb.GetGamesForPlayerResponse{GameIds: []string{"game_id1", "game_id2"}},
+			gameAccessorMock: &storage.GamesGetterMockSuccess{GameIds: []string{"game_id1", "game_id2"}},
+			errorExpected:    false,
+			errorString:      "",
+		},
+		{
+			name:             "errors if getting games fails",
+			input:            &pb.GetGamesForPlayerRequest{PlayerId: "player_id1"},
+			output:           nil,
+			gameAccessorMock: &storage.GamesGetterMockFailure{},
+			errorExpected:    true,
+			errorString:      "unable to get games",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server, _ := NewServer(ServerDependencies{
+				Storage: storage.NewStorageAccessorMock(
+					storage.WithGameAccessorMock(
+						tt.gameAccessorMock,
+					),
+				),
+			})
+
+			response, err := server.GetGamesForPlayer(
+				context.Background(),
+				tt.input,
+			)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.EqualValues(t, tt.output, response)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
