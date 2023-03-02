@@ -27,13 +27,13 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 
 	randomizedTurnOrder := game.RandomizedTurnOrder()
 
-	firstTurnBotType := game.GetBotType(randomizedTurnOrder[0])
+	firstTurnBot := game.BotWithId(randomizedTurnOrder[0])
 
 	var newGameState string
 
-	if firstTurnBotType.IsAi() {
+	if firstTurnBot.IsAi() {
 		newGameState = "WAITING_FOR_BOT_QUESTION"
-	} else if firstTurnBotType.IsHuman() {
+	} else if firstTurnBot.IsHuman() {
 		newGameState = "WAITING_FOR_PLAYER_QUESTION"
 	}
 
