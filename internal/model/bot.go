@@ -73,6 +73,13 @@ func (b *Bot) IsAi() bool {
 	return b.typeOfBot == ai
 }
 
+func (b *Bot) IsHuman() bool {
+	if b == nil {
+		return false
+	}
+	return b.typeOfBot == human
+}
+
 func (b *Bot) ConnectPlayer(player *Player) error {
 	if b == nil {
 		return errors.New("Cannot conect to an empty bot")

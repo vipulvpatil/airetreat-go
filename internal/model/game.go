@@ -113,7 +113,7 @@ func getRandomBot(bots []*Bot) (*Bot, error) {
 	return bots[0], nil
 }
 
-func (game *Game) botWithId(botId string) *Bot {
+func (game *Game) BotWithId(botId string) *Bot {
 	for _, bot := range game.bots {
 		if bot.id == botId {
 			return bot
@@ -134,9 +134,9 @@ func (game *Game) botWithPlayerId(playerId string) *Bot {
 func (game *Game) getTargetBot() *Bot {
 	switch game.state {
 	case waitingForBotQuestion, waitingForPlayerQuestion:
-		return game.botWithId(game.getCurrentTurnBotId())
+		return game.BotWithId(game.getCurrentTurnBotId())
 	case waitingForBotAnswer, waitingForPlayerAnswer:
-		return game.botWithId(game.lastQuestionTargetBotId)
+		return game.BotWithId(game.lastQuestionTargetBotId)
 	default:
 		return nil
 	}
@@ -148,5 +148,28 @@ func (game *Game) getCurrentTurnBotId() string {
 }
 
 func (game *Game) HasPlayer(playerId string) bool {
+	if utilities.IsBlank(playerId) {
+		return false
+	}
 	return game.botWithPlayerId(playerId) != nil
+}
+
+func (game *Game) StateHasBeenHandled() bool {
+	return game.stateHandled
+}
+
+func (game *Game) IsInStatePlayersJoined() bool {
+	return game.state == playersJoined
+}
+
+func (game *Game) RandomizedTurnOrder() []string {
+	botIds := []string{}
+	for _, bot := range game.bots {
+		botIds = append(botIds, bot.id)
+	}
+
+	rand.Shuffle(len(botIds), func(i, j int) {
+		botIds[i], botIds[j] = botIds[j], botIds[i]
+	})
+	return botIds
 }

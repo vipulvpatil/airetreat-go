@@ -159,15 +159,50 @@ func Test_Bot_IsAi(t *testing.T) {
 			expectedOutput: false,
 		},
 		{
-			name:           "returns Id successfully",
+			name:           "returns true",
 			input:          &Bot{id: "id1", typeOfBot: ai},
 			expectedOutput: true,
+		},
+		{
+			name:           "returns false",
+			input:          &Bot{id: "id1", typeOfBot: human},
+			expectedOutput: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.IsAi()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+func Test_Bot_IsHuman(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Bot
+		expectedOutput bool
+	}{
+		{
+			name:           "returns false empty if bot is empty",
+			input:          nil,
+			expectedOutput: false,
+		},
+		{
+			name:           "returns true",
+			input:          &Bot{id: "id1", typeOfBot: human},
+			expectedOutput: true,
+		},
+		{
+			name:           "returns false",
+			input:          &Bot{id: "id1", typeOfBot: ai},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsHuman()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}

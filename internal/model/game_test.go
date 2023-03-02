@@ -210,3 +210,315 @@ func Test_Game_GetOneRandomAiBot(t *testing.T) {
 		})
 	}
 }
+
+func Test_Game_BotWithId(t *testing.T) {
+	tests := []struct {
+		name  string
+		input struct {
+			game  *Game
+			botId string
+		}
+		expectedOutput *Bot
+	}{
+		{
+			name: "returns bot if present in game",
+			input: struct {
+				game  *Game
+				botId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+				},
+				botId: "bot_id1",
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id1",
+				name:      "bot1",
+				typeOfBot: 1,
+			},
+		},
+		{
+			name: "returns nil if game does not have the specified bot",
+			input: struct {
+				game  *Game
+				botId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+						},
+					},
+				},
+				botId: "bot_id4",
+			},
+			expectedOutput: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.game.BotWithId(tt.input.botId)
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+func Test_Game_HasPlayer(t *testing.T) {
+	tests := []struct {
+		name  string
+		input struct {
+			game     *Game
+			playerId string
+		}
+		expectedOutput bool
+	}{
+		{
+			name: "returns true if game has player",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+				},
+				playerId: "player_id1",
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false if game does not have player",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+						},
+					},
+				},
+				playerId: "player_id1",
+			},
+			expectedOutput: false,
+		},
+		{
+			name: "returns false if playerId is blank",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+						},
+					},
+				},
+				playerId: "",
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.game.HasPlayer(tt.input.playerId)
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Game_StateHasBeenHandled(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        started,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.StateHasBeenHandled()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Game_IsInStatePlayersJoined(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        playersJoined,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsInStatePlayersJoined()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Game_RandomizedTurnOrder(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput []string
+	}{
+		{
+			name: "returns randomized turn order",
+			input: &Game{
+				state: playersJoined,
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+					},
+					{
+						id:        "bot_id4",
+						name:      "bot4",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id5",
+						name:      "bot5",
+						typeOfBot: ai,
+					},
+				},
+			},
+			expectedOutput: []string{"bot_id3", "bot_id4", "bot_id2", "bot_id1", "bot_id5"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(0)
+			result := tt.input.RandomizedTurnOrder()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}

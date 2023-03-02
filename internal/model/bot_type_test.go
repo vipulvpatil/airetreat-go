@@ -77,23 +77,3 @@ func Test_BotType_Valid(t *testing.T) {
 		assert.False(t, undefinedBotType.Valid())
 	})
 }
-
-func Test_BotType_IsAi(t *testing.T) {
-	t.Run("returns true for a Ai Bot type type", func(t *testing.T) {
-		assert.True(t, ai.IsAi())
-	})
-
-	t.Run("returns false for a non Ai bot", func(t *testing.T) {
-		assert.False(t, undefinedBotType.IsAi())
-	})
-}
-
-func Test_BotType_IsHuman(t *testing.T) {
-	t.Run("returns true for a Ai Bot type type", func(t *testing.T) {
-		assert.True(t, human.IsHuman())
-	})
-
-	t.Run("returns false for a non Ai bot", func(t *testing.T) {
-		assert.False(t, undefinedBotType.IsHuman())
-	})
-}
