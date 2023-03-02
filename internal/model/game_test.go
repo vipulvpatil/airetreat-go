@@ -101,11 +101,6 @@ func Test_Game_HasJustStarted(t *testing.T) {
 			input:          &Game{state: playersJoined},
 			expectedOutput: false,
 		},
-		{
-			name:           "returns false if game is nil",
-			input:          nil,
-			expectedOutput: false,
-		},
 	}
 
 	for _, tt := range tests {
@@ -124,13 +119,6 @@ func Test_Game_GetOneRandomAiBot(t *testing.T) {
 		errorExpected  bool
 		errorString    string
 	}{
-		{
-			name:           "errors if game is nil",
-			input:          nil,
-			expectedOutput: nil,
-			errorExpected:  true,
-			errorString:    "attempting to get bots from a nil game",
-		},
 		{
 			name: "errors if game has no ai bots",
 			input: &Game{state: started, bots: []*Bot{

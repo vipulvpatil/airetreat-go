@@ -23,8 +23,5 @@ func NewPlayer(opts PlayerOptions) (*Player, error) {
 }
 
 func (p *Player) Id() string {
-	if p != nil {
-		return p.id
-	}
-	return ""
+	return p.id
 }

@@ -54,11 +54,6 @@ func Test_Player_Id(t *testing.T) {
 		expectedOutput string
 	}{
 		{
-			name:           "returns empty if player is empty",
-			input:          nil,
-			expectedOutput: "",
-		},
-		{
 			name:           "returns Id successfully",
 			input:          &Player{id: "id1"},
 			expectedOutput: "id1",

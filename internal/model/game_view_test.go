@@ -594,17 +594,6 @@ func Test_GameViewForPlayer(t *testing.T) {
 			},
 		},
 		{
-			name: "returns nil if game is nil",
-			input: struct {
-				playerId string
-				game     *Game
-			}{
-				playerId: "player_id1",
-				game:     nil,
-			},
-			output: nil,
-		},
-		{
 			name: "returns nil if playerId is blank",
 			input: struct {
 				playerId string

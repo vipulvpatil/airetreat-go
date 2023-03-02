@@ -60,30 +60,18 @@ func NewBot(opts BotOptions) (*Bot, error) {
 }
 
 func (b *Bot) Id() string {
-	if b != nil {
-		return b.id
-	}
-	return ""
+	return b.id
 }
 
 func (b *Bot) IsAi() bool {
-	if b == nil {
-		return false
-	}
 	return b.typeOfBot == ai
 }
 
 func (b *Bot) IsHuman() bool {
-	if b == nil {
-		return false
-	}
 	return b.typeOfBot == human
 }
 
 func (b *Bot) ConnectPlayer(player *Player) error {
-	if b == nil {
-		return errors.New("Cannot conect to an empty bot")
-	}
 	if player == nil {
 		return errors.New("Cannot connect an empty player")
 	}

@@ -76,17 +76,10 @@ func NewGame(opts GameOptions) (*Game, error) {
 }
 
 func (game *Game) HasJustStarted() bool {
-	if game == nil {
-		return false
-	}
 	return game.state == started
 }
 
 func (game *Game) GetOneRandomAiBot() (*Bot, error) {
-	if game == nil {
-		return nil, errors.New("attempting to get bots from a nil game")
-	}
-
 	aiBots := []*Bot{}
 	for _, bot := range game.bots {
 		if bot.IsAi() {

@@ -18,10 +18,6 @@ type GameView struct {
 }
 
 func (g *Game) GameViewForPlayer(playerId string) *GameView {
-	if g == nil {
-		return nil
-	}
-
 	if utilities.IsBlank(playerId) {
 		return nil
 	}

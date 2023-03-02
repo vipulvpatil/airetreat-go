@@ -128,11 +128,6 @@ func Test_Bot_Id(t *testing.T) {
 		expectedOutput string
 	}{
 		{
-			name:           "returns empty if bot is empty",
-			input:          nil,
-			expectedOutput: "",
-		},
-		{
 			name:           "returns Id successfully",
 			input:          &Bot{id: "id1"},
 			expectedOutput: "id1",
@@ -153,11 +148,6 @@ func Test_Bot_IsAi(t *testing.T) {
 		input          *Bot
 		expectedOutput bool
 	}{
-		{
-			name:           "returns false empty if bot is empty",
-			input:          nil,
-			expectedOutput: false,
-		},
 		{
 			name:           "returns true",
 			input:          &Bot{id: "id1", typeOfBot: ai},
@@ -183,11 +173,6 @@ func Test_Bot_IsHuman(t *testing.T) {
 		input          *Bot
 		expectedOutput bool
 	}{
-		{
-			name:           "returns false empty if bot is empty",
-			input:          nil,
-			expectedOutput: false,
-		},
 		{
 			name:           "returns true",
 			input:          &Bot{id: "id1", typeOfBot: human},
@@ -235,19 +220,6 @@ func Test_Bot_ConectPlayer(t *testing.T) {
 			},
 			errorExpected: false,
 			errorString:   "",
-		},
-		{
-			name: "errors when conecting player to an empty bot",
-			input: struct {
-				bot    *Bot
-				player *Player
-			}{
-				bot:    nil,
-				player: &Player{id: "p1"},
-			},
-			expectedOutput: nil,
-			errorExpected:  true,
-			errorString:    "Cannot conect to an empty bot",
 		},
 		{
 			name: "errors when conecting empty player to a bot",
