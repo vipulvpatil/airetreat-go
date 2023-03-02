@@ -33,3 +33,11 @@ func (b botType) String() string {
 func (b botType) Valid() bool {
 	return b.String() != "UNDEFINED"
 }
+
+func (b botType) IsAi() bool {
+	return b == ai
+}
+
+func (b botType) IsHuman() bool {
+	return b == human
+}
