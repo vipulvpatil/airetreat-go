@@ -1,10 +1,10 @@
 package workers
 
 import (
-	"fmt"
-
 	"github.com/gocraft/work"
 	"github.com/pkg/errors"
+	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 type jobContext struct{}
@@ -12,17 +12,20 @@ type jobContext struct{}
 func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId is required")
+	}
 	game, err := workerStorage.GetGame(gameId)
 	if err != nil {
 		return err
 	}
 
 	if game.StateHasBeenHandled() {
-		return nil
+		return errors.Errorf("game has already been handled: %s", gameId)
 	}
 
 	if !game.IsInStatePlayersJoined() {
-		return errors.Errorf("Game should be in PlayersJoined state: %s", gameId)
+		return errors.Errorf("game should be in PlayersJoined state: %s", gameId)
 	}
 
 	randomizedTurnOrder := game.RandomizedTurnOrder()
@@ -37,10 +40,13 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 		newGameState = "WAITING_FOR_PLAYER_QUESTION"
 	}
 
-	fmt.Println(newGameState)
-	// save to db.
+	startTurnIndex := int64(0)
 
-	// Temp.
-	// process job for 30 seconds with sleep
-	return nil
+	updateOpts := storage.GameUpdateOptions{
+		State:            &newGameState,
+		CurrentTurnIndex: &startTurnIndex,
+		TurnOrder:        randomizedTurnOrder,
+	}
+
+	return workerStorage.UpdateGameState(gameId, updateOpts)
 }

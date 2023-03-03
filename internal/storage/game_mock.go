@@ -71,3 +71,27 @@ type GamesGetterMockFailure struct {
 func (g *GamesGetterMockFailure) GetGames(string) ([]string, error) {
 	return nil, errors.New("unable to get games")
 }
+
+type GameAccessorConfigurableMock struct {
+	CreateGameInternal      func() (string, error)
+	JoinGameInternal        func(gameId, playerId string) error
+	GetGameInternal         func(gameId string) (*model.Game, error)
+	GetGamesInternal        func(playerId string) ([]string, error)
+	UpdateGameStateInternal func(gameId string, updateOpts GameUpdateOptions) error
+}
+
+func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
+	return g.CreateGameInternal()
+}
+func (g *GameAccessorConfigurableMock) JoinGame(gameId, playerId string) error {
+	return g.JoinGameInternal(gameId, playerId)
+}
+func (g *GameAccessorConfigurableMock) GetGame(gameId string) (*model.Game, error) {
+	return g.GetGameInternal(gameId)
+}
+func (g *GameAccessorConfigurableMock) GetGames(playerId string) ([]string, error) {
+	return g.GetGamesInternal(playerId)
+}
+func (g *GameAccessorConfigurableMock) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
+	return g.UpdateGameStateInternal(gameId, updateOpts)
+}
