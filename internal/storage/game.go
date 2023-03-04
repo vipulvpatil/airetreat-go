@@ -8,4 +8,5 @@ type GameAccessor interface {
 	GetGame(gameId string) (*model.Game, error)
 	GetGames(playerId string) ([]string, error)
 	UpdateGameState(gameId string, updateOpts GameUpdateOptions) error
+	GetUnhandledGameIdsForState(gameStateString string) []string
 }

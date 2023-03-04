@@ -37,7 +37,6 @@ func (s *Storage) GetUnhandledGameIdsForState(gameStateString string) []string {
 			fmt.Printf("THIS IS BAD but no error: failed while scanning rows: %s\n", err)
 			return nil
 		}
-		fmt.Println(gameId)
 		gameIds = append(gameIds, gameId)
 	}
 
