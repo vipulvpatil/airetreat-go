@@ -88,13 +88,19 @@ func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString str
 	return []string{}
 }
 
-type GameIdsGetterMockSuccess struct {
+type GameIdsGetterMockSuccessOnce struct {
 	GameAccessor
-	GameIds []string
+	GameIds     []string
+	CallCount   int
+	ReturnCount int
 }
 
-func (g *GameIdsGetterMockSuccess) GetUnhandledGameIdsForState(gameStateString string) []string {
-	return g.GameIds
+func (g *GameIdsGetterMockSuccessOnce) GetUnhandledGameIdsForState(gameStateString string) []string {
+	g.CallCount++
+	if g.ReturnCount >= g.CallCount {
+		return g.GameIds
+	}
+	return nil
 }
 
 type GameAccessorConfigurableMock struct {

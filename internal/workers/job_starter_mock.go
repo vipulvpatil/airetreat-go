@@ -6,9 +6,15 @@ import (
 	"github.com/gocraft/work"
 )
 
-type JobStarterMockSuccess struct{}
+type JobStarterMockCallCheck struct {
+	CalledArgs []map[string]interface{}
+}
 
-func (j *JobStarterMockSuccess) Enqueue(jobName string, args map[string]interface{}) (*work.Job, error) {
+func (j *JobStarterMockCallCheck) EnqueueUnique(jobName string, args map[string]interface{}) (*work.Job, error) {
+	if j.CalledArgs == nil {
+		j.CalledArgs = []map[string]interface{}{}
+	}
+	j.CalledArgs = append(j.CalledArgs, args)
 	return &work.Job{}, nil
 }
 
