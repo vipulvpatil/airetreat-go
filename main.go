@@ -12,7 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gocraft/work"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/health"
@@ -89,7 +88,8 @@ func main() {
 	startGrpcServerAsync("health", &wg, grpcHealthServer, "9090")
 
 	gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
-	gameHandlerLoop(gameHandlerLoopCtx, &wg, jobStarter)
+	loopTickerDuration := 1 * time.Second
+	go s.GameHandlerLoop(gameHandlerLoopCtx, loopTickerDuration, &wg, jobStarter)
 
 	osTermSig := make(chan os.Signal, 1)
 	signal.Notify(osTermSig, syscall.SIGINT, syscall.SIGTERM)
@@ -156,24 +156,4 @@ func tlsGrpcServerOptions(cfg *config.Config) grpc.ServerOption {
 		return grpc.Creds(tlsCredentials)
 	}
 	return nil
-}
-
-func gameHandlerLoop(ctx context.Context, wg *sync.WaitGroup, jobStarter workers.JobStarter) {
-	wg.Add(1)
-	defer wg.Done()
-
-	ticker := time.NewTicker(1 * time.Second)
-	for {
-		select {
-		case <-ticker.C:
-			job, err := jobStarter.EnqueueUnique(workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED, work.Q{"id": "1"})
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Println(job)
-			}
-		case <-ctx.Done():
-			return
-		}
-	}
 }
