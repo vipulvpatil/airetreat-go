@@ -88,11 +88,15 @@ func Test_Game_UpdateGameState(t *testing.T) {
 			setupSqlStmts: []TestSqlStmts{
 				{
 					Query: `INSERT INTO public."games" (
-						"id", "state", "current_turn_index", "turn_order", "state_handled"
+						"id", "state", "current_turn_index", "turn_order", "state_handled", "created_at", "updated_at"
 					)
 					VALUES (
-						'game_id1', 'STARTED', 0, Array['bot_id1'], false
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false, $1, $2
 					)`,
+					Args: []any{
+						time.Now().Add(-1 * time.Hour),
+						time.Now().Add(-1 * time.Hour),
+					},
 				},
 				{
 					Query: `INSERT INTO public."bots" (
@@ -166,11 +170,15 @@ func Test_Game_UpdateGameState(t *testing.T) {
 			setupSqlStmts: []TestSqlStmts{
 				{
 					Query: `INSERT INTO public."games" (
-						"id", "state", "current_turn_index", "turn_order", "state_handled"
+						"id", "state", "current_turn_index", "turn_order", "state_handled", "created_at", "updated_at"
 					)
 					VALUES (
-						'game_id1', 'STARTED', 0, Array['bot_id1'], false
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false, $1, $2
 					)`,
+					Args: []any{
+						time.Now().Add(-1 * time.Hour),
+						time.Now().Add(-1 * time.Hour),
+					},
 				},
 				{
 					Query: `INSERT INTO public."bots" (
@@ -213,8 +221,6 @@ func Test_Game_UpdateGameState(t *testing.T) {
 			)
 
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
-			// TODO: Remove this sleep and figure a better way to set the creation time of game such that we can verify it gets updated
-			time.Sleep(2 * time.Second)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
