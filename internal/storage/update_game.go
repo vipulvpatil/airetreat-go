@@ -21,7 +21,7 @@ type GameUpdateOptions struct {
 	StateTotalTime          *int64
 }
 
-func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) (string, []interface{}) {
+func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) ([]string, []interface{}) {
 	// Changes to this function may result in SQL injection issues. Be careful while modifying.
 	setSqls := []string{}
 	args := []interface{}{}
@@ -68,18 +68,25 @@ func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) (string, []interface{}) {
 		index++
 	}
 
-	finalSql := strings.Join(setSqls, ", ")
-	return finalSql, args
+	return setSqls, args
+}
+
+func autoAddUpdateTimeStamp(setSqls []string, args []interface{}) ([]string, []interface{}) {
+	if len(args) > 0 {
+		setSqls = append(setSqls, fmt.Sprintf("\"updated_at\" = $%d", len(args)+1))
+		args = append(args, time.Now())
+	}
+	return setSqls, args
 }
 
 func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
-	updateSqlSetPart, args := sqlAndArgsForUpdate(updateOpts)
+	updateSqlsPart, args := sqlAndArgsForUpdate(updateOpts)
 	if len(args) == 0 {
 		return errors.New("no update options provided")
 	}
-
+	updateSqlsPart, args = autoAddUpdateTimeStamp(updateSqlsPart, args)
+	updateSqlSetPart := strings.Join(updateSqlsPart, ", ")
 	argsWithGameId := append(args, gameId)
-
 	updateSql := fmt.Sprintf("UPDATE public.\"games\" SET %s WHERE \"id\" = $%d", updateSqlSetPart, len(args)+1)
 	result, err := s.db.Exec(updateSql, argsWithGameId...)
 

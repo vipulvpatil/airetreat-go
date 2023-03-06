@@ -60,15 +60,16 @@ func Test_Game_UpdateGameState(t *testing.T) {
 					scanLastQuestion            sql.NullString
 					scanLastQuestionTargetBotId sql.NullString
 					scanStateTotalTime          int64
+					updatedAt                   time.Time
 				)
 				row := db.QueryRow(
 					`SELECT g.state, g.current_turn_index, g.turn_order, g.state_handled, g.state_handled_at,
-					g.last_question, g.last_question_target_bot_id, g.state_total_time
+					g.last_question, g.last_question_target_bot_id, g.state_total_time, g.updated_at
 					FROM public."games" AS g
 					WHERE g.id = 'game_id1'`,
 				)
 				assert.NoError(t, row.Err())
-				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime)
+				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime, &updatedAt)
 				assert.NoError(t, err)
 				assert.Equal(t, state, scanState)
 				assert.Equal(t, currentTurnIndex, scanCurrentTurnIndex)
@@ -81,7 +82,7 @@ func Test_Game_UpdateGameState(t *testing.T) {
 				assert.True(t, scanLastQuestionTargetBotId.Valid)
 				assert.Equal(t, lastQuestionTargetBotId, scanLastQuestionTargetBotId.String)
 				assert.Equal(t, stateTotalTime, scanStateTotalTime)
-
+				model.AssertTimeAlmostEqual(t, time.Now(), updatedAt, 1*time.Second)
 				return true
 			},
 			setupSqlStmts: []string{
@@ -130,17 +131,18 @@ func Test_Game_UpdateGameState(t *testing.T) {
 					scanLastQuestion            sql.NullString
 					scanLastQuestionTargetBotId sql.NullString
 					scanStateTotalTime          int64
+					updatedAt                   time.Time
 				)
 				unchangedCurrentTurnIndex := int64(0)
 				unchangedTurnOrder := []string{"bot_id1"}
 				row := db.QueryRow(
 					`SELECT g.state, g.current_turn_index, g.turn_order, g.state_handled, g.state_handled_at,
-					g.last_question, g.last_question_target_bot_id, g.state_total_time
+					g.last_question, g.last_question_target_bot_id, g.state_total_time, g.updated_at
 					FROM public."games" AS g
 					WHERE g.id = 'game_id1'`,
 				)
 				assert.NoError(t, row.Err())
-				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime)
+				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime, &updatedAt)
 				assert.NoError(t, err)
 				assert.Equal(t, state, scanState)
 				assert.Equal(t, unchangedCurrentTurnIndex, scanCurrentTurnIndex)
@@ -153,6 +155,7 @@ func Test_Game_UpdateGameState(t *testing.T) {
 				assert.True(t, scanLastQuestionTargetBotId.Valid)
 				assert.Equal(t, lastQuestionTargetBotId, scanLastQuestionTargetBotId.String)
 				assert.Equal(t, stateTotalTime, scanStateTotalTime)
+				model.AssertTimeAlmostEqual(t, time.Now(), updatedAt, 1*time.Second)
 
 				return true
 			},
@@ -202,6 +205,8 @@ func Test_Game_UpdateGameState(t *testing.T) {
 			)
 
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			// TODO: Remove this sleep and figure a better way to set the creation time of game such that we can verify it gets updated
+			time.Sleep(2 * time.Second)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
