@@ -247,3 +247,130 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 		})
 	}
 }
+
+func Test_deleteExpiredGames(t *testing.T) {
+	tests := []struct {
+		name             string
+		input            map[string]interface{}
+		gameAccessorMock storage.GameAccessor
+		errorExpected    bool
+		errorString      string
+	}{
+		{
+			name: "deletes game if present and is not recently updated",
+			input: map[string]interface{}{
+				"gameId": "game_id1",
+			},
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameInternal: func(string) (*model.Game, error) {
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					return model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "PLAYERS_JOINED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now().Add(-10 * time.Hour),
+							Bots:             bots,
+						},
+					)
+				},
+				DeleteGameInternal: func(gameId string) error {
+					assert.Equal(t, "game_id1", gameId)
+					return nil
+				},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "continues silently if game is present and is recently updated",
+			input: map[string]interface{}{
+				"gameId": "game_id1",
+			},
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameInternal: func(string) (*model.Game, error) {
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					return model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "PLAYERS_JOINED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+				},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "errors if game is not in db",
+			input: map[string]interface{}{
+				"gameId": "game_id1",
+			},
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameInternal: func(string) (*model.Game, error) {
+
+					return nil, errors.New("game not in db")
+				},
+			},
+			errorExpected: true,
+			errorString:   "game not in db",
+		},
+		{
+			name: "errors if gameId is blank",
+			input: map[string]interface{}{
+				"gameId": "",
+			},
+			gameAccessorMock: nil,
+			errorExpected:    true,
+			errorString:      "gameId is required",
+		},
+	}
+
+	for _, tt := range tests {
+		workerStorage = storage.NewStorageAccessorMock(
+			storage.WithGameAccessorMock(tt.gameAccessorMock),
+		)
+
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(0)
+			jc := jobContext{}
+			err := jc.deleteExpiredGames(&work.Job{
+				Args: tt.input,
+			})
+			if tt.errorExpected {
+				assert.EqualError(t, err, tt.errorString)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}

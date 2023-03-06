@@ -50,3 +50,28 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 
 	return workerStorage.UpdateGameState(gameId, updateOpts)
 }
+
+func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
+	return nil
+}
+
+func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
+	return nil
+}
+func (j *jobContext) deleteExpiredGames(job *work.Job) error {
+	gameId := job.ArgString("gameId")
+
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId is required")
+	}
+	game, err := workerStorage.GetGame(gameId)
+	if err != nil {
+		return err
+	}
+
+	if game.RecentlyUpdated() {
+		return nil
+	}
+
+	return workerStorage.DeleteGame(gameId)
+}

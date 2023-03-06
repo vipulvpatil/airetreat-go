@@ -166,3 +166,8 @@ func (game *Game) RandomizedTurnOrder() []string {
 	})
 	return botIds
 }
+
+func (game *Game) RecentlyUpdated() bool {
+	recent := time.Now().Add(-4 * time.Hour)
+	return recent.Before(game.updatedAt)
+}

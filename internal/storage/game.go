@@ -9,4 +9,5 @@ type GameAccessor interface {
 	GetGames(playerId string) ([]string, error)
 	UpdateGameState(gameId string, updateOpts GameUpdateOptions) error
 	GetUnhandledGameIdsForState(gameStateString string) []string
+	DeleteGame(gameId string) error
 }

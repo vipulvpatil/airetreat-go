@@ -110,6 +110,7 @@ type GameAccessorConfigurableMock struct {
 	GetGamesInternal                    func(playerId string) ([]string, error)
 	UpdateGameStateInternal             func(gameId string, updateOpts GameUpdateOptions) error
 	GetUnhandledGameIdsForStateInternal func(gameStateString string) []string
+	DeleteGameInternal                  func(gameId string) error
 }
 
 func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
@@ -129,4 +130,7 @@ func (g *GameAccessorConfigurableMock) UpdateGameState(gameId string, updateOpts
 }
 func (g *GameAccessorConfigurableMock) GetUnhandledGameIdsForState(gameStateString string) []string {
 	return g.GetUnhandledGameIdsForStateInternal(gameStateString)
+}
+func (g *GameAccessorConfigurableMock) DeleteGame(gameId string) error {
+	return g.DeleteGameInternal(gameId)
 }
