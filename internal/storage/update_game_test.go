@@ -27,8 +27,8 @@ func Test_Game_UpdateGameState(t *testing.T) {
 			updateOpts GameUpdateOptions
 		}
 		dbUpdateCheck   func(*sql.DB) bool
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		errorExpected   bool
 		errorString     string
 	}{
@@ -85,22 +85,26 @@ func Test_Game_UpdateGameState(t *testing.T) {
 				model.AssertTimeAlmostEqual(t, time.Now(), updatedAt, 1*time.Second)
 				return true
 			},
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
-				)
-				VALUES (
-					'game_id1', 'STARTED', 0, Array['bot_id1'], false
-				)`,
-				`INSERT INTO public."bots" (
-					"id", "name", "type", "game_id"
-				)
-				VALUES (
-					'bot_id2', 'bot2', 'AI', 'game_id1'
-				)`,
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'AI', 'game_id1'
+					)`,
+				},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
 			},
 			errorExpected: false,
 			errorString:   "",
@@ -159,22 +163,26 @@ func Test_Game_UpdateGameState(t *testing.T) {
 
 				return true
 			},
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
-				)
-				VALUES (
-					'game_id1', 'STARTED', 0, Array['bot_id1'], false
-				)`,
-				`INSERT INTO public."bots" (
-					"id", "name", "type", "game_id"
-				)
-				VALUES (
-					'bot_id2', 'bot2', 'AI', 'game_id1'
-				)`,
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'AI', 'game_id1'
+					)`,
+				},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
 			},
 			errorExpected: false,
 			errorString:   "",

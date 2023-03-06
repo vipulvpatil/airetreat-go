@@ -13,6 +13,11 @@ import (
 
 var testDb *sql.DB
 
+type TestSqlStmts struct {
+	Query string
+	Args  []any
+}
+
 func TestMain(m *testing.M) {
 	code, err := run(m)
 	if err != nil {
@@ -89,9 +94,9 @@ func Test_InitDb(t *testing.T) {
 	})
 }
 
-func runSqlOnDb(t *testing.T, db *sql.DB, sqlStmts []string) {
+func runSqlOnDb(t *testing.T, db *sql.DB, sqlStmts []TestSqlStmts) {
 	for _, sqlStmts := range sqlStmts {
-		_, err := db.Exec(sqlStmts)
+		_, err := db.Exec(sqlStmts.Query, sqlStmts.Args...)
 		assert.NoError(t, err)
 	}
 }

@@ -17,8 +17,8 @@ func Test_CreateMessage(t *testing.T) {
 			botId string
 			text  string
 		}
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		idGenerator     utilities.CuidGenerator
 		dbUpdateCheck   func(*sql.DB) bool
 		errorExpected   bool
@@ -33,8 +33,8 @@ func Test_CreateMessage(t *testing.T) {
 				"",
 				"this is a message",
 			},
-			setupSqlStmts:   []string{},
-			cleanupSqlStmts: []string{},
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
 			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "message_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var (
@@ -45,7 +45,7 @@ func Test_CreateMessage(t *testing.T) {
 				)
 				err := db.QueryRow(
 					`SELECT "id", "bot_id", "text", "created_at"
-					FROM public."messages" WHERE "id" = 'message_id1'`,
+						FROM public."messages" WHERE "id" = 'message_id1'`,
 				).Scan(&id, &botId, &text, &createdAt)
 				assert.EqualError(t, err, "sql: no rows in result set")
 				return true
@@ -62,8 +62,8 @@ func Test_CreateMessage(t *testing.T) {
 				"bot_id1",
 				"",
 			},
-			setupSqlStmts:   []string{},
-			cleanupSqlStmts: []string{},
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
 			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "message_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var (
@@ -74,7 +74,7 @@ func Test_CreateMessage(t *testing.T) {
 				)
 				err := db.QueryRow(
 					`SELECT "id", "bot_id", "text", "created_at"
-					FROM public."messages" WHERE "id" = 'message_id1'`,
+						FROM public."messages" WHERE "id" = 'message_id1'`,
 				).Scan(&id, &botId, &text, &createdAt)
 				assert.EqualError(t, err, "sql: no rows in result set")
 				return true
@@ -91,22 +91,26 @@ func Test_CreateMessage(t *testing.T) {
 				"bot_id1",
 				"this is a message",
 			},
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
-				)
-				VALUES (
-					'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
-				)`,
-				`INSERT INTO public."bots" (
-					"id", "name", "type", "game_id"
-				)
-				VALUES (
-					'bot_id1', 'bot1', 'AI', 'game_id1'
-				)`,
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'AI', 'game_id1'
+					)`,
+				},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
 			},
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "message_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
@@ -118,7 +122,7 @@ func Test_CreateMessage(t *testing.T) {
 				)
 				err := db.QueryRow(
 					`SELECT "id", "bot_id", "text", "created_at"
-					FROM public."messages" WHERE "id" = 'message_id1'`,
+						FROM public."messages" WHERE "id" = 'message_id1'`,
 				).Scan(&id, &botId, &text, &createdAt)
 				assert.NoError(t, err)
 				assert.Equal(t, "message_id1", id)

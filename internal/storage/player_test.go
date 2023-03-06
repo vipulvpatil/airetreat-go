@@ -12,8 +12,8 @@ func Test_CreatePlayer(t *testing.T) {
 	tests := []struct {
 		name            string
 		output          string
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		idGenerator     utilities.CuidGenerator
 		dbUpdateCheck   func(*sql.DB) bool
 		errorExpected   bool
@@ -22,9 +22,9 @@ func Test_CreatePlayer(t *testing.T) {
 		{
 			name:          "creates player successfully",
 			output:        "player_id1",
-			setupSqlStmts: []string{},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."players" WHERE id = 'player_id1'`,
+			setupSqlStmts: nil,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
 			},
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "player_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
@@ -44,11 +44,11 @@ func Test_CreatePlayer(t *testing.T) {
 		{
 			name:   "errors and does not update anything, if Player ID already exists in DB",
 			output: "",
-			setupSqlStmts: []string{
-				`INSERT INTO public."players" ("id") VALUES ('id1')`,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."players" ("id") VALUES ('id1')`},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'id1'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'id1'`},
 			},
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {

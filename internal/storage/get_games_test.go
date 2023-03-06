@@ -12,8 +12,8 @@ func Test_Game_GetGames(t *testing.T) {
 		name            string
 		input           string
 		output          []string
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		errorExpected   bool
 		errorString     string
 	}{
@@ -21,8 +21,8 @@ func Test_Game_GetGames(t *testing.T) {
 			name:            "errors when playerId is blank",
 			input:           "",
 			output:          []string{},
-			setupSqlStmts:   []string{},
-			cleanupSqlStmts: []string{},
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
 			errorExpected:   true,
 			errorString:     "cannot GetGames for a blank playerId",
 		},
@@ -30,43 +30,63 @@ func Test_Game_GetGames(t *testing.T) {
 			name:   "returns a list of gameIds for the player",
 			input:  "player_id1",
 			output: []string{"game_id5", "game_id2", "game_id1"},
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
 				VALUES ('game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false)`,
-				`INSERT INTO public."bots" ("id", "name", "type", "game_id")
+				},
+				{
+					Query: `INSERT INTO public."bots" ("id", "name", "type", "game_id")
 				VALUES ('bot_id1', 'bot1', 'AI', 'game_id1')`,
-				`INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
+				},
+				{
+					Query: `INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
 				VALUES ('game_id2', 'STARTED', 0, Array['b','p1','b','p2'], false)`,
-				`INSERT INTO public."bots" ("id", "name", "type", "game_id")
+				},
+				{
+					Query: `INSERT INTO public."bots" ("id", "name", "type", "game_id")
 				VALUES ('bot_id2', 'bot2', 'AI', 'game_id2')`,
-				`INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
+				},
+				{
+					Query: `INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
 					VALUES ('game_id3', 'STARTED', 0, Array['b','p1','b','p2'], false)`,
-				`INSERT INTO public."bots" ("id", "name", "type", "game_id")
+				},
+				{
+					Query: `INSERT INTO public."bots" ("id", "name", "type", "game_id")
 					VALUES ('bot_id3', 'bot3', 'AI', 'game_id3')`,
-				`INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
+				},
+				{
+					Query: `INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
 					VALUES ('game_id4', 'STARTED', 0, Array['b','p1','b','p2'], false)`,
-				`INSERT INTO public."bots" ("id", "name", "type", "game_id")
+				},
+				{
+					Query: `INSERT INTO public."bots" ("id", "name", "type", "game_id")
 					VALUES ('bot_id4', 'bot4', 'AI', 'game_id4')`,
-				`INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
+				},
+				{
+					Query: `INSERT INTO public."games" ("id", "state", "current_turn_index", "turn_order", "state_handled")
 					VALUES ('game_id5', 'STARTED', 0, Array['b','p1','b','p2'], false)`,
-				`INSERT INTO public."bots" ("id", "name", "type", "game_id")
+				},
+				{
+					Query: `INSERT INTO public."bots" ("id", "name", "type", "game_id")
 					VALUES ('bot_id5', 'bot5', 'AI', 'game_id5')`,
-				`INSERT INTO public."players" ("id") VALUES ('player_id1')`,
-				`INSERT INTO public."players" ("id") VALUES ('player_id2')`,
-				`UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id1'`,
-				`UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id2'`,
-				`UPDATE public."bots" SET "player_id" = 'player_id2', "type" = 'HUMAN' WHERE id = 'bot_id3'`,
-				`UPDATE public."bots" SET "player_id" = 'player_id2', "type" = 'HUMAN' WHERE id = 'bot_id4'`,
-				`UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id5'`,
+				},
+				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id1')`},
+				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id2')`},
+				{Query: `UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id1'`},
+				{Query: `UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id2'`},
+				{Query: `UPDATE public."bots" SET "player_id" = 'player_id2', "type" = 'HUMAN' WHERE id = 'bot_id3'`},
+				{Query: `UPDATE public."bots" SET "player_id" = 'player_id2', "type" = 'HUMAN' WHERE id = 'bot_id4'`},
+				{Query: `UPDATE public."bots" SET "player_id" = 'player_id1', "type" = 'HUMAN' WHERE id = 'bot_id5'`},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
-				`DELETE FROM public."games" WHERE id = 'game_id2'`,
-				`DELETE FROM public."games" WHERE id = 'game_id3'`,
-				`DELETE FROM public."games" WHERE id = 'game_id4'`,
-				`DELETE FROM public."games" WHERE id = 'game_id5'`,
-				`DELETE FROM public."players" WHERE id = 'player_id1'`,
-				`DELETE FROM public."players" WHERE id = 'player_id2'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id2'`},
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id3'`},
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id4'`},
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id5'`},
+				{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
+				{Query: `DELETE FROM public."players" WHERE id = 'player_id2'`},
 			},
 			errorExpected: false,
 			errorString:   "",

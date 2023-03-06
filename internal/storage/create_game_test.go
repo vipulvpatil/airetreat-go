@@ -15,8 +15,8 @@ func Test_CreateGame(t *testing.T) {
 	tests := []struct {
 		name            string
 		output          string
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		idGenerator     utilities.CuidGenerator
 		dbUpdateCheck   func(*sql.DB) bool
 		errorExpected   bool
@@ -25,9 +25,9 @@ func Test_CreateGame(t *testing.T) {
 		{
 			name:          "creates game successfully",
 			output:        "game_id1",
-			setupSqlStmts: []string{},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'game_id1'`,
+			setupSqlStmts: nil,
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
 			},
 			idGenerator: &utilities.IdGeneratorMockSeries{Series: []string{"game_id1", "bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"}},
 			dbUpdateCheck: func(db *sql.DB) bool {
@@ -100,17 +100,21 @@ func Test_CreateGame(t *testing.T) {
 		{
 			name:   "errors and does not update anything, if Game ID already exists in DB",
 			output: "",
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
-				)
-				VALUES (
-					'id1', 'STARTED', 0, ARRAY['b', 'p1', 'b', 'p2'], false
-				)
-				`,
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'id1', 'STARTED', 0, ARRAY['b', 'p1', 'b', 'p2'], false
+					)
+					`,
+				},
 			},
-			cleanupSqlStmts: []string{
-				`DELETE FROM public."games" WHERE id = 'id1'`,
+			cleanupSqlStmts: []TestSqlStmts{
+				{
+					Query: `DELETE FROM public."games" WHERE id = 'id1'`,
+				},
 			},
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
@@ -137,8 +141,8 @@ func Test_CreateGame(t *testing.T) {
 		{
 			name:            "errors and does not update anything, if Bot ID already exists in DB",
 			output:          "",
-			setupSqlStmts:   []string{},
-			cleanupSqlStmts: []string{},
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
 			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var id string

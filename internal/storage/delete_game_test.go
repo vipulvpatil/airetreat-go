@@ -13,8 +13,8 @@ func Test_Game_DeleteGame(t *testing.T) {
 		name            string
 		input           string
 		dbUpdateCheck   func(*sql.DB) bool
-		setupSqlStmts   []string
-		cleanupSqlStmts []string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
 		errorExpected   bool
 		errorString     string
 	}{
@@ -22,7 +22,7 @@ func Test_Game_DeleteGame(t *testing.T) {
 			name:          "errors when game_id is blank",
 			input:         "",
 			dbUpdateCheck: nil,
-			setupSqlStmts: []string{},
+			setupSqlStmts: []TestSqlStmts{},
 			errorExpected: true,
 			errorString:   "gameId cannot be blank",
 		},
@@ -50,28 +50,33 @@ func Test_Game_DeleteGame(t *testing.T) {
 				assert.NoError(t, row.Err())
 				err := row.Scan(&gameId, &state)
 				assert.EqualError(t, err, "sql: no rows in result set")
-
 				return true
 			},
-			setupSqlStmts: []string{
-				`INSERT INTO public."games" (
-					"id", "state", "current_turn_index", "turn_order", "state_handled"
-				)
-				VALUES (
-					'game_id1', 'PLAYERS_JOINED', 0, Array['b','p1','b','p2'], false
-				)`,
-				`INSERT INTO public."bots" (
-					"id", "name", "type", "game_id"
-				)
-				VALUES (
-					'bot_id1', 'bot1', 'AI', 'game_id1'
-				)`,
-				`INSERT INTO public."bots" (
-					"id", "name", "type", "game_id"
-				)
-				VALUES (
-					'bot_id2', 'bot2', 'AI', 'game_id1'
-				)`,
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'PLAYERS_JOINED', 0, Array['b','p1','b','p2'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'AI', 'game_id1'
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'AI', 'game_id1'
+					)`,
+				},
 			},
 			errorExpected: false,
 			errorString:   "",
