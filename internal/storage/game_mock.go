@@ -76,7 +76,6 @@ func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString str
 
 type GameAccessorConfigurableMock struct {
 	CreateGameInternal                                               func() (string, error)
-	JoinGameInternal                                                 func(gameId, playerId string) error
 	GetGameInternal                                                  func(gameId string) (*model.Game, error)
 	GetGameUsingTransactionInternal                                  func(gameId string, transaction DatabaseTransaction) (*model.Game, error)
 	GetGamesInternal                                                 func(playerId string) ([]string, error)
@@ -89,9 +88,6 @@ type GameAccessorConfigurableMock struct {
 
 func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
 	return g.CreateGameInternal()
-}
-func (g *GameAccessorConfigurableMock) JoinGame(gameId, playerId string) error {
-	return g.JoinGameInternal(gameId, playerId)
 }
 func (g *GameAccessorConfigurableMock) GetGame(gameId string) (*model.Game, error) {
 	return g.GetGameInternal(gameId)

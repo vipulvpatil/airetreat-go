@@ -8,7 +8,6 @@ import (
 
 type GameAccessor interface {
 	CreateGame() (string, error)
-	JoinGame(gameId, playerId string) error
 	GetGame(gameId string) (*model.Game, error)
 	GetGameUsingTransaction(gameId string, transaction DatabaseTransaction) (*model.Game, error)
 	GetGames(playerId string) ([]string, error)
