@@ -78,16 +78,16 @@ type GameIdsGetterMockNil struct {
 	GameAccessor
 }
 
-func (g *GameIdsGetterMockNil) GetUnhandledGameIdsForState(gameStateString string) []string {
-	return nil
+func (g *GameIdsGetterMockNil) GetUnhandledGameIdsForState(gameStateString string) ([]string, error) {
+	return nil, nil
 }
 
 type GameIdsGetterMockEmpty struct {
 	GameAccessor
 }
 
-func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString string) []string {
-	return []string{}
+func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString string) ([]string, error) {
+	return []string{}, nil
 }
 
 type GameAccessorConfigurableMock struct {
@@ -96,7 +96,7 @@ type GameAccessorConfigurableMock struct {
 	GetGameInternal                     func(gameId string) (*model.Game, error)
 	GetGamesInternal                    func(playerId string) ([]string, error)
 	UpdateGameStateInternal             func(gameId string, updateOpts GameUpdateOptions) error
-	GetUnhandledGameIdsForStateInternal func(gameStateString string) []string
+	GetUnhandledGameIdsForStateInternal func(gameStateString string) ([]string, error)
 	DeleteGameInternal                  func(gameId string) error
 	GetOldGamesInternal                 func(gameExpiryDuration time.Duration) ([]string, error)
 }
@@ -116,7 +116,7 @@ func (g *GameAccessorConfigurableMock) GetGames(playerId string) ([]string, erro
 func (g *GameAccessorConfigurableMock) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
 	return g.UpdateGameStateInternal(gameId, updateOpts)
 }
-func (g *GameAccessorConfigurableMock) GetUnhandledGameIdsForState(gameStateString string) []string {
+func (g *GameAccessorConfigurableMock) GetUnhandledGameIdsForState(gameStateString string) ([]string, error) {
 	return g.GetUnhandledGameIdsForStateInternal(gameStateString)
 }
 func (g *GameAccessorConfigurableMock) DeleteGame(gameId string) error {

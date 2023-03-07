@@ -27,7 +27,11 @@ func (s *AiRetreatGoService) GameHandlerLoop(ctx context.Context, tickerDuration
 }
 
 func (s *AiRetreatGoService) beginGames(jobStarter workers.JobStarter) {
-	gameIds := s.storage.GetUnhandledGameIdsForState("PLAYERS_JOINED")
+	gameIds, err := s.storage.GetUnhandledGameIdsForState("PLAYERS_JOINED")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	for _, gameId := range gameIds {
 		_, err := jobStarter.EnqueueUnique(workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED, work.Q{"gameId": gameId})
 		if err != nil {

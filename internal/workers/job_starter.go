@@ -4,8 +4,6 @@ package workers
 // TODO: Find a better solution and replace all of this when possible.
 
 import (
-	"fmt"
-
 	"github.com/gocraft/work"
 	"github.com/gomodule/redigo/redis"
 )
@@ -25,6 +23,5 @@ func NewJobStarter(namespace string, redisPool *redis.Pool) JobStarter {
 }
 
 func (j *jobStarter) EnqueueUnique(jobName string, args map[string]interface{}) (*work.Job, error) {
-	fmt.Println(args)
 	return j.enqueuer.EnqueueUnique(jobName, args)
 }

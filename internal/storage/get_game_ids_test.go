@@ -14,6 +14,8 @@ func Test_Game_GetUnhandledGameIdsForState(t *testing.T) {
 		output          []string
 		setupSqlStmts   []TestSqlStmts
 		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
 	}{
 		{
 			name:            "returns nil when incorrect game state is passed in",
@@ -21,6 +23,8 @@ func Test_Game_GetUnhandledGameIdsForState(t *testing.T) {
 			output:          nil,
 			setupSqlStmts:   nil,
 			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "invalid game state",
 		},
 		{
 			name:   "returns a list of unhandled game Ids matching state",
@@ -75,6 +79,8 @@ func Test_Game_GetUnhandledGameIdsForState(t *testing.T) {
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id4'`},
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id5'`},
 			},
+			errorExpected: false,
+			errorString:   "",
 		},
 		{
 			name:   "returns an empty list if no games match",
@@ -129,6 +135,8 @@ func Test_Game_GetUnhandledGameIdsForState(t *testing.T) {
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id4'`},
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id5'`},
 			},
+			errorExpected: false,
+			errorString:   "",
 		},
 	}
 
@@ -144,8 +152,14 @@ func Test_Game_GetUnhandledGameIdsForState(t *testing.T) {
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
 			rand.Seed(0)
-			gameIds := s.GetUnhandledGameIdsForState(tt.input)
-			assert.Equal(t, tt.output, gameIds)
+			gameIds, err := s.GetUnhandledGameIdsForState(tt.input)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.output, gameIds)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
 		})
 	}
 }

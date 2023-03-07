@@ -19,7 +19,7 @@ type GetUnhandledGameIdsMockCaller struct {
 	}
 }
 
-func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(gameStateString string) []string {
+func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(gameStateString string) ([]string, error) {
 	f, ok := m.MapByInput[gameStateString]
 	if !ok {
 		f = struct {
@@ -31,10 +31,10 @@ func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(game
 	f.CallCount++
 	if f.ReturnCount >= f.CallCount {
 		m.MapByInput[gameStateString] = f
-		return f.ReturnData[f.CallCount-1]
+		return f.ReturnData[f.CallCount-1], nil
 	}
 	m.MapByInput[gameStateString] = f
-	return nil
+	return nil, nil
 }
 
 type GetOldGamesMockCaller struct {
