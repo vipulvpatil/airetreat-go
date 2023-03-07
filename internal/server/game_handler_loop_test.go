@@ -37,11 +37,26 @@ func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(game
 	return nil
 }
 
+type GetOldGamesMockCaller struct {
+	ReturnData  [][]string
+	CallCount   int
+	ReturnCount int
+}
+
+func (m *GetOldGamesMockCaller) getOldGames(gameExpiryDuration time.Duration) ([]string, error) {
+	m.CallCount++
+	if m.ReturnCount >= m.CallCount {
+		return m.ReturnData[m.CallCount-1], nil
+	}
+	return nil, nil
+}
+
 func Test_GameHandlerLoop(t *testing.T) {
 	tests := []struct {
 		name                                       string
 		jobStarterMock                             *workers.JobStarterMockCallCheck
 		gamesAccessorGetUnhandledGameIdsMockCaller GetUnhandledGameIdsMockCaller
+		gamesAccessorGetOldGamesMockCaller         GetOldGamesMockCaller
 		tickerDuration                             time.Duration
 	}{
 		{
@@ -60,6 +75,11 @@ func Test_GameHandlerLoop(t *testing.T) {
 					},
 				},
 			},
+			gamesAccessorGetOldGamesMockCaller: GetOldGamesMockCaller{
+				ReturnData:  [][]string{{"old_game_id1"}, {"old_game_id2"}},
+				CallCount:   0,
+				ReturnCount: 2,
+			},
 			tickerDuration: 10 * time.Millisecond,
 		},
 	}
@@ -72,6 +92,7 @@ func Test_GameHandlerLoop(t *testing.T) {
 						storage.WithGameAccessorMock(
 							&storage.GameAccessorConfigurableMock{
 								GetUnhandledGameIdsForStateInternal: tt.gamesAccessorGetUnhandledGameIdsMockCaller.getUnhandledGameIdsForStateInternal,
+								GetOldGamesInternal:                 tt.gamesAccessorGetOldGamesMockCaller.getOldGames,
 							},
 						),
 					),
@@ -91,10 +112,21 @@ func Test_GameHandlerLoop(t *testing.T) {
 				tt.jobStarterMock.CalledArgs[workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED],
 				"appropriate jobs should be started from the loop",
 			)
+			assert.EqualValues(
+				t,
+				[]map[string]interface{}{
+					{"gameId": "old_game_id1"},
+					{"gameId": "old_game_id2"},
+				},
+				tt.jobStarterMock.CalledArgs[workers.DELETE_EXPIRED_GAMES],
+				"appropriate jobs should be started from the loop",
+			)
 			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should run continuously until canceled")
+			assert.Equal(t, 4, tt.gamesAccessorGetOldGamesMockCaller.CallCount, "loop should run continuously until canceled")
 			cancelGameHandlerLoop()
 			time.Sleep(45 * time.Millisecond)
 			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should not run once canceled")
+			assert.Equal(t, 4, tt.gamesAccessorGetOldGamesMockCaller.CallCount, "loop should not run once canceled")
 		})
 	}
 }

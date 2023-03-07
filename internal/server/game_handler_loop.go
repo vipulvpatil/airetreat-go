@@ -19,7 +19,7 @@ func (s *AiRetreatGoService) GameHandlerLoop(ctx context.Context, tickerDuration
 		select {
 		case <-ticker.C:
 			s.beginGames(jobStarter)
-			// s.deleteExpiredGames(jobStarter)
+			s.deleteExpiredGames(jobStarter)
 		case <-ctx.Done():
 			return
 		}
