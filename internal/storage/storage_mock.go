@@ -5,7 +5,8 @@ type StorageAccessorMock struct {
 	GameAccessor
 	PlayerCreator
 	MessageCreator
-	TxProvider
+	BotAccessor
+	DatabaseTransactionProvider
 }
 
 type StorageAccessorMockOption func(*StorageAccessorMock)
@@ -34,5 +35,17 @@ func WithGameAccessorMock(mock GameAccessor) StorageAccessorMockOption {
 func WithMessageCreatorMock(mock MessageCreator) StorageAccessorMockOption {
 	return func(s *StorageAccessorMock) {
 		s.MessageCreator = mock
+	}
+}
+
+func WithBotAccessorMock(mock BotAccessor) StorageAccessorMockOption {
+	return func(s *StorageAccessorMock) {
+		s.BotAccessor = mock
+	}
+}
+
+func WithDatabaseTransactionProviderMock(mock DatabaseTransactionProvider) StorageAccessorMockOption {
+	return func(s *StorageAccessorMock) {
+		s.DatabaseTransactionProvider = mock
 	}
 }

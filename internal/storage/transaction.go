@@ -2,10 +2,26 @@ package storage
 
 import "database/sql"
 
-type TxProvider interface {
-	GetTx() (*sql.Tx, error)
+type DatabaseTransactionProvider interface {
+	BeginTransaction() (DatabaseTransaction, error)
 }
 
-func (s *Storage) GetTx() (*sql.Tx, error) {
-	return s.db.Begin()
+type databaseTransaction struct {
+	*sql.Tx
+}
+
+type DatabaseTransaction interface {
+	customDbHandler
+	Commit() error
+	Rollback() error
+}
+
+func (s *Storage) BeginTransaction() (DatabaseTransaction, error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	return &databaseTransaction{
+		Tx: tx,
+	}, nil
 }

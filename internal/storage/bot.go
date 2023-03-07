@@ -1,15 +1,18 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/pkg/errors"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
-func (s *Storage) UpdateBotWithPlayerIdUsingTransaction(botId, playerId string, tx *sql.Tx) error {
-	return connectPlayerToBot(tx, playerId, botId)
+type BotAccessor interface {
+	UpdateBotWithPlayerIdUsingTransaction(botId, playerId string, transaction DatabaseTransaction) error
+}
+
+func (s *Storage) UpdateBotWithPlayerIdUsingTransaction(botId, playerId string, transaction DatabaseTransaction) error {
+	return connectPlayerToBot(transaction, playerId, botId)
 }
 
 func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error {

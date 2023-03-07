@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/pkg/errors"
@@ -23,22 +22,6 @@ type GameCreatorMockFailure struct {
 
 func (g *GameCreatorMockFailure) CreateGame() (string, error) {
 	return "", errors.New("unable to create game")
-}
-
-type GameJoinerMockSuccess struct {
-	GameAccessor
-}
-
-func (g *GameJoinerMockSuccess) JoinGame(string, string) error {
-	return nil
-}
-
-type GameJoinerMockFailure struct {
-	GameAccessor
-}
-
-func (g *GameJoinerMockFailure) JoinGame(string, string) error {
-	return errors.New("unable to join game")
 }
 
 type GameGetterMockSuccess struct {
@@ -92,15 +75,16 @@ func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString str
 }
 
 type GameAccessorConfigurableMock struct {
-	CreateGameInternal                  func() (string, error)
-	JoinGameInternal                    func(gameId, playerId string) error
-	GetGameInternal                     func(gameId string) (*model.Game, error)
-	GetGameUsingTransactionInternal     func(gameId string, tx *sql.Tx) (*model.Game, error)
-	GetGamesInternal                    func(playerId string) ([]string, error)
-	UpdateGameStateInternal             func(gameId string, updateOpts GameUpdateOptions) error
-	GetUnhandledGameIdsForStateInternal func(gameStateString string) ([]string, error)
-	DeleteGameInternal                  func(gameId string) error
-	GetOldGamesInternal                 func(gameExpiryDuration time.Duration) ([]string, error)
+	CreateGameInternal                                               func() (string, error)
+	JoinGameInternal                                                 func(gameId, playerId string) error
+	GetGameInternal                                                  func(gameId string) (*model.Game, error)
+	GetGameUsingTransactionInternal                                  func(gameId string, transaction DatabaseTransaction) (*model.Game, error)
+	GetGamesInternal                                                 func(playerId string) ([]string, error)
+	UpdateGameStateInternal                                          func(gameId string, updateOpts GameUpdateOptions) error
+	GetUnhandledGameIdsForStateInternal                              func(gameStateString string) ([]string, error)
+	DeleteGameInternal                                               func(gameId string) error
+	GetOldGamesInternal                                              func(gameExpiryDuration time.Duration) ([]string, error)
+	UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal func(gameId string, transaction DatabaseTransaction) error
 }
 
 func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
@@ -112,8 +96,8 @@ func (g *GameAccessorConfigurableMock) JoinGame(gameId, playerId string) error {
 func (g *GameAccessorConfigurableMock) GetGame(gameId string) (*model.Game, error) {
 	return g.GetGameInternal(gameId)
 }
-func (g *GameAccessorConfigurableMock) GetGameUsingTransaction(gameId string, tx *sql.Tx) (*model.Game, error) {
-	return g.GetGameUsingTransactionInternal(gameId, tx)
+func (g *GameAccessorConfigurableMock) GetGameUsingTransaction(gameId string, transaction DatabaseTransaction) (*model.Game, error) {
+	return g.GetGameUsingTransactionInternal(gameId, transaction)
 }
 func (g *GameAccessorConfigurableMock) GetGames(playerId string) ([]string, error) {
 	return g.GetGamesInternal(playerId)
@@ -129,4 +113,7 @@ func (g *GameAccessorConfigurableMock) DeleteGame(gameId string) error {
 }
 func (g *GameAccessorConfigurableMock) GetOldGames(gameExpiryDuration time.Duration) ([]string, error) {
 	return g.GetOldGamesInternal(gameExpiryDuration)
+}
+func (g *GameAccessorConfigurableMock) UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, transaction DatabaseTransaction) error {
+	return g.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal(gameId, transaction)
 }

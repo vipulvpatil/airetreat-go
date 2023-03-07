@@ -13,8 +13,8 @@ func (s *Storage) GetGame(gameId string) (*model.Game, error) {
 	return getGameUsingCustomDbHandler(s.db, gameId)
 }
 
-func (s *Storage) GetGameUsingTransaction(gameId string, tx *sql.Tx) (*model.Game, error) {
-	return getGameUsingCustomDbHandler(tx, gameId)
+func (s *Storage) GetGameUsingTransaction(gameId string, transaction DatabaseTransaction) (*model.Game, error) {
+	return getGameUsingCustomDbHandler(transaction, gameId)
 }
 
 func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*model.Game, error) {

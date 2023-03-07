@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -47,8 +46,8 @@ func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) e
 	return nil
 }
 
-func (s *Storage) UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, tx *sql.Tx) error {
-	return updateGameStateIfEnoughPlayersHaveJoined(tx, gameId)
+func (s *Storage) UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, transaction DatabaseTransaction) error {
+	return updateGameStateIfEnoughPlayersHaveJoined(transaction, gameId)
 }
 
 func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) ([]string, []interface{}) {

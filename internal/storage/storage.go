@@ -12,7 +12,8 @@ type StorageAccessor interface {
 	GameAccessor
 	PlayerCreator
 	MessageCreator
-	TxProvider
+	BotAccessor
+	DatabaseTransactionProvider
 }
 
 type Storage struct {

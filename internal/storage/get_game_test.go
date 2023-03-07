@@ -428,7 +428,7 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			tx, err := s.GetTx()
+			tx, err := s.BeginTransaction()
 			assert.NoError(t, err)
 			result, err := s.GetGameUsingTransaction(tt.input, tx)
 			tx.Commit()

@@ -166,7 +166,7 @@ func Test_UpdateBotWithPlayerIdUsingTransaction(t *testing.T) {
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			tx, err := s.GetTx()
+			tx, err := s.BeginTransaction()
 			assert.NoError(t, err)
 			err = s.UpdateBotWithPlayerIdUsingTransaction(tt.input.botId, tt.input.playerId, tx)
 			tx.Commit()
