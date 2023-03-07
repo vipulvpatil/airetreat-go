@@ -17,11 +17,42 @@ func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameR
 }
 
 func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameRequest) (*pb.JoinGameResponse, error) {
-	err := s.storage.JoinGame(req.GetGameId(), req.GetPlayerId())
+	tx, err := s.storage.BeginTransaction()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.JoinGameResponse{}, nil
+	defer tx.Rollback()
+
+	game, err := s.storage.GetGameUsingTransaction(req.GetGameId(), tx)
+	if err != nil {
+		return nil, err
+	}
+
+	if game.HasPlayer(req.GetPlayerId()) {
+		return &pb.JoinGameResponse{}, nil
+	}
+
+	if !game.HasJustStarted() {
+		return nil, errors.New("cannot join this game")
+	}
+
+	aiBot, err := game.GetOneRandomAiBot()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storage.UpdateBotWithPlayerIdUsingTransaction(aiBot.Id(), req.GetPlayerId(), tx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storage.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(req.GetGameId(), tx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	return &pb.JoinGameResponse{}, err
 }
 
 func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGameForPlayerRequest) (*pb.GetGameForPlayerResponse, error) {

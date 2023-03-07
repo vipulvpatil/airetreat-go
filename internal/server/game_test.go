@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -64,34 +66,329 @@ func Test_CreateGame(t *testing.T) {
 
 func Test_JoinGame(t *testing.T) {
 	tests := []struct {
-		name           string
-		input          *pb.JoinGameRequest
-		output         *pb.JoinGameResponse
-		gameJoinerMock storage.GameAccessor
-		errorExpected  bool
-		errorString    string
+		name             string
+		input            *pb.JoinGameRequest
+		output           *pb.JoinGameResponse
+		txProviderMock   storage.DatabaseTransactionProvider
+		gameAccessorMock storage.GameAccessor
+		botAccessorMock  storage.BotAccessor
+		txShouldCommit   bool
+		errorExpected    bool
+		errorString      string
 	}{
 		{
-			name: "test runs successfully",
-			input: &pb.JoinGameRequest{
-				GameId:   "game_id1",
-				PlayerId: "player_id1",
-			},
-			output:         &pb.JoinGameResponse{},
-			gameJoinerMock: &storage.GameJoinerMockSuccess{},
-			errorExpected:  false,
-			errorString:    "",
+			name:             "errors if unable to get transaction",
+			input:            &pb.JoinGameRequest{},
+			output:           nil,
+			txProviderMock:   &storage.DatabaseTransactionProviderMockFailure{},
+			txShouldCommit:   false,
+			gameAccessorMock: nil,
+			botAccessorMock:  nil,
+			errorExpected:    true,
+			errorString:      "unable to begin a db transaction",
 		},
 		{
-			name: "errors if joining game fails",
+			name: "errors if unable to get game",
 			input: &pb.JoinGameRequest{
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
 			},
 			output:         nil,
-			gameJoinerMock: &storage.GameJoinerMockFailure{},
-			errorExpected:  true,
-			errorString:    "unable to join game",
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					return nil, errors.New("unable to get game")
+				},
+			},
+			botAccessorMock: nil,
+			errorExpected:   true,
+			errorString:     "unable to get game",
+		},
+		{
+			name: "errors if game is not waiting for more people to join",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id1",
+			},
+			output:         nil,
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "PLAYERS_JOINED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+
+					return game, nil
+				},
+			},
+			botAccessorMock: nil,
+			errorExpected:   true,
+			errorString:     "cannot join this game",
+		},
+		{
+			name: "does not error if player is already in game",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id1",
+			},
+			output:         &pb.JoinGameResponse{},
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[1].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "STARTED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+
+					return game, nil
+				},
+			},
+			botAccessorMock: nil,
+			errorExpected:   false,
+			errorString:     "",
+		},
+		{
+			name: "errors if no ai bots in game to convert to human bot",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id2",
+			},
+			output:         nil,
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 1; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[0].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "STARTED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+
+					return game, nil
+				},
+			},
+			botAccessorMock: nil,
+			errorExpected:   true,
+			errorString:     "no AI bots in the game",
+		},
+		{
+			name: "errors if unable to update bot",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id2",
+			},
+			output:         nil,
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[0].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "STARTED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+					return game, nil
+				},
+			},
+			botAccessorMock: &storage.BotAccessorMockFailure{},
+			errorExpected:   true,
+			errorString:     "unable to update bot",
+		},
+		{
+			name: "errors if unable to update game state",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id2",
+			},
+			output:         nil,
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[0].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "STARTED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+					return game, nil
+				},
+				UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) error {
+					return errors.New("unable to update game")
+				},
+			},
+			botAccessorMock: &storage.BotAccessorMockSuccess{},
+			errorExpected:   true,
+			errorString:     "unable to update game",
+		},
+		{
+			name: "success",
+			input: &pb.JoinGameRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id2",
+			},
+			output:         &pb.JoinGameResponse{},
+			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
+			txShouldCommit: false,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[0].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:               "game_id1",
+							State:            "STARTED",
+							CurrentTurnIndex: 0,
+							TurnOrder:        []string{"b", "p1", "b", "p2"},
+							StateHandled:     false,
+							StateTotalTime:   0,
+							CreatedAt:        time.Now(),
+							UpdatedAt:        time.Now(),
+							Bots:             bots,
+						},
+					)
+					return game, nil
+				},
+				UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) error {
+					return nil
+				},
+			},
+			botAccessorMock: &storage.BotAccessorMockSuccess{},
+			errorExpected:   false,
+			errorString:     "",
 		},
 	}
 
@@ -99,12 +396,13 @@ func Test_JoinGame(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server, _ := NewServer(ServerDependencies{
 				Storage: storage.NewStorageAccessorMock(
-					storage.WithGameAccessorMock(
-						tt.gameJoinerMock,
-					),
+					storage.WithDatabaseTransactionProviderMock(tt.txProviderMock),
+					storage.WithGameAccessorMock(tt.gameAccessorMock),
+					storage.WithBotAccessorMock(tt.botAccessorMock),
 				),
 			})
 
+			rand.Seed(0)
 			response, err := server.JoinGame(
 				context.Background(),
 				tt.input,
@@ -115,6 +413,12 @@ func Test_JoinGame(t *testing.T) {
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
+
+			}
+			if tt.txShouldCommit {
+				// TODO: Commit was called
+			} else {
+				// TODO: Check rollback was called
 			}
 		})
 	}
