@@ -5,6 +5,7 @@ type StorageAccessorMock struct {
 	GameAccessor
 	PlayerCreator
 	MessageCreator
+	TxProvider
 }
 
 type StorageAccessorMockOption func(*StorageAccessorMock)

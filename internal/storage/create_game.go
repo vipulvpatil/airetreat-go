@@ -45,7 +45,7 @@ func (s *Storage) CreateGame() (string, error) {
 		return "", utilities.WrapBadError(err, "failed to create game")
 	}
 
-	tx, err := s.db.Begin()
+	tx, err := s.GetTx()
 	if err != nil {
 		return "", utilities.WrapBadError(err, "failed to start db transaction")
 	}

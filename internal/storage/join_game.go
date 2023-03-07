@@ -14,7 +14,7 @@ func (s *Storage) JoinGame(gameId, playerId string) error {
 		return errors.New("playerId cannot be blank")
 	}
 
-	tx, err := s.db.Begin()
+	tx, err := s.GetTx()
 	if err != nil {
 		return utilities.WrapBadError(err, "failed to start db transaction")
 	}

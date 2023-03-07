@@ -372,7 +372,7 @@ func Test_Game_UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(t *testi
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			tx, err := s.db.Begin()
+			tx, err := s.GetTx()
 			assert.NoError(t, err)
 
 			err = s.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(tt.input, tx)
