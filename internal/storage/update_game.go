@@ -124,10 +124,11 @@ func updateGameStateIfEnoughPlayersHaveJoined(customDb customDbHandler, gameId s
 			GROUP BY g.id
 		)
 		UPDATE public."games" AS games
-		SET state = 'PLAYERS_JOINED'
+		SET state = 'PLAYERS_JOINED', updated_at = $2
 		FROM selected_games
 		WHERE games.id = selected_games.id
-		AND human_bot_count = 2`, gameId,
+		AND human_bot_count = 2`,
+		gameId, time.Now(),
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while updating game state: %s", gameId))

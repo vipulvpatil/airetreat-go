@@ -237,3 +237,155 @@ func Test_Game_UpdateGameState(t *testing.T) {
 		})
 	}
 }
+
+func Test_Game_UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(t *testing.T) {
+	tests := []struct {
+		name            string
+		input           string
+		dbUpdateCheck   func(*sql.DB) bool
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:  "updates game if enough players have joined",
+			input: "game_id1",
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					scanState string
+					updatedAt time.Time
+				)
+				row := db.QueryRow(
+					`SELECT g.state, g.updated_at
+					FROM public."games" AS g
+					WHERE g.id = 'game_id1'`,
+				)
+				assert.NoError(t, row.Err())
+				err := row.Scan(&scanState, &updatedAt)
+				assert.NoError(t, err)
+				assert.Equal(t, "PLAYERS_JOINED", scanState)
+				model.AssertTimeAlmostEqual(t, time.Now(), updatedAt, 1*time.Second)
+				return true
+			},
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled", "updated_at"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false, $1
+					)`,
+					Args: []any{
+						time.Now().Add(-1 * time.Hour),
+					},
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'HUMAN', 'game_id1'
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'HUMAN', 'game_id1'
+					)`,
+				},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name:  "does not update game if enough players have not joined",
+			input: "game_id1",
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					scanState string
+					updatedAt time.Time
+				)
+				row := db.QueryRow(
+					`SELECT g.state, g.updated_at
+					FROM public."games" AS g
+					WHERE g.id = 'game_id1'`,
+				)
+				assert.NoError(t, row.Err())
+				err := row.Scan(&scanState, &updatedAt)
+				assert.NoError(t, err)
+				assert.Equal(t, "STARTED", scanState)
+				model.AssertTimeAlmostEqual(t, time.Now().Add(-1*time.Hour), updatedAt, 1*time.Second)
+				return true
+			},
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled", "updated_at"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['bot_id1'], false, $1
+					)`,
+					Args: []any{
+						time.Now().Add(-1 * time.Hour),
+					},
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'HUMAN', 'game_id1'
+					)`,
+				},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name:            "errors if gameId is blank",
+			input:           "",
+			dbUpdateCheck:   nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "gameId cannot be blank",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			tx, err := s.db.Begin()
+			assert.NoError(t, err)
+
+			err = s.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(tt.input, tx)
+			tx.Commit()
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+			if tt.dbUpdateCheck != nil {
+				assert.True(t, tt.dbUpdateCheck(s.db))
+			}
+		})
+	}
+}
