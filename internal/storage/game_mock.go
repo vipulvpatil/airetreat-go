@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 )
@@ -88,21 +90,6 @@ func (g *GameIdsGetterMockEmpty) GetUnhandledGameIdsForState(gameStateString str
 	return []string{}
 }
 
-type GameIdsGetterMockSuccessOnce struct {
-	GameAccessor
-	GameIds     []string
-	CallCount   int
-	ReturnCount int
-}
-
-func (g *GameIdsGetterMockSuccessOnce) GetUnhandledGameIdsForState(gameStateString string) []string {
-	g.CallCount++
-	if g.ReturnCount >= g.CallCount {
-		return g.GameIds
-	}
-	return nil
-}
-
 type GameAccessorConfigurableMock struct {
 	CreateGameInternal                  func() (string, error)
 	JoinGameInternal                    func(gameId, playerId string) error
@@ -111,6 +98,7 @@ type GameAccessorConfigurableMock struct {
 	UpdateGameStateInternal             func(gameId string, updateOpts GameUpdateOptions) error
 	GetUnhandledGameIdsForStateInternal func(gameStateString string) []string
 	DeleteGameInternal                  func(gameId string) error
+	GetOldGamesInternal                 func(gameExpiryDuration time.Duration) ([]string, error)
 }
 
 func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
@@ -133,4 +121,7 @@ func (g *GameAccessorConfigurableMock) GetUnhandledGameIdsForState(gameStateStri
 }
 func (g *GameAccessorConfigurableMock) DeleteGame(gameId string) error {
 	return g.DeleteGameInternal(gameId)
+}
+func (g *GameAccessorConfigurableMock) GetOldGames(gameExpiryDuration time.Duration) ([]string, error) {
+	return g.GetOldGamesInternal(gameExpiryDuration)
 }

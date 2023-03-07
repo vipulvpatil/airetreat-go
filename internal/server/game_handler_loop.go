@@ -18,16 +18,34 @@ func (s *AiRetreatGoService) GameHandlerLoop(ctx context.Context, tickerDuration
 	for {
 		select {
 		case <-ticker.C:
-			gameIds := s.storage.GetUnhandledGameIdsForState("PLAYERS_JOINED")
-			for _, gameId := range gameIds {
-				_, err := jobStarter.EnqueueUnique(workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED, work.Q{"gameId": gameId})
-				if err != nil {
-					fmt.Println(err)
-				}
-			}
-
+			s.beginGames(jobStarter)
+			// s.deleteExpiredGames(jobStarter)
 		case <-ctx.Done():
 			return
+		}
+	}
+}
+
+func (s *AiRetreatGoService) beginGames(jobStarter workers.JobStarter) {
+	gameIds := s.storage.GetUnhandledGameIdsForState("PLAYERS_JOINED")
+	for _, gameId := range gameIds {
+		_, err := jobStarter.EnqueueUnique(workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED, work.Q{"gameId": gameId})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func (s *AiRetreatGoService) deleteExpiredGames(jobStarter workers.JobStarter) {
+	gameIds, err := s.storage.GetOldGames(-1 * time.Hour)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, gameId := range gameIds {
+		_, err := jobStarter.EnqueueUnique(workers.DELETE_EXPIRED_GAMES, work.Q{"gameId": gameId})
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
+const GAME_EXPIRY_DURATION = -4 * time.Hour
+
 type Game struct {
 	id                      string
 	state                   gameState
@@ -168,6 +170,6 @@ func (game *Game) RandomizedTurnOrder() []string {
 }
 
 func (game *Game) RecentlyUpdated() bool {
-	recent := time.Now().Add(-4 * time.Hour)
+	recent := time.Now().Add(GAME_EXPIRY_DURATION)
 	return recent.Before(game.updatedAt)
 }

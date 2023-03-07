@@ -7,14 +7,17 @@ import (
 )
 
 type JobStarterMockCallCheck struct {
-	CalledArgs []map[string]interface{}
+	CalledArgs map[string][]map[string]interface{}
 }
 
 func (j *JobStarterMockCallCheck) EnqueueUnique(jobName string, args map[string]interface{}) (*work.Job, error) {
 	if j.CalledArgs == nil {
-		j.CalledArgs = []map[string]interface{}{}
+		j.CalledArgs = map[string][]map[string]interface{}{}
 	}
-	j.CalledArgs = append(j.CalledArgs, args)
+	if j.CalledArgs[jobName] == nil {
+		j.CalledArgs[jobName] = []map[string]interface{}{}
+	}
+	j.CalledArgs[jobName] = append(j.CalledArgs[jobName], args)
 	return &work.Job{}, nil
 }
 

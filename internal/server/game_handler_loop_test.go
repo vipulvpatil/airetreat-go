@@ -11,20 +11,54 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/workers"
 )
 
+type GetUnhandledGameIdsMockCaller struct {
+	MapByInput map[string]struct {
+		ReturnData  [][]string
+		CallCount   int
+		ReturnCount int
+	}
+}
+
+func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(gameStateString string) []string {
+	f, ok := m.MapByInput[gameStateString]
+	if !ok {
+		f = struct {
+			ReturnData  [][]string
+			CallCount   int
+			ReturnCount int
+		}{}
+	}
+	f.CallCount++
+	if f.ReturnCount >= f.CallCount {
+		m.MapByInput[gameStateString] = f
+		return f.ReturnData[f.CallCount-1]
+	}
+	m.MapByInput[gameStateString] = f
+	return nil
+}
+
 func Test_GameHandlerLoop(t *testing.T) {
 	tests := []struct {
-		name              string
-		jobStarterMock    *workers.JobStarterMockCallCheck
-		gameIdsGetterMock *storage.GameIdsGetterMockSuccessOnce
-		tickerDuration    time.Duration
+		name                                       string
+		jobStarterMock                             *workers.JobStarterMockCallCheck
+		gamesAccessorGetUnhandledGameIdsMockCaller GetUnhandledGameIdsMockCaller
+		tickerDuration                             time.Duration
 	}{
 		{
 			name:           "looks for appropriate games and calls job starter, until canceled",
 			jobStarterMock: &workers.JobStarterMockCallCheck{},
-			gameIdsGetterMock: &storage.GameIdsGetterMockSuccessOnce{
-				GameIds:     []string{"game_id1", "game_id2"},
-				CallCount:   0,
-				ReturnCount: 1,
+			gamesAccessorGetUnhandledGameIdsMockCaller: GetUnhandledGameIdsMockCaller{
+				MapByInput: map[string]struct {
+					ReturnData  [][]string
+					CallCount   int
+					ReturnCount int
+				}{
+					"PLAYERS_JOINED": {
+						ReturnData:  [][]string{{"game_id1", "game_id2"}},
+						CallCount:   0,
+						ReturnCount: 1,
+					},
+				},
 			},
 			tickerDuration: 10 * time.Millisecond,
 		},
@@ -36,7 +70,9 @@ func Test_GameHandlerLoop(t *testing.T) {
 				ServerDependencies{
 					Storage: storage.NewStorageAccessorMock(
 						storage.WithGameAccessorMock(
-							tt.gameIdsGetterMock,
+							&storage.GameAccessorConfigurableMock{
+								GetUnhandledGameIdsForStateInternal: tt.gamesAccessorGetUnhandledGameIdsMockCaller.getUnhandledGameIdsForStateInternal,
+							},
 						),
 					),
 				},
@@ -52,13 +88,13 @@ func Test_GameHandlerLoop(t *testing.T) {
 					{"gameId": "game_id1"},
 					{"gameId": "game_id2"},
 				},
-				tt.jobStarterMock.CalledArgs,
+				tt.jobStarterMock.CalledArgs[workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED],
 				"appropriate jobs should be started from the loop",
 			)
-			assert.Equal(t, 4, tt.gameIdsGetterMock.CallCount, "loop should run continuously until canceled")
+			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should run continuously until canceled")
 			cancelGameHandlerLoop()
 			time.Sleep(45 * time.Millisecond)
-			assert.Equal(t, 4, tt.gameIdsGetterMock.CallCount, "loop should not run once canceled")
+			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should not run once canceled")
 		})
 	}
 }

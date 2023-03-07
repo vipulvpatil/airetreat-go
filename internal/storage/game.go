@@ -1,6 +1,10 @@
 package storage
 
-import "github.com/vipulvpatil/airetreat-go/internal/model"
+import (
+	"time"
+
+	"github.com/vipulvpatil/airetreat-go/internal/model"
+)
 
 type GameAccessor interface {
 	CreateGame() (string, error)
@@ -10,4 +14,5 @@ type GameAccessor interface {
 	UpdateGameState(gameId string, updateOpts GameUpdateOptions) error
 	GetUnhandledGameIdsForState(gameStateString string) []string
 	DeleteGame(gameId string) error
+	GetOldGames(gameExpiryDuration time.Duration) ([]string, error)
 }
