@@ -52,12 +52,26 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 }
 
 func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
+	// WAITING_FOR_BOT_QUESTION
+	// verify state
+	// identify question target.
+	// get question from AI
+	// update state. and
+	// set handled, if question target is HUMAN
+	// set unhandled, if question target is AI
 	return nil
 }
 
 func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
+	// WAITING_FOR_BOT_ANSWER
+	// verify state
+	// get answer from AI
+	// update state. and
+	// set handled, if next turn is HUMAN
+	// set unhandled, if next turn is AI
 	return nil
 }
+
 func (j *jobContext) deleteExpiredGames(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
