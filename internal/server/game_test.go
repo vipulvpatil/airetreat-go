@@ -69,7 +69,7 @@ func Test_JoinGame(t *testing.T) {
 		name             string
 		input            *pb.JoinGameRequest
 		output           *pb.JoinGameResponse
-		txProviderMock   storage.DatabaseTransactionProvider
+		transactionMock  *storage.DatabaseTransactionMock
 		gameAccessorMock storage.GameAccessor
 		botAccessorMock  storage.BotAccessor
 		txShouldCommit   bool
@@ -80,7 +80,7 @@ func Test_JoinGame(t *testing.T) {
 			name:             "errors if unable to get transaction",
 			input:            &pb.JoinGameRequest{},
 			output:           nil,
-			txProviderMock:   &storage.DatabaseTransactionProviderMockFailure{},
+			transactionMock:  nil,
 			txShouldCommit:   false,
 			gameAccessorMock: nil,
 			botAccessorMock:  nil,
@@ -93,9 +93,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
 			},
-			output:         nil,
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          nil,
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					return nil, errors.New("unable to get game")
@@ -111,9 +111,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
 			},
-			output:         nil,
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          nil,
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					bots := []*model.Bot{}
@@ -153,9 +153,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
 			},
-			output:         &pb.JoinGameResponse{},
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          &pb.JoinGameResponse{},
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					player1, _ := model.NewPlayer(
@@ -201,9 +201,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id2",
 			},
-			output:         nil,
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          nil,
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					player1, _ := model.NewPlayer(
@@ -249,9 +249,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id2",
 			},
-			output:         nil,
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          nil,
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					player1, _ := model.NewPlayer(
@@ -296,9 +296,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id2",
 			},
-			output:         nil,
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          nil,
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  false,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					player1, _ := model.NewPlayer(
@@ -346,9 +346,9 @@ func Test_JoinGame(t *testing.T) {
 				GameId:   "game_id1",
 				PlayerId: "player_id2",
 			},
-			output:         &pb.JoinGameResponse{},
-			txProviderMock: &storage.DatabaseTransactionProviderMockSuccess{},
-			txShouldCommit: false,
+			output:          &pb.JoinGameResponse{},
+			transactionMock: &storage.DatabaseTransactionMock{},
+			txShouldCommit:  true,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{
 				GetGameUsingTransactionInternal: func(gameId string, transaction storage.DatabaseTransaction) (*model.Game, error) {
 					player1, _ := model.NewPlayer(
@@ -396,7 +396,9 @@ func Test_JoinGame(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server, _ := NewServer(ServerDependencies{
 				Storage: storage.NewStorageAccessorMock(
-					storage.WithDatabaseTransactionProviderMock(tt.txProviderMock),
+					storage.WithDatabaseTransactionProviderMock(&storage.DatabaseTransactionProviderMock{
+						Transaction: tt.transactionMock,
+					}),
 					storage.WithGameAccessorMock(tt.gameAccessorMock),
 					storage.WithBotAccessorMock(tt.botAccessorMock),
 				),
@@ -415,10 +417,13 @@ func Test_JoinGame(t *testing.T) {
 				assert.EqualError(t, err, tt.errorString)
 
 			}
-			if tt.txShouldCommit {
-				// TODO: Commit was called
-			} else {
-				// TODO: Check rollback was called
+			if tt.transactionMock != nil {
+				if tt.txShouldCommit {
+					assert.True(t, tt.transactionMock.Committed, "transaction should have committed")
+				} else {
+					assert.True(t, tt.transactionMock.Rolledback, "transaction should have rolledback")
+					assert.False(t, tt.transactionMock.Committed, "transaction should not have committed")
+				}
 			}
 		})
 	}

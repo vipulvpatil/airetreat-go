@@ -4,26 +4,29 @@ import (
 	"errors"
 )
 
-type databaseTransactionMock struct {
+type DatabaseTransactionMock struct {
 	customDbHandler
+	Committed  bool
+	Rolledback bool
 }
 
-func (s databaseTransactionMock) Commit() error {
+func (d *DatabaseTransactionMock) Commit() error {
+	d.Committed = true
 	return nil
 }
 
-func (s databaseTransactionMock) Rollback() error {
+func (d *DatabaseTransactionMock) Rollback() error {
+	d.Rolledback = true
 	return nil
 }
 
-type DatabaseTransactionProviderMockSuccess struct{}
-
-func (s *DatabaseTransactionProviderMockSuccess) BeginTransaction() (DatabaseTransaction, error) {
-	return &databaseTransactionMock{}, nil
+type DatabaseTransactionProviderMock struct {
+	Transaction *DatabaseTransactionMock
 }
 
-type DatabaseTransactionProviderMockFailure struct{}
-
-func (s *DatabaseTransactionProviderMockFailure) BeginTransaction() (DatabaseTransaction, error) {
-	return nil, errors.New("unable to begin a db transaction")
+func (s *DatabaseTransactionProviderMock) BeginTransaction() (DatabaseTransaction, error) {
+	if s.Transaction == nil {
+		return nil, errors.New("unable to begin a db transaction")
+	}
+	return s.Transaction, nil
 }
