@@ -13,12 +13,12 @@ func (s *Storage) UpdateBotWithPlayerIdUsingTransaction(botId, playerId string, 
 }
 
 func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error {
-	if utilities.IsBlank(playerId) {
-		return errors.New("playerId cannot be blank")
-	}
-
 	if utilities.IsBlank(botId) {
 		return errors.New("botId cannot be blank")
+	}
+
+	if utilities.IsBlank(playerId) {
+		return errors.New("playerId cannot be blank")
 	}
 
 	result, err := customDb.Exec(
