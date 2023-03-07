@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -19,6 +20,35 @@ type GameUpdateOptions struct {
 	LastQuestion            *string
 	LastQuestionTargetBotId *string
 	StateTotalTime          *int64
+}
+
+func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
+	updateSqlsPart, args := sqlAndArgsForUpdate(updateOpts)
+	if len(args) == 0 {
+		return errors.New("no update options provided")
+	}
+	updateSqlsPart, args = autoAddUpdateTimeStamp(updateSqlsPart, args)
+	updateSqlSetPart := strings.Join(updateSqlsPart, ", ")
+	argsWithGameId := append(args, gameId)
+	updateSql := fmt.Sprintf("UPDATE public.\"games\" SET %s WHERE \"id\" = $%d", updateSqlSetPart, len(args)+1)
+	result, err := s.db.Exec(updateSql, argsWithGameId...)
+
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while updating game and changing db")
+	}
+
+	if rowsAffected != 1 {
+		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when updating game in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+	}
+	return nil
+}
+
+func (s *Storage) UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, tx *sql.Tx) error {
+	return updateGameStateIfEnoughPlayersHaveJoined(tx, gameId)
 }
 
 func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) ([]string, []interface{}) {
@@ -79,27 +109,38 @@ func autoAddUpdateTimeStamp(setSqls []string, args []interface{}) ([]string, []i
 	return setSqls, args
 }
 
-func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
-	updateSqlsPart, args := sqlAndArgsForUpdate(updateOpts)
-	if len(args) == 0 {
-		return errors.New("no update options provided")
+func updateGameStateIfEnoughPlayersHaveJoined(customDb customDbHandler, gameId string) error {
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId cannot be blank")
 	}
-	updateSqlsPart, args = autoAddUpdateTimeStamp(updateSqlsPart, args)
-	updateSqlSetPart := strings.Join(updateSqlsPart, ", ")
-	argsWithGameId := append(args, gameId)
-	updateSql := fmt.Sprintf("UPDATE public.\"games\" SET %s WHERE \"id\" = $%d", updateSqlSetPart, len(args)+1)
-	result, err := s.db.Exec(updateSql, argsWithGameId...)
 
+	result, err := customDb.Exec(
+		`WITH selected_games AS (
+			SELECT g.id, count(b.id) AS human_bot_count
+			FROM public."games" AS g
+			JOIN public."bots" AS b ON g.id = b.game_id
+			WHERE g.id = $1
+			AND b.type = 'HUMAN'
+			GROUP BY g.id
+		)
+		UPDATE public."games" AS games
+		SET state = 'PLAYERS_JOINED'
+		FROM selected_games
+		WHERE games.id = selected_games.id
+		AND human_bot_count = 2`, gameId,
+	)
 	if err != nil {
-		return err
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while updating game state: %s", gameId))
 	}
+
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return utilities.WrapBadError(err, "dbError while updating game and changing db")
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while checking affected row after updating game state: %s", gameId))
 	}
 
-	if rowsAffected != 1 {
-		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when updating game in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+	if rowsAffected > 1 {
+		return utilities.NewBadError(fmt.Sprintf("More than one row (%d) was affected when game state was updated. This is highly unexpected.", rowsAffected))
 	}
+
 	return nil
 }

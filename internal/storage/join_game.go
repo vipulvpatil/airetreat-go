@@ -20,7 +20,7 @@ func (s *Storage) JoinGame(gameId, playerId string) error {
 	}
 	defer tx.Rollback()
 
-	game, err := getGame(tx, gameId)
+	game, err := getGameUsingCustomDbHandler(tx, gameId)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (s *Storage) JoinGame(gameId, playerId string) error {
 		return err
 	}
 
-	err = updateGameStateToPlayersJoined(tx, gameId)
+	err = updateGameStateIfEnoughPlayersHaveJoined(tx, gameId)
 	if err != nil {
 		return err
 	}
