@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/pkg/errors"
@@ -94,6 +95,7 @@ type GameAccessorConfigurableMock struct {
 	CreateGameInternal                  func() (string, error)
 	JoinGameInternal                    func(gameId, playerId string) error
 	GetGameInternal                     func(gameId string) (*model.Game, error)
+	GetGameUsingTransactionInternal     func(gameId string, tx *sql.Tx) (*model.Game, error)
 	GetGamesInternal                    func(playerId string) ([]string, error)
 	UpdateGameStateInternal             func(gameId string, updateOpts GameUpdateOptions) error
 	GetUnhandledGameIdsForStateInternal func(gameStateString string) ([]string, error)
@@ -109,6 +111,9 @@ func (g *GameAccessorConfigurableMock) JoinGame(gameId, playerId string) error {
 }
 func (g *GameAccessorConfigurableMock) GetGame(gameId string) (*model.Game, error) {
 	return g.GetGameInternal(gameId)
+}
+func (g *GameAccessorConfigurableMock) GetGameUsingTransaction(gameId string, tx *sql.Tx) (*model.Game, error) {
+	return g.GetGameUsingTransactionInternal(gameId, tx)
 }
 func (g *GameAccessorConfigurableMock) GetGames(playerId string) ([]string, error) {
 	return g.GetGamesInternal(playerId)
