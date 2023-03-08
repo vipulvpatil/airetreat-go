@@ -35,9 +35,10 @@ message JoinGameRequest {
 message JoinGameResponse {}
 
 message SendMessageRequest {
-  string playerId = 1;
-  string botId = 2;
-  string text = 3;
+  string gameId = 1;
+  string playerId = 2;
+  string botId = 3;
+  string text = 4;
 }
 
 message SendMessageResponse {}
