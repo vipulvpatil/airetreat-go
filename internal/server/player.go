@@ -6,10 +6,10 @@ import (
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
 
-func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
-	err := s.storage.CreateMessage(req.GetBotId(), req.GetText())
+func (s *AiRetreatGoService) GetPlayerId(ctx context.Context, req *pb.GetPlayerIdRequest) (*pb.GetPlayerIdResponse, error) {
+	playerId, err := s.storage.CreatePlayer()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.SendMessageResponse{}, nil
+	return &pb.GetPlayerIdResponse{PlayerId: playerId}, nil
 }
