@@ -58,3 +58,23 @@ func (s gameState) String() string {
 func (s gameState) Valid() bool {
 	return s.String() != "UNDEFINED"
 }
+
+func (s gameState) isWaitingForAi() bool {
+	return s == waitingForBotQuestion || s == waitingForBotAnswer
+}
+
+func (s gameState) isWaitingForHuman() bool {
+	return s == waitingForPlayerQuestion || s == waitingForPlayerAnswer
+}
+
+func (s gameState) isQuestion() bool {
+	return s == waitingForBotQuestion || s == waitingForPlayerQuestion
+}
+
+func (s gameState) isAnswer() bool {
+	return s == waitingForBotAnswer || s == waitingForPlayerAnswer
+}
+
+func (s gameState) isWaitingForMessage() bool {
+	return s == waitingForBotQuestion || s == waitingForBotAnswer || s == waitingForPlayerQuestion || s == waitingForPlayerAnswer
+}
