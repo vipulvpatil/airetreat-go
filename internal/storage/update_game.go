@@ -22,6 +22,14 @@ type GameUpdateOptions struct {
 }
 
 func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
+	return updateGameState(s.db, gameId, updateOpts)
+}
+
+func (s *Storage) UpdateGameStateUsingTransaction(gameId string, updateOpts GameUpdateOptions, transaction DatabaseTransaction) error {
+	return updateGameState(transaction, gameId, updateOpts)
+}
+
+func updateGameState(customDb customDbHandler, gameId string, updateOpts GameUpdateOptions) error {
 	updateSqlsPart, args := sqlAndArgsForUpdate(updateOpts)
 	if len(args) == 0 {
 		return errors.New("no update options provided")
@@ -30,7 +38,7 @@ func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) e
 	updateSqlSetPart := strings.Join(updateSqlsPart, ", ")
 	argsWithGameId := append(args, gameId)
 	updateSql := fmt.Sprintf("UPDATE public.\"games\" SET %s WHERE \"id\" = $%d", updateSqlSetPart, len(args)+1)
-	result, err := s.db.Exec(updateSql, argsWithGameId...)
+	result, err := customDb.Exec(updateSql, argsWithGameId...)
 
 	if err != nil {
 		return err

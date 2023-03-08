@@ -80,6 +80,7 @@ type GameAccessorConfigurableMock struct {
 	GetGameUsingTransactionInternal                                  func(gameId string, transaction DatabaseTransaction) (*model.Game, error)
 	GetGamesInternal                                                 func(playerId string) ([]string, error)
 	UpdateGameStateInternal                                          func(gameId string, updateOpts GameUpdateOptions) error
+	UpdateGameStateUsingTransactionInternal                          func(gameId string, updateOpts GameUpdateOptions, transaction DatabaseTransaction) error
 	GetUnhandledGameIdsForStateInternal                              func(gameStateString string) ([]string, error)
 	DeleteGameInternal                                               func(gameId string) error
 	GetOldGamesInternal                                              func(gameExpiryDuration time.Duration) ([]string, error)
@@ -100,6 +101,9 @@ func (g *GameAccessorConfigurableMock) GetGames(playerId string) ([]string, erro
 }
 func (g *GameAccessorConfigurableMock) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
 	return g.UpdateGameStateInternal(gameId, updateOpts)
+}
+func (g *GameAccessorConfigurableMock) UpdateGameStateUsingTransaction(gameId string, updateOpts GameUpdateOptions, transaction DatabaseTransaction) error {
+	return g.UpdateGameStateUsingTransactionInternal(gameId, updateOpts, transaction)
 }
 func (g *GameAccessorConfigurableMock) GetUnhandledGameIdsForState(gameStateString string) ([]string, error) {
 	return g.GetUnhandledGameIdsForStateInternal(gameStateString)
