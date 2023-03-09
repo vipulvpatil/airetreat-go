@@ -52,7 +52,64 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 }
 
 func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
+	gameId := job.ArgString("gameId")
 
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId is required")
+	}
+
+	tx, err := workerStorage.BeginTransaction()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	game, err := workerStorage.GetGameUsingTransaction(gameId, tx)
+	if err != nil {
+		return err
+	}
+
+	if game.StateHasBeenHandled() {
+		return errors.Errorf("game has already been handled: %s", gameId)
+	}
+
+	if !game.IsInStateWaitingForBotQuestion() {
+		return errors.Errorf("game should be in WaitingForBotQuestion state: %s", gameId)
+	}
+
+	sourceBot := game.GetCurrentTurnBot()
+	targetBot, err := game.GetTargetBotForNextQuestion()
+	if err != nil {
+		return err
+	}
+
+	// TODO: Get question from OpenAiClient
+	question := "Some question from AI"
+	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBot.Id(), question)
+	if err != nil {
+		return err
+	}
+
+	newGameState := gameUpdate.State.String()
+	updateOptions := storage.GameUpdateOptions{
+		State:                   &newGameState,
+		CurrentTurnIndex:        gameUpdate.CurrentTurnIndex,
+		StateHandled:            gameUpdate.StateHandled,
+		LastQuestion:            gameUpdate.LastQuestion,
+		LastQuestionTargetBotId: gameUpdate.LastQuestionTargetBotId,
+	}
+
+	err = workerStorage.UpdateGameStateUsingTransaction(gameId, updateOptions, tx)
+	if err != nil {
+		return err
+	}
+
+	err = workerStorage.CreateMessageUsingTransaction(targetBot.Id(), question, tx)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
 	return nil
 }
 

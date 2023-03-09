@@ -284,7 +284,6 @@ func Test_SendMessage(t *testing.T) {
 			errorExpected:  true,
 			errorString:    "expecting AI message but did not receive one",
 		},
-
 		{
 			name: "errors if unable to update game state",
 			input: &pb.SendMessageRequest{
