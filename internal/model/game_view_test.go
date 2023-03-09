@@ -164,7 +164,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id1",
 				game: &Game{
-					state:            waitingForBotQuestion,
+					state:            waitingForAiQuestion,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex: 1,
 					stateTotalTime:   60,
@@ -236,7 +236,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id1",
 				game: &Game{
-					state:                   waitingForBotAnswer,
+					state:                   waitingForAiAnswer,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        4,
 					stateTotalTime:          60,
@@ -309,7 +309,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id1",
 				game: &Game{
-					state:                   waitingForPlayerQuestion,
+					state:                   waitingForHumanQuestion,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        10,
 					stateTotalTime:          60,
@@ -382,7 +382,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id1",
 				game: &Game{
-					state:                   waitingForPlayerAnswer,
+					state:                   waitingForHumanAnswer,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        3,
 					stateTotalTime:          60,
@@ -455,7 +455,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id2",
 				game: &Game{
-					state:                   waitingForPlayerQuestion,
+					state:                   waitingForHumanQuestion,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        10,
 					stateTotalTime:          60,
@@ -528,7 +528,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id2",
 				game: &Game{
-					state:                   waitingForPlayerAnswer,
+					state:                   waitingForHumanAnswer,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        3,
 					stateTotalTime:          60,
@@ -601,7 +601,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "",
 				game: &Game{
-					state:                   waitingForBotAnswer,
+					state:                   waitingForAiAnswer,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        4,
 					stateTotalTime:          60,
@@ -646,7 +646,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			}{
 				playerId: "player_id3",
 				game: &Game{
-					state:                   waitingForBotAnswer,
+					state:                   waitingForAiAnswer,
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        4,
 					lastQuestionTargetBotId: "bot_id2",

@@ -6,10 +6,10 @@ const (
 	undefinedGameState gameState = iota
 	started
 	playersJoined
-	waitingForBotQuestion
-	waitingForBotAnswer
-	waitingForPlayerQuestion
-	waitingForPlayerAnswer
+	waitingForAiQuestion
+	waitingForAiAnswer
+	waitingForHumanQuestion
+	waitingForHumanAnswer
 	finished
 )
 
@@ -19,14 +19,14 @@ func GameState(str string) gameState {
 		return started
 	case "PLAYERS_JOINED":
 		return playersJoined
-	case "WAITING_FOR_BOT_QUESTION":
-		return waitingForBotQuestion
-	case "WAITING_FOR_BOT_ANSWER":
-		return waitingForBotAnswer
-	case "WAITING_FOR_PLAYER_QUESTION":
-		return waitingForPlayerQuestion
-	case "WAITING_FOR_PLAYER_ANSWER":
-		return waitingForPlayerAnswer
+	case "WAITING_FOR_AI_QUESTION":
+		return waitingForAiQuestion
+	case "WAITING_FOR_AI_ANSWER":
+		return waitingForAiAnswer
+	case "WAITING_FOR_HUMAN_QUESTION":
+		return waitingForHumanQuestion
+	case "WAITING_FOR_HUMAN_ANSWER":
+		return waitingForHumanAnswer
 	case "FINISHED":
 		return finished
 	default:
@@ -40,14 +40,14 @@ func (s gameState) String() string {
 		return "STARTED"
 	case playersJoined:
 		return "PLAYERS_JOINED"
-	case waitingForBotQuestion:
-		return "WAITING_FOR_BOT_QUESTION"
-	case waitingForBotAnswer:
-		return "WAITING_FOR_BOT_ANSWER"
-	case waitingForPlayerQuestion:
-		return "WAITING_FOR_PLAYER_QUESTION"
-	case waitingForPlayerAnswer:
-		return "WAITING_FOR_PLAYER_ANSWER"
+	case waitingForAiQuestion:
+		return "WAITING_FOR_AI_QUESTION"
+	case waitingForAiAnswer:
+		return "WAITING_FOR_AI_ANSWER"
+	case waitingForHumanQuestion:
+		return "WAITING_FOR_HUMAN_QUESTION"
+	case waitingForHumanAnswer:
+		return "WAITING_FOR_HUMAN_ANSWER"
 	case finished:
 		return "FINISHED"
 	default:
@@ -60,21 +60,21 @@ func (s gameState) Valid() bool {
 }
 
 func (s gameState) isWaitingForAi() bool {
-	return s == waitingForBotQuestion || s == waitingForBotAnswer
+	return s == waitingForAiQuestion || s == waitingForAiAnswer
 }
 
 func (s gameState) isWaitingForHuman() bool {
-	return s == waitingForPlayerQuestion || s == waitingForPlayerAnswer
+	return s == waitingForHumanQuestion || s == waitingForHumanAnswer
 }
 
 func (s gameState) isQuestion() bool {
-	return s == waitingForBotQuestion || s == waitingForPlayerQuestion
+	return s == waitingForAiQuestion || s == waitingForHumanQuestion
 }
 
 func (s gameState) isAnswer() bool {
-	return s == waitingForBotAnswer || s == waitingForPlayerAnswer
+	return s == waitingForAiAnswer || s == waitingForHumanAnswer
 }
 
 func (s gameState) isWaitingForMessage() bool {
-	return s == waitingForBotQuestion || s == waitingForBotAnswer || s == waitingForPlayerQuestion || s == waitingForPlayerAnswer
+	return s == waitingForAiQuestion || s == waitingForAiAnswer || s == waitingForHumanQuestion || s == waitingForHumanAnswer
 }

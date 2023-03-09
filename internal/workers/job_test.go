@@ -22,7 +22,7 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 		errorString      string
 	}{
 		{
-			name: "updates game successfully to WAITING_FOR_BOT_QUESTION",
+			name: "updates game successfully to WAITING_FOR_AI_QUESTION",
 			input: map[string]interface{}{
 				"gameId": "game_id1",
 			},
@@ -68,7 +68,7 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 				},
 				UpdateGameStateInternal: func(gameId string, opts storage.GameUpdateOptions) error {
 					assert.Equal(t, "game_id1", gameId)
-					assert.Equal(t, "WAITING_FOR_BOT_QUESTION", *opts.State)
+					assert.Equal(t, "WAITING_FOR_AI_QUESTION", *opts.State)
 					assert.Equal(t, int64(0), *opts.CurrentTurnIndex)
 					assert.Equal(t, []string{"bot_id3", "bot_id4", "bot_id2", "bot_id1", "bot_id5"}, opts.TurnOrder)
 					return nil
@@ -78,7 +78,7 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "updates game successfully to WAITING_FOR_PLAYER_QUESTION",
+			name: "updates game successfully to WAITING_FOR_HUMAN_QUESTION",
 			input: map[string]interface{}{
 				"gameId": "game_id1",
 			},
@@ -130,7 +130,7 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 				},
 				UpdateGameStateInternal: func(gameId string, opts storage.GameUpdateOptions) error {
 					assert.Equal(t, "game_id1", gameId)
-					assert.Equal(t, "WAITING_FOR_PLAYER_QUESTION", *opts.State)
+					assert.Equal(t, "WAITING_FOR_HUMAN_QUESTION", *opts.State)
 					assert.Equal(t, int64(0), *opts.CurrentTurnIndex)
 					assert.Equal(t, []string{"bot_id3", "bot_id4", "bot_id2", "bot_id1", "bot_id5"}, opts.TurnOrder)
 					return nil
@@ -295,7 +295,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return model.NewGame(
 						model.GameOptions{
 							Id:               "game_id1",
-							State:            "WAITING_FOR_BOT_QUESTION",
+							State:            "WAITING_FOR_AI_QUESTION",
 							CurrentTurnIndex: 0,
 							TurnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:     false,
@@ -307,7 +307,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					)
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_ANSWER"
+					expectedState := "WAITING_FOR_AI_ANSWER"
 					expectedStateHandled := false
 					expectedLastQuestion := "Some question from AI"
 					expectedLastQuestionTargetBotId := "bot_id4"
@@ -393,7 +393,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            true,
@@ -440,7 +440,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -457,7 +457,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 			},
 			txShouldCommit: false,
 			errorExpected:  true,
-			errorString:    "game should be in WaitingForBotQuestion state: game_id1",
+			errorString:    "game should be in WaitingForAiQuestion state: game_id1",
 		},
 		{
 			name: "errors if cannot determine bot to ask a question",
@@ -481,7 +481,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_QUESTION",
+							State:                   "WAITING_FOR_AI_QUESTION",
 							CurrentTurnIndex:        0,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -528,7 +528,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_QUESTION",
+							State:                   "WAITING_FOR_AI_QUESTION",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -578,7 +578,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_QUESTION",
+							State:                   "WAITING_FOR_AI_QUESTION",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -593,7 +593,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return game, nil
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_ANSWER"
+					expectedState := "WAITING_FOR_AI_ANSWER"
 					expectedStateHandled := false
 					expectedLastQuestion := "Some question from AI"
 					expectedLastQuestionTargetBotId := "bot_id4"
@@ -693,7 +693,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					return model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_ANSWER",
+							State:                   "WAITING_FOR_AI_ANSWER",
 							CurrentTurnIndex:        0,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -707,7 +707,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					)
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_QUESTION"
+					expectedState := "WAITING_FOR_AI_QUESTION"
 					expectedStateHandled := false
 					expectedCurrentTurnIndex := int64(1)
 
@@ -791,7 +791,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            true,
@@ -838,7 +838,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -855,7 +855,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 			},
 			txShouldCommit: false,
 			errorExpected:  true,
-			errorString:    "game should be in WaitingForBotAnswer state: game_id1",
+			errorString:    "game should be in WaitingForAiAnswer state: game_id1",
 		},
 		{
 			name: "errors if unable to update game state",
@@ -885,7 +885,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_ANSWER",
+							State:                   "WAITING_FOR_AI_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -935,7 +935,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_ANSWER",
+							State:                   "WAITING_FOR_AI_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -950,7 +950,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 					return game, nil
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_QUESTION"
+					expectedState := "WAITING_FOR_AI_QUESTION"
 					expectedStateHandled := false
 					expectedCurrentTurnIndex := int64(3)
 

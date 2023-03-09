@@ -530,7 +530,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 		errorString    string
 	}{
 		{
-			name: "returns the game update for the incoming message given a game in waitingForBotQuestion",
+			name: "returns the game update for the incoming message given a game in waitingForAiQuestion",
 			input: struct {
 				game        *Game
 				sourceBotId string
@@ -538,7 +538,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForBotQuestion,
+					state:            waitingForAiQuestion,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -572,7 +572,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				lastQuestionTargetBotId := "bot_id3"
 
 				return &GameUpdate{
-					State:                   GameState("WAITING_FOR_PLAYER_ANSWER"),
+					State:                   GameState("WAITING_FOR_HUMAN_ANSWER"),
 					CurrentTurnIndex:        nil,
 					StateHandled:            &stateHandled,
 					LastQuestion:            &lastQuestion,
@@ -583,7 +583,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "returns the game update for the incoming message given a game in waitingForBotAnswer",
+			name: "returns the game update for the incoming message given a game in waitingForAiAnswer",
 			input: struct {
 				game        *Game
 				sourceBotId string
@@ -591,7 +591,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForBotAnswer,
+					state:            waitingForAiAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -626,7 +626,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				stateHandled := false
 
 				return &GameUpdate{
-					State:                   GameState("WAITING_FOR_PLAYER_QUESTION"),
+					State:                   GameState("WAITING_FOR_HUMAN_QUESTION"),
 					CurrentTurnIndex:        &currentTurnIndex,
 					StateHandled:            &stateHandled,
 					LastQuestion:            nil,
@@ -637,7 +637,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "returns the game update for the incoming message given a game in waitingForPlayerQuestion",
+			name: "returns the game update for the incoming message given a game in waitingForHumanQuestion",
 			input: struct {
 				game        *Game
 				sourceBotId string
@@ -645,7 +645,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerQuestion,
+					state:            waitingForHumanQuestion,
 					currentTurnIndex: 2,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -679,7 +679,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				lastQuestionTargetBotId := "bot_id1"
 
 				return &GameUpdate{
-					State:                   GameState("WAITING_FOR_BOT_ANSWER"),
+					State:                   GameState("WAITING_FOR_AI_ANSWER"),
 					CurrentTurnIndex:        nil,
 					StateHandled:            &stateHandled,
 					LastQuestion:            &lastQuestion,
@@ -690,7 +690,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "returns the game update for the incoming message given a game in waitingForPlayerAnswer",
+			name: "returns the game update for the incoming message given a game in waitingForHumanAnswer",
 			input: struct {
 				game        *Game
 				sourceBotId string
@@ -698,7 +698,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -733,7 +733,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				stateHandled := false
 
 				return &GameUpdate{
-					State:                   GameState("WAITING_FOR_PLAYER_QUESTION"),
+					State:                   GameState("WAITING_FOR_HUMAN_QUESTION"),
 					CurrentTurnIndex:        &currentTurnIndex,
 					StateHandled:            &stateHandled,
 					LastQuestion:            nil,
@@ -744,7 +744,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 			errorString:   "",
 		},
 		{
-			name: "returns the game update for the incoming message given a game in waitingForPlayerAnswer and the next turn is AI",
+			name: "returns the game update for the incoming message given a game in waitingForHumanAnswer and the next turn is AI",
 			input: struct {
 				game        *Game
 				sourceBotId string
@@ -752,7 +752,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 0,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -787,7 +787,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				stateHandled := false
 
 				return &GameUpdate{
-					State:                   GameState("WAITING_FOR_BOT_QUESTION"),
+					State:                   GameState("WAITING_FOR_AI_QUESTION"),
 					CurrentTurnIndex:        &currentTurnIndex,
 					StateHandled:            &stateHandled,
 					LastQuestion:            nil,
@@ -806,7 +806,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -849,7 +849,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -892,7 +892,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -935,7 +935,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1021,7 +1021,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForBotQuestion,
+					state:            waitingForAiQuestion,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1064,7 +1064,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1107,7 +1107,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForBotAnswer,
+					state:            waitingForAiAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1150,7 +1150,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerQuestion,
+					state:            waitingForHumanQuestion,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1194,7 +1194,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForPlayerAnswer,
+					state:            waitingForHumanAnswer,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1237,7 +1237,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 				text        string
 			}{
 				game: &Game{
-					state:            waitingForBotQuestion,
+					state:            waitingForAiQuestion,
 					currentTurnIndex: 1,
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 					bots: []*Bot{
@@ -1350,7 +1350,7 @@ func Test_IsInStatePlayersJoined(t *testing.T) {
 	}
 }
 
-func Test_IsInStateWaitingForBotQuestion(t *testing.T) {
+func Test_IsInStateWaitingForAiQuestion(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1359,7 +1359,7 @@ func Test_IsInStateWaitingForBotQuestion(t *testing.T) {
 		{
 			name: "returns true",
 			input: &Game{
-				state:        waitingForBotQuestion,
+				state:        waitingForAiQuestion,
 				stateHandled: true,
 			},
 			expectedOutput: true,
@@ -1376,13 +1376,13 @@ func Test_IsInStateWaitingForBotQuestion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := tt.input.IsInStateWaitingForBotQuestion()
+			result := tt.input.IsInStateWaitingForAiQuestion()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
 }
 
-func Test_IsInStateWaitingForBotAnswer(t *testing.T) {
+func Test_IsInStateWaitingForAiAnswer(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1391,7 +1391,7 @@ func Test_IsInStateWaitingForBotAnswer(t *testing.T) {
 		{
 			name: "returns true",
 			input: &Game{
-				state:        waitingForBotAnswer,
+				state:        waitingForAiAnswer,
 				stateHandled: true,
 			},
 			expectedOutput: true,
@@ -1408,7 +1408,7 @@ func Test_IsInStateWaitingForBotAnswer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := tt.input.IsInStateWaitingForBotAnswer()
+			result := tt.input.IsInStateWaitingForAiAnswer()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
@@ -1476,7 +1476,7 @@ func Test_RecentlyUpdated(t *testing.T) {
 		{
 			name: "returns true",
 			input: &Game{
-				state:        waitingForBotAnswer,
+				state:        waitingForAiAnswer,
 				stateHandled: true,
 				updatedAt:    timeNow,
 			},
@@ -1732,7 +1732,7 @@ func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 		{
 			name: "returns bot with current turn when waiting for bot to ask question",
 			input: &Game{
-				state:            waitingForBotQuestion,
+				state:            waitingForAiQuestion,
 				currentTurnIndex: 1,
 				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 				bots: []*Bot{
@@ -1765,7 +1765,7 @@ func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 		{
 			name: "returns bot with lastQuestionTargetBotId when waiting for bot to answer question",
 			input: &Game{
-				state:                   waitingForBotAnswer,
+				state:                   waitingForAiAnswer,
 				currentTurnIndex:        1,
 				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3"},
 				lastQuestionTargetBotId: "bot_id1",
@@ -1799,7 +1799,7 @@ func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 		{
 			name: "returns bot with current turn when waiting for human to ask question",
 			input: &Game{
-				state:            waitingForPlayerQuestion,
+				state:            waitingForHumanQuestion,
 				currentTurnIndex: 2,
 				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 				bots: []*Bot{
@@ -1835,7 +1835,7 @@ func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 		{
 			name: "returns bot with lastQuestionTargetBotId when waiting for huma to answer question",
 			input: &Game{
-				state:                   waitingForPlayerAnswer,
+				state:                   waitingForHumanAnswer,
 				currentTurnIndex:        1,
 				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3"},
 				lastQuestionTargetBotId: "bot_id3",

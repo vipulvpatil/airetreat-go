@@ -23,24 +23,24 @@ func Test_GameState(t *testing.T) {
 			expectedOutput: playersJoined,
 		},
 		{
-			name:           "creates WAITING_FOR_BOT_QUESTION account type",
-			input:          "WAITING_FOR_BOT_QUESTION",
-			expectedOutput: waitingForBotQuestion,
+			name:           "creates WAITING_FOR_AI_QUESTION account type",
+			input:          "WAITING_FOR_AI_QUESTION",
+			expectedOutput: waitingForAiQuestion,
 		},
 		{
-			name:           "creates WAITING_FOR_BOT_ANSWER account type",
-			input:          "WAITING_FOR_BOT_ANSWER",
-			expectedOutput: waitingForBotAnswer,
+			name:           "creates WAITING_FOR_AI_ANSWER account type",
+			input:          "WAITING_FOR_AI_ANSWER",
+			expectedOutput: waitingForAiAnswer,
 		},
 		{
-			name:           "creates WAITING_FOR_PLAYER_QUESTION account type",
-			input:          "WAITING_FOR_PLAYER_QUESTION",
-			expectedOutput: waitingForPlayerQuestion,
+			name:           "creates WAITING_FOR_HUMAN_QUESTION account type",
+			input:          "WAITING_FOR_HUMAN_QUESTION",
+			expectedOutput: waitingForHumanQuestion,
 		},
 		{
-			name:           "creates WAITING_FOR_PLAYER_ANSWER account type",
-			input:          "WAITING_FOR_PLAYER_ANSWER",
-			expectedOutput: waitingForPlayerAnswer,
+			name:           "creates WAITING_FOR_HUMAN_ANSWER account type",
+			input:          "WAITING_FOR_HUMAN_ANSWER",
+			expectedOutput: waitingForHumanAnswer,
 		},
 		{
 			name:           "creates FINISHED account type",
@@ -79,24 +79,24 @@ func Test_GameState_String(t *testing.T) {
 			expectedOutput: "PLAYERS_JOINED",
 		},
 		{
-			name:           "gets WAITING_FOR_BOT_QUESTION from waitingForBotQuestion game state",
-			input:          waitingForBotQuestion,
-			expectedOutput: "WAITING_FOR_BOT_QUESTION",
+			name:           "gets WAITING_FOR_AI_QUESTION from waitingForAiQuestion game state",
+			input:          waitingForAiQuestion,
+			expectedOutput: "WAITING_FOR_AI_QUESTION",
 		},
 		{
-			name:           "gets WAITING_FOR_BOT_ANSWER from waitingForBotAnswer game state",
-			input:          waitingForBotAnswer,
-			expectedOutput: "WAITING_FOR_BOT_ANSWER",
+			name:           "gets WAITING_FOR_AI_ANSWER from waitingForAiAnswer game state",
+			input:          waitingForAiAnswer,
+			expectedOutput: "WAITING_FOR_AI_ANSWER",
 		},
 		{
-			name:           "gets WAITING_FOR_PLAYER_QUESTION from waitingForPlayerQuestion game state",
-			input:          waitingForPlayerQuestion,
-			expectedOutput: "WAITING_FOR_PLAYER_QUESTION",
+			name:           "gets WAITING_FOR_HUMAN_QUESTION from waitingForHumanQuestion game state",
+			input:          waitingForHumanQuestion,
+			expectedOutput: "WAITING_FOR_HUMAN_QUESTION",
 		},
 		{
-			name:           "gets WAITING_FOR_PLAYER_ANSWER from waitingForPlayerAnswer game state",
-			input:          waitingForPlayerAnswer,
-			expectedOutput: "WAITING_FOR_PLAYER_ANSWER",
+			name:           "gets WAITING_FOR_HUMAN_ANSWER from waitingForHumanAnswer game state",
+			input:          waitingForHumanAnswer,
+			expectedOutput: "WAITING_FOR_HUMAN_ANSWER",
 		},
 		{
 			name:           "gets FINISHED from finished game state",
@@ -129,75 +129,75 @@ func Test_GameState_Valid(t *testing.T) {
 }
 
 func Test_GameState_isWaitingForAi(t *testing.T) {
-	t.Run("returns true for a waitingForBotQuestion", func(t *testing.T) {
-		assert.True(t, waitingForBotQuestion.isWaitingForAi())
+	t.Run("returns true for a waitingForAiQuestion", func(t *testing.T) {
+		assert.True(t, waitingForAiQuestion.isWaitingForAi())
 	})
 
-	t.Run("returns true for a waitingForBotAnswer", func(t *testing.T) {
-		assert.True(t, waitingForBotAnswer.isWaitingForAi())
+	t.Run("returns true for a waitingForAiAnswer", func(t *testing.T) {
+		assert.True(t, waitingForAiAnswer.isWaitingForAi())
 	})
 
 	t.Run("returns false for other states", func(t *testing.T) {
-		assert.False(t, waitingForPlayerQuestion.isWaitingForAi())
+		assert.False(t, waitingForHumanQuestion.isWaitingForAi())
 	})
 }
 
 func Test_GameState_isWaitingForHuman(t *testing.T) {
-	t.Run("returns true for a waitingForPlayerQuestion", func(t *testing.T) {
-		assert.True(t, waitingForPlayerQuestion.isWaitingForHuman())
+	t.Run("returns true for a waitingForHumanQuestion", func(t *testing.T) {
+		assert.True(t, waitingForHumanQuestion.isWaitingForHuman())
 	})
 
-	t.Run("returns true for a waitingForPlayerAnswer", func(t *testing.T) {
-		assert.True(t, waitingForPlayerAnswer.isWaitingForHuman())
+	t.Run("returns true for a waitingForHumanAnswer", func(t *testing.T) {
+		assert.True(t, waitingForHumanAnswer.isWaitingForHuman())
 	})
 
 	t.Run("returns false for other states", func(t *testing.T) {
-		assert.False(t, waitingForBotQuestion.isWaitingForHuman())
+		assert.False(t, waitingForAiQuestion.isWaitingForHuman())
 	})
 }
 
 func Test_GameState_isQuestion(t *testing.T) {
-	t.Run("returns true for a waitingForBotQuestion", func(t *testing.T) {
-		assert.True(t, waitingForBotQuestion.isQuestion())
+	t.Run("returns true for a waitingForAiQuestion", func(t *testing.T) {
+		assert.True(t, waitingForAiQuestion.isQuestion())
 	})
 
-	t.Run("returns true for a waitingForPlayerQuestion", func(t *testing.T) {
-		assert.True(t, waitingForPlayerQuestion.isQuestion())
+	t.Run("returns true for a waitingForHumanQuestion", func(t *testing.T) {
+		assert.True(t, waitingForHumanQuestion.isQuestion())
 	})
 
 	t.Run("returns false for other states", func(t *testing.T) {
-		assert.False(t, waitingForBotAnswer.isQuestion())
+		assert.False(t, waitingForAiAnswer.isQuestion())
 	})
 }
 func Test_GameState_isAnswer(t *testing.T) {
-	t.Run("returns true for a waitingForBotAnswer", func(t *testing.T) {
-		assert.True(t, waitingForBotAnswer.isAnswer())
+	t.Run("returns true for a waitingForAiAnswer", func(t *testing.T) {
+		assert.True(t, waitingForAiAnswer.isAnswer())
 	})
 
-	t.Run("returns true for a waitingForPlayerAnswer", func(t *testing.T) {
-		assert.True(t, waitingForPlayerAnswer.isAnswer())
+	t.Run("returns true for a waitingForHumanAnswer", func(t *testing.T) {
+		assert.True(t, waitingForHumanAnswer.isAnswer())
 	})
 
 	t.Run("returns false for other states", func(t *testing.T) {
-		assert.False(t, waitingForBotQuestion.isAnswer())
+		assert.False(t, waitingForAiQuestion.isAnswer())
 	})
 }
 
 func Test_GameState_isWaitingForMessage(t *testing.T) {
-	t.Run("returns true for a waitingForBotQuestion", func(t *testing.T) {
-		assert.True(t, waitingForBotQuestion.isWaitingForMessage())
+	t.Run("returns true for a waitingForAiQuestion", func(t *testing.T) {
+		assert.True(t, waitingForAiQuestion.isWaitingForMessage())
 	})
 
-	t.Run("returns true for a waitingForPlayerQuestion", func(t *testing.T) {
-		assert.True(t, waitingForPlayerQuestion.isWaitingForMessage())
+	t.Run("returns true for a waitingForHumanQuestion", func(t *testing.T) {
+		assert.True(t, waitingForHumanQuestion.isWaitingForMessage())
 	})
 
-	t.Run("returns true for a waitingForBotAnswer", func(t *testing.T) {
-		assert.True(t, waitingForBotAnswer.isWaitingForMessage())
+	t.Run("returns true for a waitingForAiAnswer", func(t *testing.T) {
+		assert.True(t, waitingForAiAnswer.isWaitingForMessage())
 	})
 
-	t.Run("returns true for a waitingForPlayerAnswer", func(t *testing.T) {
-		assert.True(t, waitingForPlayerAnswer.isWaitingForMessage())
+	t.Run("returns true for a waitingForHumanAnswer", func(t *testing.T) {
+		assert.True(t, waitingForHumanAnswer.isWaitingForMessage())
 	})
 
 	t.Run("returns false for other states", func(t *testing.T) {

@@ -26,7 +26,7 @@ func Test_SendMessage(t *testing.T) {
 		errorString        string
 	}{
 		{
-			name: "test runs successfully for a game waiting for player question",
+			name: "test runs successfully for a game waiting for human question",
 			input: &pb.SendMessageRequest{
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
@@ -57,7 +57,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:               "game_id1",
-							State:            "WAITING_FOR_PLAYER_QUESTION",
+							State:            "WAITING_FOR_HUMAN_QUESTION",
 							CurrentTurnIndex: 0,
 							TurnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:     false,
@@ -70,7 +70,7 @@ func Test_SendMessage(t *testing.T) {
 					return game, nil
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_ANSWER"
+					expectedState := "WAITING_FOR_AI_ANSWER"
 					expectedStateHandled := false
 					expectedLastQuestion := "question message"
 					expectedLastQuestionTargetBotId := "bot_id2"
@@ -89,7 +89,7 @@ func Test_SendMessage(t *testing.T) {
 			errorString:    "",
 		},
 		{
-			name: "test runs successfully for a game waiting for player answer",
+			name: "test runs successfully for a game waiting for human answer",
 			input: &pb.SendMessageRequest{
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
@@ -120,7 +120,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -135,7 +135,7 @@ func Test_SendMessage(t *testing.T) {
 					return game, nil
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_QUESTION"
+					expectedState := "WAITING_FOR_AI_QUESTION"
 					expectedStateHandled := false
 					expectedCurrentTurnIndex := int64(3)
 
@@ -214,7 +214,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -265,7 +265,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_BOT_ANSWER",
+							State:                   "WAITING_FOR_AI_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -316,7 +316,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -370,7 +370,7 @@ func Test_SendMessage(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:                      "game_id1",
-							State:                   "WAITING_FOR_PLAYER_ANSWER",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
 							CurrentTurnIndex:        2,
 							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:            false,
@@ -385,7 +385,7 @@ func Test_SendMessage(t *testing.T) {
 					return game, nil
 				},
 				UpdateGameStateUsingTransactionInternal: func(gameId string, updateOpts storage.GameUpdateOptions, transaction storage.DatabaseTransaction) error {
-					expectedState := "WAITING_FOR_BOT_QUESTION"
+					expectedState := "WAITING_FOR_AI_QUESTION"
 					expectedStateHandled := false
 					expectedCurrentTurnIndex := int64(3)
 

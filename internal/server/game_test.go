@@ -470,7 +470,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 	game, _ := model.NewGame(
 		model.GameOptions{
 			Id:               "game_id1",
-			State:            "WAITING_FOR_PLAYER_QUESTION",
+			State:            "WAITING_FOR_HUMAN_QUESTION",
 			CurrentTurnIndex: 1,
 			TurnOrder:        []string{"bot_id4", "bot_id5", "bot_id3", "bot_id2"},
 			StateHandled:     false,

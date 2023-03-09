@@ -84,22 +84,22 @@ func Test_GameViewState_String(t *testing.T) {
 			expectedOutput: "WAITING_ON_BOT_TO_ASK_A_QUESTION",
 		},
 		{
-			name:           "gets WAITING_ON_BOT_TO_ANSWER from waitingForBotQuestion game state",
+			name:           "gets WAITING_ON_BOT_TO_ANSWER from waitingForAiQuestion game state",
 			input:          waitingOnBotToAnswer,
 			expectedOutput: "WAITING_ON_BOT_TO_ANSWER",
 		},
 		{
-			name:           "gets WAITING_ON_YOU_TO_ASK_A_QUESTION from waitingForBotAnswer game state",
+			name:           "gets WAITING_ON_YOU_TO_ASK_A_QUESTION from waitingForAiAnswer game state",
 			input:          waitingOnYouToAskAQuestion,
 			expectedOutput: "WAITING_ON_YOU_TO_ASK_A_QUESTION",
 		},
 		{
-			name:           "gets WAITING_ON_YOU_TO_ANSWER from waitingForPlayerQuestion game state",
+			name:           "gets WAITING_ON_YOU_TO_ANSWER from waitingForHumanQuestion game state",
 			input:          waitingOnYouToAnswer,
 			expectedOutput: "WAITING_ON_YOU_TO_ANSWER",
 		},
 		{
-			name:           "gets YOU_LOST from waitingForPlayerAnswer game state",
+			name:           "gets YOU_LOST from waitingForHumanAnswer game state",
 			input:          youLost,
 			expectedOutput: "YOU_LOST",
 		},

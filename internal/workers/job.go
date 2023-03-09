@@ -35,9 +35,9 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 	var newGameState string
 
 	if firstTurnBot.IsAi() {
-		newGameState = "WAITING_FOR_BOT_QUESTION"
+		newGameState = "WAITING_FOR_AI_QUESTION"
 	} else if firstTurnBot.IsHuman() {
-		newGameState = "WAITING_FOR_PLAYER_QUESTION"
+		newGameState = "WAITING_FOR_HUMAN_QUESTION"
 	}
 
 	startTurnIndex := int64(0)
@@ -73,8 +73,8 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return errors.Errorf("game has already been handled: %s", gameId)
 	}
 
-	if !game.IsInStateWaitingForBotQuestion() {
-		return errors.Errorf("game should be in WaitingForBotQuestion state: %s", gameId)
+	if !game.IsInStateWaitingForAiQuestion() {
+		return errors.Errorf("game should be in WaitingForAiQuestion state: %s", gameId)
 	}
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()
@@ -135,8 +135,8 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 		return errors.Errorf("game has already been handled: %s", gameId)
 	}
 
-	if !game.IsInStateWaitingForBotAnswer() {
-		return errors.Errorf("game should be in WaitingForBotAnswer state: %s", gameId)
+	if !game.IsInStateWaitingForAiAnswer() {
+		return errors.Errorf("game should be in WaitingForAiAnswer state: %s", gameId)
 	}
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()

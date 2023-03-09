@@ -61,18 +61,18 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 	switch g.state {
 	case started, playersJoined:
 		return waitingForPlayersToJoin, "Please wait as players join in"
-	case waitingForBotQuestion:
+	case waitingForAiQuestion:
 		return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
-	case waitingForBotAnswer:
+	case waitingForAiAnswer:
 		return waitingOnBotToAnswer,
 			fmt.Sprintf("Please wait as %s is answering the question", waitingOnBot.name)
-	case waitingForPlayerQuestion:
+	case waitingForHumanQuestion:
 		if g.getCurrentTurnBotId() == myBotId {
 			return waitingOnYouToAskAQuestion, "Please type a question. OR Click suggest for help!"
 		} else {
 			return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
 		}
-	case waitingForPlayerAnswer:
+	case waitingForHumanAnswer:
 		if g.lastQuestionTargetBotId == myBotId {
 			return waitingOnYouToAnswer, "Please answer the question. OR Click suggest for help!"
 		} else {

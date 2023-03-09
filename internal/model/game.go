@@ -151,11 +151,11 @@ func (game *Game) IsInStatePlayersJoined() bool {
 	return game.state == playersJoined
 }
 
-func (game *Game) IsInStateWaitingForBotQuestion() bool {
+func (game *Game) IsInStateWaitingForAiQuestion() bool {
 	return game.state.isQuestion() && game.state.isWaitingForAi()
 }
 
-func (game *Game) IsInStateWaitingForBotAnswer() bool {
+func (game *Game) IsInStateWaitingForAiAnswer() bool {
 	return game.state.isAnswer() && game.state.isWaitingForAi()
 }
 
@@ -249,15 +249,15 @@ func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBo
 func getNewStateForNextBot(currentState gameState, nextBot *Bot) gameState {
 	if currentState.isQuestion() {
 		if nextBot.IsAi() {
-			return waitingForBotAnswer
+			return waitingForAiAnswer
 		} else if nextBot.IsHuman() {
-			return waitingForPlayerAnswer
+			return waitingForHumanAnswer
 		}
 	} else if currentState.isAnswer() {
 		if nextBot.IsAi() {
-			return waitingForBotQuestion
+			return waitingForAiQuestion
 		} else if nextBot.IsHuman() {
-			return waitingForPlayerQuestion
+			return waitingForHumanQuestion
 		}
 	}
 	return undefinedGameState
