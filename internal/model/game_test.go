@@ -1500,3 +1500,225 @@ func Test_RecentlyUpdated(t *testing.T) {
 		})
 	}
 }
+
+func Test_Get(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput *Bot
+		errorExpected  bool
+		errorString    string
+	}{
+		{
+			name: "errors if game has no bots",
+			input: &Game{
+				state:            started,
+				turnOrder:        []string{"bot_id1"},
+				currentTurnIndex: 0,
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot get random bot from an empty list",
+		},
+		{
+			name: "errors if only one bot",
+			input: &Game{
+				state:            started,
+				turnOrder:        []string{"bot_id1"},
+				currentTurnIndex: 0,
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+				},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot get random bot from an empty list",
+		},
+		{
+			name: "returns random bot with least messages",
+			input: &Game{
+				state:            started,
+				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				currentTurnIndex: 2,
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+							"question 3",
+							"answer 3",
+						},
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+							"question 3",
+							"answer 3",
+							"question 4",
+							"answer 4",
+							"question 5",
+							"answer 5",
+						},
+					},
+					{
+						id:        "bot_id4",
+						name:      "bot4",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+					{
+						id:        "bot_id5",
+						name:      "bot5",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id4",
+				name:      "bot4",
+				typeOfBot: ai,
+				messages: []string{
+					"question 1",
+					"answer 1",
+					"question 2",
+					"answer 2",
+				},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns random bot with least messages excluding current turn bot",
+			input: &Game{
+				state:            started,
+				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				currentTurnIndex: 1,
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+						},
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+					{
+						id:        "bot_id4",
+						name:      "bot4",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+						},
+					},
+					{
+						id:        "bot_id5",
+						name:      "bot5",
+						typeOfBot: ai,
+						messages: []string{
+							"question 1",
+							"answer 1",
+							"question 2",
+							"answer 2",
+							"question 3",
+							"answer 3",
+							"question 4",
+							"answer 4",
+							"question 5",
+							"answer 5",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id3",
+				name:      "bot3",
+				typeOfBot: ai,
+				messages: []string{
+					"question 1",
+					"answer 1",
+					"question 2",
+					"answer 2",
+				},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(0)
+			result, err := tt.input.GetTargetBotForNextQuestion()
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedOutput, result)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}

@@ -98,7 +98,7 @@ func (game *Game) GetOneRandomAiBot() (*Bot, error) {
 
 func getRandomBot(bots []*Bot) (*Bot, error) {
 	if len(bots) == 0 {
-		return nil, errors.Errorf("Cannot get random bot from an empty list")
+		return nil, errors.Errorf("cannot get random bot from an empty list")
 	}
 
 	rand.Shuffle(len(bots), func(i, j int) {
@@ -288,4 +288,43 @@ func (game *Game) expectedSourceBotIdForWaitingMessage() (string, error) {
 	}
 
 	return "", utilities.NewBadError("game in an unexpected state")
+}
+
+func (game *Game) GetTargetBotForNextQuestion() (*Bot, error) {
+	possibleTargetBotsForNextQuestion := []*Bot{}
+	currentTurnBotId := game.getCurrentTurnBotId()
+	for _, bot := range game.bots {
+		if currentTurnBotId != bot.id {
+			possibleTargetBotsForNextQuestion = append(possibleTargetBotsForNextQuestion, bot)
+		}
+	}
+
+	botsWithLeastNumberOfMessages := getBotsWithLeastNumberOfMessages(possibleTargetBotsForNextQuestion)
+	randomBotWithLeastNumberOfMessages, err := getRandomBot(botsWithLeastNumberOfMessages)
+	if err != nil {
+		return nil, err
+	}
+
+	return randomBotWithLeastNumberOfMessages, nil
+}
+
+func getBotsWithLeastNumberOfMessages(bots []*Bot) []*Bot {
+	if len(bots) == 0 {
+		return bots
+	}
+	leastNumberOfMessages := len(bots[0].messages)
+	for _, bot := range bots {
+		if len(bot.messages) < leastNumberOfMessages {
+			leastNumberOfMessages = len(bot.messages)
+		}
+	}
+
+	botsWithLeastNumberOfMessages := []*Bot{}
+	for _, bot := range bots {
+		if len(bot.messages) == leastNumberOfMessages {
+			botsWithLeastNumberOfMessages = append(botsWithLeastNumberOfMessages, bot)
+		}
+	}
+
+	return botsWithLeastNumberOfMessages
 }
