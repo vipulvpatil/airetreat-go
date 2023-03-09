@@ -22,5 +22,5 @@ func (m *MessageCreatorMockFailure) CreateMessage(botId, text string) error {
 }
 
 func (m *MessageCreatorMockFailure) CreateMessageUsingTransaction(botId, text string, transation DatabaseTransaction) error {
-	return nil
+	return errors.New("unable to create message")
 }
