@@ -77,7 +77,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return errors.Errorf("game should be in WaitingForBotQuestion state: %s", gameId)
 	}
 
-	sourceBot := game.GetCurrentTurnBot()
+	sourceBot := game.GetBotThatGameIsWaitingOn()
 	targetBot, err := game.GetTargetBotForNextQuestion()
 	if err != nil {
 		return err
@@ -114,12 +114,60 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 }
 
 func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
-	// WAITING_FOR_BOT_ANSWER
-	// verify state
-	// get answer from AI
-	// update state. and
-	// set handled, if next turn is HUMAN
-	// set unhandled, if next turn is AI
+	gameId := job.ArgString("gameId")
+
+	if utilities.IsBlank(gameId) {
+		return errors.New("gameId is required")
+	}
+
+	tx, err := workerStorage.BeginTransaction()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	game, err := workerStorage.GetGameUsingTransaction(gameId, tx)
+	if err != nil {
+		return err
+	}
+
+	if game.StateHasBeenHandled() {
+		return errors.Errorf("game has already been handled: %s", gameId)
+	}
+
+	if !game.IsInStateWaitingForBotAnswer() {
+		return errors.Errorf("game should be in WaitingForBotAnswer state: %s", gameId)
+	}
+
+	sourceBot := game.GetBotThatGameIsWaitingOn()
+
+	// TODO: Get question from OpenAiClient
+	answer := "Some answer from AI"
+	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), sourceBot.Id(), answer)
+	if err != nil {
+		return err
+	}
+
+	newGameState := gameUpdate.State.String()
+	updateOptions := storage.GameUpdateOptions{
+		State:                   &newGameState,
+		CurrentTurnIndex:        gameUpdate.CurrentTurnIndex,
+		StateHandled:            gameUpdate.StateHandled,
+		LastQuestion:            gameUpdate.LastQuestion,
+		LastQuestionTargetBotId: gameUpdate.LastQuestionTargetBotId,
+	}
+
+	err = workerStorage.UpdateGameStateUsingTransaction(gameId, updateOptions, tx)
+	if err != nil {
+		return err
+	}
+
+	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), answer, tx)
+	if err != nil {
+		return err
+	}
+
+	tx.Commit()
 	return nil
 }
 
