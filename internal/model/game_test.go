@@ -3,6 +3,7 @@ package model
 import (
 	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -515,10 +516,6 @@ func Test_BotWithPlayerId(t *testing.T) {
 	}
 }
 
-//	 waitingForBotQuestion
-//		waitingForBotAnswer
-//		waitingForPlayerQuestion
-//		waitingForPlayerAnswer
 func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -1289,7 +1286,7 @@ func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
 	}
 }
 
-func Test_Game_StateHasBeenHandled(t *testing.T) {
+func Test_StateHasBeenHandled(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1321,7 +1318,7 @@ func Test_Game_StateHasBeenHandled(t *testing.T) {
 	}
 }
 
-func Test_Game_IsInStatePlayersJoined(t *testing.T) {
+func Test_IsInStatePlayersJoined(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1353,7 +1350,71 @@ func Test_Game_IsInStatePlayersJoined(t *testing.T) {
 	}
 }
 
-func Test_Game_RandomizedTurnOrder(t *testing.T) {
+func Test_IsInStateWaitingForBotQuestion(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        waitingForBotQuestion,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsInStateWaitingForBotQuestion()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_IsInStateWaitingForBotAnswer(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        waitingForBotAnswer,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsInStateWaitingForBotAnswer()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_RandomizedTurnOrder(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1399,6 +1460,42 @@ func Test_Game_RandomizedTurnOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rand.Seed(0)
 			result := tt.input.RandomizedTurnOrder()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_RecentlyUpdated(t *testing.T) {
+	timeNow := time.Now()
+	timeOld := time.Now().Add(-5 * time.Hour)
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        waitingForBotAnswer,
+				stateHandled: true,
+				updatedAt:    timeNow,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+				updatedAt:    timeOld,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.RecentlyUpdated()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}

@@ -162,6 +162,14 @@ func (game *Game) IsInStatePlayersJoined() bool {
 	return game.state == playersJoined
 }
 
+func (game *Game) IsInStateWaitingForBotQuestion() bool {
+	return game.state.isQuestion() && game.state.isWaitingForAi()
+}
+
+func (game *Game) IsInStateWaitingForBotAnswer() bool {
+	return game.state.isAnswer() && game.state.isWaitingForAi()
+}
+
 func (game *Game) RandomizedTurnOrder() []string {
 	botIds := []string{}
 	for _, bot := range game.bots {
