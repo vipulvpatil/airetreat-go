@@ -1723,16 +1723,16 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 	}
 }
 
-func Test_GetCurrentTurnBot(t *testing.T) {
+func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
 		expectedOutput *Bot
 	}{
 		{
-			name: "returns bot for current turn",
+			name: "returns bot with current turn when waiting for bot to ask question",
 			input: &Game{
-				state:            started,
+				state:            waitingForBotQuestion,
 				currentTurnIndex: 1,
 				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
 				bots: []*Bot{
@@ -1762,11 +1762,148 @@ func Test_GetCurrentTurnBot(t *testing.T) {
 				typeOfBot: ai,
 			},
 		},
+		{
+			name: "returns bot with lastQuestionTargetBotId when waiting for bot to answer question",
+			input: &Game{
+				state:                   waitingForBotAnswer,
+				currentTurnIndex:        1,
+				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3"},
+				lastQuestionTargetBotId: "bot_id1",
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+						player: &Player{
+							id: "player_id1",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id1",
+				name:      "bot1",
+				typeOfBot: ai,
+			},
+		},
+		{
+			name: "returns bot with current turn when waiting for human to ask question",
+			input: &Game{
+				state:            waitingForPlayerQuestion,
+				currentTurnIndex: 2,
+				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+						player: &Player{
+							id: "player_id1",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id3",
+				name:      "bot3",
+				typeOfBot: human,
+				player: &Player{
+					id: "player_id1",
+				},
+			},
+		},
+		{
+			name: "returns bot with lastQuestionTargetBotId when waiting for huma to answer question",
+			input: &Game{
+				state:                   waitingForPlayerAnswer,
+				currentTurnIndex:        1,
+				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3"},
+				lastQuestionTargetBotId: "bot_id3",
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+						player: &Player{
+							id: "player_id1",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id3",
+				name:      "bot3",
+				typeOfBot: human,
+				player: &Player{
+					id: "player_id1",
+				},
+			},
+		},
+		{
+			name: "returns nil if game in unexpected state",
+			input: &Game{
+				state:                   playersJoined,
+				currentTurnIndex:        1,
+				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3"},
+				lastQuestionTargetBotId: "bot_id3",
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+						player: &Player{
+							id: "player_id1",
+						},
+					},
+				},
+			},
+			expectedOutput: nil,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := tt.input.GetCurrentTurnBot()
+			result := tt.input.GetBotThatGameIsWaitingOn()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}

@@ -57,7 +57,7 @@ func prepareBotViews(bots []*Bot) []BotView {
 }
 
 func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameViewState, string) {
-	waitingOnBot := g.getWaitingOnBot()
+	waitingOnBot := g.GetBotThatGameIsWaitingOn()
 	switch g.state {
 	case started, playersJoined:
 		return waitingForPlayersToJoin, "Please wait as players join in"

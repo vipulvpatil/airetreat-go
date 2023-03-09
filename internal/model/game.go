@@ -126,17 +126,6 @@ func (game *Game) BotWithPlayerId(playerId string) *Bot {
 	return nil
 }
 
-func (game *Game) getWaitingOnBot() *Bot {
-	switch game.state {
-	case waitingForBotQuestion, waitingForPlayerQuestion:
-		return game.GetCurrentTurnBot()
-	case waitingForBotAnswer, waitingForPlayerAnswer:
-		return game.BotWithId(game.lastQuestionTargetBotId)
-	default:
-		return nil
-	}
-}
-
 func (game *Game) getCurrentTurnBotId() string {
 	turnIndex := game.currentTurnIndex % int64(len(game.turnOrder))
 	return game.turnOrder[turnIndex]
@@ -329,6 +318,16 @@ func getBotsWithLeastNumberOfMessages(bots []*Bot) []*Bot {
 	return botsWithLeastNumberOfMessages
 }
 
-func (game *Game) GetCurrentTurnBot() *Bot {
+func (game *Game) getCurrentTurnBot() *Bot {
 	return game.BotWithId(game.getCurrentTurnBotId())
+}
+
+func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
+	if game.state.isQuestion() {
+		return game.getCurrentTurnBot()
+	}
+	if game.state.isAnswer() {
+		return game.BotWithId(game.lastQuestionTargetBotId)
+	}
+	return nil
 }
