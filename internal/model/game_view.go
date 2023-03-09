@@ -22,7 +22,7 @@ func (g *Game) GameViewForPlayer(playerId string) *GameView {
 		return nil
 	}
 
-	myBot := g.botWithPlayerId(playerId)
+	myBot := g.BotWithPlayerId(playerId)
 	if myBot == nil {
 		return nil
 	}

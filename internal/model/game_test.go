@@ -85,7 +85,7 @@ func Test_NewGame(t *testing.T) {
 	}
 }
 
-func Test_Game_HasJustStarted(t *testing.T) {
+func Test_HasJustStarted(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -111,7 +111,7 @@ func Test_Game_HasJustStarted(t *testing.T) {
 	}
 }
 
-func Test_Game_GetOneRandomAiBot(t *testing.T) {
+func Test_GetOneRandomAiBot(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -199,7 +199,7 @@ func Test_Game_GetOneRandomAiBot(t *testing.T) {
 	}
 }
 
-func Test_Game_BotWithId(t *testing.T) {
+func Test_BotWithId(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
@@ -284,7 +284,7 @@ func Test_Game_BotWithId(t *testing.T) {
 		})
 	}
 }
-func Test_Game_HasPlayer(t *testing.T) {
+func Test_HasPlayer(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
@@ -392,6 +392,899 @@ func Test_Game_HasPlayer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.game.HasPlayer(tt.input.playerId)
 			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_BotWithPlayerId(t *testing.T) {
+	tests := []struct {
+		name  string
+		input struct {
+			game     *Game
+			playerId string
+		}
+		expectedOutput *Bot
+	}{
+		{
+			name: "returns the corresponding bot connected to the player",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+				},
+				playerId: "player_id1",
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id3",
+				name:      "bot3",
+				typeOfBot: human,
+				player: &Player{
+					id: "player_id1",
+				},
+			},
+		},
+		{
+			name: "returns nil if game does not have player",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+						},
+					},
+				},
+				playerId: "player_id1",
+			},
+			expectedOutput: nil,
+		},
+		{
+			name: "returns nil if playerId is blank",
+			input: struct {
+				game     *Game
+				playerId string
+			}{
+				game: &Game{
+					state: started,
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+						},
+					},
+				},
+				playerId: "",
+			},
+			expectedOutput: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.game.BotWithPlayerId(tt.input.playerId)
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+//	 waitingForBotQuestion
+//		waitingForBotAnswer
+//		waitingForPlayerQuestion
+//		waitingForPlayerAnswer
+func Test_GetGameUpdateAfterIncomingMessage(t *testing.T) {
+	tests := []struct {
+		name  string
+		input struct {
+			game        *Game
+			sourceBotId string
+			targetBotId string
+			text        string
+		}
+		expectedOutput *GameUpdate
+		errorExpected  bool
+		errorString    string
+	}{
+		{
+			name: "returns the game update for the incoming message given a game in waitingForBotQuestion",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForBotQuestion,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+				},
+				sourceBotId: "bot_id2",
+				targetBotId: "bot_id3",
+				text:        "What is the answer?",
+			},
+			expectedOutput: func() *GameUpdate {
+				stateHandled := false
+				lastQuestion := "What is the answer?"
+				lastQuestionTargetBotId := "bot_id3"
+
+				return &GameUpdate{
+					State:                   GameState("WAITING_FOR_PLAYER_ANSWER"),
+					CurrentTurnIndex:        nil,
+					StateHandled:            &stateHandled,
+					LastQuestion:            &lastQuestion,
+					LastQuestionTargetBotId: &lastQuestionTargetBotId,
+				}
+			}(),
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns the game update for the incoming message given a game in waitingForBotAnswer",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForBotAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id2",
+				},
+				sourceBotId: "bot_id2",
+				targetBotId: "bot_id2",
+				text:        "This is the answer",
+			},
+			expectedOutput: func() *GameUpdate {
+				currentTurnIndex := int64(2)
+				stateHandled := false
+
+				return &GameUpdate{
+					State:                   GameState("WAITING_FOR_PLAYER_QUESTION"),
+					CurrentTurnIndex:        &currentTurnIndex,
+					StateHandled:            &stateHandled,
+					LastQuestion:            nil,
+					LastQuestionTargetBotId: nil,
+				}
+			}(),
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns the game update for the incoming message given a game in waitingForPlayerQuestion",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerQuestion,
+					currentTurnIndex: 2,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id1",
+				text:        "What is the next question?",
+			},
+			expectedOutput: func() *GameUpdate {
+				stateHandled := false
+				lastQuestion := "What is the next question?"
+				lastQuestionTargetBotId := "bot_id1"
+
+				return &GameUpdate{
+					State:                   GameState("WAITING_FOR_BOT_ANSWER"),
+					CurrentTurnIndex:        nil,
+					StateHandled:            &stateHandled,
+					LastQuestion:            &lastQuestion,
+					LastQuestionTargetBotId: &lastQuestionTargetBotId,
+				}
+			}(),
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns the game update for the incoming message given a game in waitingForPlayerAnswer",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id3",
+				text:        "This is the answer",
+			},
+			expectedOutput: func() *GameUpdate {
+				currentTurnIndex := int64(2)
+				stateHandled := false
+
+				return &GameUpdate{
+					State:                   GameState("WAITING_FOR_PLAYER_QUESTION"),
+					CurrentTurnIndex:        &currentTurnIndex,
+					StateHandled:            &stateHandled,
+					LastQuestion:            nil,
+					LastQuestionTargetBotId: nil,
+				}
+			}(),
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "returns the game update for the incoming message given a game in waitingForPlayerAnswer and the next turn is AI",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 0,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id3",
+				text:        "This is the answer",
+			},
+			expectedOutput: func() *GameUpdate {
+				currentTurnIndex := int64(1)
+				stateHandled := false
+
+				return &GameUpdate{
+					State:                   GameState("WAITING_FOR_BOT_QUESTION"),
+					CurrentTurnIndex:        &currentTurnIndex,
+					StateHandled:            &stateHandled,
+					LastQuestion:            nil,
+					LastQuestionTargetBotId: nil,
+				}
+			}(),
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "errors if sourceBotId is not in game",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id5",
+				targetBotId: "bot_id3",
+				text:        "This is the answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "invalid sourceBotId",
+		},
+		{
+			name: "errors if sourceBotId is blank",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "",
+				targetBotId: "bot_id3",
+				text:        "This is the answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "invalid sourceBotId",
+		},
+		{
+			name: "errors if targetBotId is not in game",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id5",
+				text:        "This is the answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "invalid targetBotId",
+		},
+		{
+			name: "errors if targetBotId is blank",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "",
+				text:        "This is the answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "invalid targetBotId",
+		},
+		{
+			name: "errors if game is not waiting for messages",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            playersJoined,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id3",
+				text:        "This is the answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "this game is not waiting for messages currently",
+		},
+		{
+			name: "errors if game source bot asking question does not match expected source bot",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForBotQuestion,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id1",
+				targetBotId: "bot_id3",
+				text:        "what?",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "incorrect sourceBotId",
+		},
+		{
+			name: "errors if game source bot answering question does not match expected source bot",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id1",
+				targetBotId: "bot_id3",
+				text:        "answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "incorrect sourceBotId",
+		},
+		{
+			name: "errors if game is in an unexpected state where game expects an AI bot but the bot is HUMAN",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForBotAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id3",
+				text:        "answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "expecting AI message but did not receive one",
+		},
+		{
+			name: "errors if game is in an unexpected state where game expects a HUMAN bot but the bot is AI",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerQuestion,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id2",
+				targetBotId: "bot_id2",
+				text:        "Another question?",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "expecting Human message but did not receive one",
+		},
+
+		{
+			name: "errors if answer has different source and target bot",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForPlayerAnswer,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id3",
+				targetBotId: "bot_id2",
+				text:        "answer",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "answering message should have same source and target bot",
+		},
+		{
+			name: "errors if question has same source and target bot",
+			input: struct {
+				game        *Game
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				game: &Game{
+					state:            waitingForBotQuestion,
+					currentTurnIndex: 1,
+					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+					bots: []*Bot{
+						{
+							id:        "bot_id1",
+							name:      "bot1",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id2",
+							name:      "bot2",
+							typeOfBot: ai,
+						},
+						{
+							id:        "bot_id3",
+							name:      "bot3",
+							typeOfBot: human,
+							player: &Player{
+								id: "player_id1",
+							},
+						},
+					},
+					lastQuestion:            "Is this a question?",
+					lastQuestionTargetBotId: "bot_id3",
+				},
+				sourceBotId: "bot_id2",
+				targetBotId: "bot_id2",
+				text:        "Another question?",
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "questioning message should have different source and target bot",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := tt.input.game.GetGameUpdateAfterIncomingMessage(tt.input.sourceBotId, tt.input.targetBotId, tt.input.text)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedOutput, result)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
 		})
 	}
 }

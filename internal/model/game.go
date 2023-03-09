@@ -117,7 +117,7 @@ func (game *Game) BotWithId(botId string) *Bot {
 	return nil
 }
 
-func (game *Game) botWithPlayerId(playerId string) *Bot {
+func (game *Game) BotWithPlayerId(playerId string) *Bot {
 	for _, bot := range game.bots {
 		if bot.player != nil && bot.player.id == playerId {
 			return bot
@@ -142,11 +142,16 @@ func (game *Game) getCurrentTurnBotId() string {
 	return game.turnOrder[turnIndex]
 }
 
+func (game *Game) getNextTurnBotId() string {
+	turnIndex := (game.currentTurnIndex + 1) % int64(len(game.turnOrder))
+	return game.turnOrder[turnIndex]
+}
+
 func (game *Game) HasPlayer(playerId string) bool {
 	if utilities.IsBlank(playerId) {
 		return false
 	}
-	return game.botWithPlayerId(playerId) != nil
+	return game.BotWithPlayerId(playerId) != nil
 }
 
 func (game *Game) StateHasBeenHandled() bool {
@@ -172,4 +177,107 @@ func (game *Game) RandomizedTurnOrder() []string {
 func (game *Game) RecentlyUpdated() bool {
 	recent := time.Now().Add(GAME_EXPIRY_DURATION)
 	return recent.Before(game.updatedAt)
+}
+
+type GameUpdate struct {
+	State                   gameState
+	CurrentTurnIndex        *int64
+	StateHandled            *bool
+	LastQuestion            *string
+	LastQuestionTargetBotId *string
+}
+
+func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBotId string, text string) (*GameUpdate, error) {
+	sourceBot := game.BotWithId(sourceBotId)
+	targetBot := game.BotWithId(targetBotId)
+
+	if sourceBot == nil {
+		return nil, errors.New("invalid sourceBotId")
+	}
+
+	if targetBot == nil {
+		return nil, errors.New("invalid targetBotId")
+	}
+
+	state := game.state
+	expectedSourceBotId, err := game.expectedSourceBotIdForWaitingMessage()
+	if err != nil {
+		return nil, err
+	}
+
+	if expectedSourceBotId != sourceBotId {
+		return nil, errors.New("incorrect sourceBotId")
+	}
+
+	if state.isWaitingForAi() && !sourceBot.IsAi() {
+		return nil, errors.New("expecting AI message but did not receive one")
+	}
+
+	if state.isWaitingForHuman() && !sourceBot.IsHuman() {
+		return nil, errors.New("expecting Human message but did not receive one")
+	}
+
+	update := GameUpdate{}
+	var nextBot *Bot
+
+	if state.isQuestion() {
+		if sourceBotId == targetBotId {
+			return nil, errors.New("questioning message should have different source and target bot")
+		}
+		nextBot = targetBot
+	} else if state.isAnswer() {
+		if sourceBotId != targetBotId {
+			return nil, errors.New("answering message should have same source and target bot")
+		}
+		nextBot = game.BotWithId(game.getNextTurnBotId())
+	}
+
+	update.State = getNewStateForNextBot(state, nextBot)
+
+	if update.State.isQuestion() {
+		nextIndex := game.currentTurnIndex + 1
+		update.CurrentTurnIndex = &nextIndex
+	} else if update.State.isAnswer() {
+		update.LastQuestion = &text
+		update.LastQuestionTargetBotId = &(nextBot.id)
+	}
+
+	// TODO: Wondering if we really need stateHandled on all the games.
+	stateHandled := false
+	update.StateHandled = &stateHandled
+
+	return &update, nil
+}
+
+func getNewStateForNextBot(currentState gameState, nextBot *Bot) gameState {
+	if currentState.isQuestion() {
+		if nextBot.IsAi() {
+			return waitingForBotAnswer
+		} else if nextBot.IsHuman() {
+			return waitingForPlayerAnswer
+		}
+	} else if currentState.isAnswer() {
+		if nextBot.IsAi() {
+			return waitingForBotQuestion
+		} else if nextBot.IsHuman() {
+			return waitingForPlayerQuestion
+		}
+	}
+	return undefinedGameState
+}
+
+func (game *Game) expectedSourceBotIdForWaitingMessage() (string, error) {
+	if !game.state.isWaitingForMessage() {
+		return "", errors.New("this game is not waiting for messages currently")
+	}
+
+	if game.state.isQuestion() {
+		return game.getCurrentTurnBotId(), nil
+	}
+
+	if game.state.isAnswer() {
+		return game.lastQuestionTargetBotId, nil
+	}
+
+	return "", utilities.NewBadError("game in an unexpected state")
 }
