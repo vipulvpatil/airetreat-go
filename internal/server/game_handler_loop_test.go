@@ -11,122 +11,153 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/workers"
 )
 
+func Test_GameHandlerLoop(t *testing.T) {
+	t.Run("looks for appropriate games and calls job starter, until canceled", func(t *testing.T) {
+		jobStarterMock := &workers.JobStarterMockCallCheck{}
+		tickerDuration := 10 * time.Millisecond
+		gamesAccessorGetUnhandledGameIdsMockCaller := GetUnhandledGameIdsMockCaller{
+			MapByInput: map[string]*functionCallInspectableMock{
+				"PLAYERS_JOINED": {
+					ReturnData:  [][]string{{"game_id1", "game_id2"}},
+					ReturnCount: 1,
+				},
+			},
+		}
+		gamesAccessorGetOldGamesMockCaller := GetOldGamesMockCaller{
+			&functionCallInspectableMock{
+				ReturnData:  [][]string{{"old_game_id1"}, {"old_game_id2"}},
+				ReturnCount: 2,
+			},
+		}
+
+		functionsToCheck := []struct {
+			name              string
+			functionCall      functionCallInspectable
+			expectedCallCount int
+		}{
+			{
+				name:              "GetUnhandledGameIds for state PLAYERS_JOINED, %s",
+				functionCall:      gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"],
+				expectedCallCount: 4,
+			},
+			{
+				name:              "GetOldGames, %s",
+				functionCall:      gamesAccessorGetOldGamesMockCaller,
+				expectedCallCount: 4,
+			},
+		}
+
+		jobStartedCallsToVerify := []struct {
+			jobName string
+			jobArgs []map[string]any
+		}{
+			{
+				jobName: workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED,
+				jobArgs: []map[string]any{
+					{"gameId": "game_id1"},
+					{"gameId": "game_id2"},
+				},
+			},
+			{
+				jobName: workers.DELETE_EXPIRED_GAMES,
+				jobArgs: []map[string]any{
+					{"gameId": "old_game_id1"},
+					{"gameId": "old_game_id2"},
+				},
+			},
+		}
+
+		server, _ := NewServer(
+			ServerDependencies{
+				Storage: storage.NewStorageAccessorMock(
+					storage.WithGameAccessorMock(
+						&storage.GameAccessorConfigurableMock{
+							GetUnhandledGameIdsForStateInternal: gamesAccessorGetUnhandledGameIdsMockCaller.getUnhandledGameIdsForStateInternal,
+							GetOldGamesInternal:                 gamesAccessorGetOldGamesMockCaller.getOldGames,
+						},
+					),
+				),
+			},
+		)
+
+		var wg sync.WaitGroup
+		gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
+		go server.GameHandlerLoop(gameHandlerLoopCtx, tickerDuration, &wg, jobStarterMock)
+		time.Sleep(45 * time.Millisecond)
+
+		for _, jobsStarted := range jobStartedCallsToVerify {
+			assertJobStarterCalledWithArgsForJob(
+				t,
+				jobsStarted.jobArgs,
+				jobStarterMock,
+				jobsStarted.jobName,
+			)
+		}
+
+		for _, f := range functionsToCheck {
+			assertCallCount(t, f.expectedCallCount, f.functionCall, f.name, "loop should run continuously until canceled")
+		}
+		cancelGameHandlerLoop()
+		time.Sleep(45 * time.Millisecond)
+		for _, f := range functionsToCheck {
+			assertCallCount(t, f.expectedCallCount, f.functionCall, f.name, "function call count should not change once loop is canceled")
+		}
+	})
+}
+
+type functionCallInspectable interface {
+	FunctionCalledCount() int
+}
+
+type functionCallInspectableMock struct {
+	ReturnData  [][]string
+	ReturnCount int
+	callCount   int
+}
+
+func (f *functionCallInspectableMock) FunctionCalledCount() int {
+	return f.callCount
+}
+
+func assertCallCount(t *testing.T, expectedCallCount int, functionCall functionCallInspectable, msgAndArgs ...any) bool {
+	return assert.Equal(t, expectedCallCount, functionCall.FunctionCalledCount(), msgAndArgs...)
+}
+
 type GetUnhandledGameIdsMockCaller struct {
-	MapByInput map[string]struct {
-		ReturnData  [][]string
-		CallCount   int
-		ReturnCount int
-	}
+	MapByInput map[string]*functionCallInspectableMock
 }
 
 func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(gameStateString string) ([]string, error) {
 	f, ok := m.MapByInput[gameStateString]
 	if !ok {
-		f = struct {
-			ReturnData  [][]string
-			CallCount   int
-			ReturnCount int
-		}{}
+		f = &functionCallInspectableMock{}
 	}
-	f.CallCount++
-	if f.ReturnCount >= f.CallCount {
+	f.callCount++
+	if f.ReturnCount >= f.callCount {
 		m.MapByInput[gameStateString] = f
-		return f.ReturnData[f.CallCount-1], nil
+		return f.ReturnData[f.callCount-1], nil
 	}
 	m.MapByInput[gameStateString] = f
 	return nil, nil
 }
 
 type GetOldGamesMockCaller struct {
-	ReturnData  [][]string
-	CallCount   int
-	ReturnCount int
+	*functionCallInspectableMock
 }
 
 func (m *GetOldGamesMockCaller) getOldGames(gameExpiryDuration time.Duration) ([]string, error) {
-	m.CallCount++
-	if m.ReturnCount >= m.CallCount {
-		return m.ReturnData[m.CallCount-1], nil
+	m.callCount++
+	if m.ReturnCount >= m.callCount {
+		return m.ReturnData[m.callCount-1], nil
 	}
 	return nil, nil
 }
 
-func Test_GameHandlerLoop(t *testing.T) {
-	tests := []struct {
-		name                                       string
-		jobStarterMock                             *workers.JobStarterMockCallCheck
-		gamesAccessorGetUnhandledGameIdsMockCaller GetUnhandledGameIdsMockCaller
-		gamesAccessorGetOldGamesMockCaller         GetOldGamesMockCaller
-		tickerDuration                             time.Duration
-	}{
-		{
-			name:           "looks for appropriate games and calls job starter, until canceled",
-			jobStarterMock: &workers.JobStarterMockCallCheck{},
-			gamesAccessorGetUnhandledGameIdsMockCaller: GetUnhandledGameIdsMockCaller{
-				MapByInput: map[string]struct {
-					ReturnData  [][]string
-					CallCount   int
-					ReturnCount int
-				}{
-					"PLAYERS_JOINED": {
-						ReturnData:  [][]string{{"game_id1", "game_id2"}},
-						CallCount:   0,
-						ReturnCount: 1,
-					},
-				},
-			},
-			gamesAccessorGetOldGamesMockCaller: GetOldGamesMockCaller{
-				ReturnData:  [][]string{{"old_game_id1"}, {"old_game_id2"}},
-				CallCount:   0,
-				ReturnCount: 2,
-			},
-			tickerDuration: 10 * time.Millisecond,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			server, _ := NewServer(
-				ServerDependencies{
-					Storage: storage.NewStorageAccessorMock(
-						storage.WithGameAccessorMock(
-							&storage.GameAccessorConfigurableMock{
-								GetUnhandledGameIdsForStateInternal: tt.gamesAccessorGetUnhandledGameIdsMockCaller.getUnhandledGameIdsForStateInternal,
-								GetOldGamesInternal:                 tt.gamesAccessorGetOldGamesMockCaller.getOldGames,
-							},
-						),
-					),
-				},
-			)
-
-			var wg sync.WaitGroup
-			gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
-			go server.GameHandlerLoop(gameHandlerLoopCtx, tt.tickerDuration, &wg, tt.jobStarterMock)
-			time.Sleep(45 * time.Millisecond)
-			assert.EqualValues(
-				t,
-				[]map[string]interface{}{
-					{"gameId": "game_id1"},
-					{"gameId": "game_id2"},
-				},
-				tt.jobStarterMock.CalledArgs[workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED],
-				"appropriate jobs should be started from the loop",
-			)
-			assert.EqualValues(
-				t,
-				[]map[string]interface{}{
-					{"gameId": "old_game_id1"},
-					{"gameId": "old_game_id2"},
-				},
-				tt.jobStarterMock.CalledArgs[workers.DELETE_EXPIRED_GAMES],
-				"appropriate jobs should be started from the loop",
-			)
-			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should run continuously until canceled")
-			assert.Equal(t, 4, tt.gamesAccessorGetOldGamesMockCaller.CallCount, "loop should run continuously until canceled")
-			cancelGameHandlerLoop()
-			time.Sleep(45 * time.Millisecond)
-			assert.Equal(t, 4, tt.gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["PLAYERS_JOINED"].CallCount, "loop should not run once canceled")
-			assert.Equal(t, 4, tt.gamesAccessorGetOldGamesMockCaller.CallCount, "loop should not run once canceled")
-		})
-	}
+func assertJobStarterCalledWithArgsForJob(t *testing.T, expectedCalledArgs []map[string]any, jobStarter *workers.JobStarterMockCallCheck, jobName string) bool {
+	return assert.EqualValues(
+		t,
+		expectedCalledArgs,
+		jobStarter.CalledArgs[jobName],
+		"appropriate jobs should be started from the loop",
+	)
 }
