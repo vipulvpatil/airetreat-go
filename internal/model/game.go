@@ -152,11 +152,11 @@ func (game *Game) IsInStatePlayersJoined() bool {
 }
 
 func (game *Game) IsInStateWaitingForAiQuestion() bool {
-	return game.state.isQuestion() && game.state.isWaitingForAi()
+	return game.state.isWaitingForAQuestion() && game.state.isWaitingOnAi()
 }
 
 func (game *Game) IsInStateWaitingForAiAnswer() bool {
-	return game.state.isAnswer() && game.state.isWaitingForAi()
+	return game.state.isWaitingForAnAnswer() && game.state.isWaitingOnAi()
 }
 
 func (game *Game) RandomizedTurnOrder() []string {
@@ -206,23 +206,23 @@ func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBo
 		return nil, errors.New("incorrect sourceBotId")
 	}
 
-	if state.isWaitingForAi() && !sourceBot.IsAi() {
+	if state.isWaitingOnAi() && !sourceBot.IsAi() {
 		return nil, errors.New("expecting AI message but did not receive one")
 	}
 
-	if state.isWaitingForHuman() && !sourceBot.IsHuman() {
+	if state.isWaitingOnHuman() && !sourceBot.IsHuman() {
 		return nil, errors.New("expecting Human message but did not receive one")
 	}
 
 	update := GameUpdate{}
 	var nextBot *Bot
 
-	if state.isQuestion() {
+	if state.isWaitingForAQuestion() {
 		if sourceBotId == targetBotId {
 			return nil, errors.New("questioning message should have different source and target bot")
 		}
 		nextBot = targetBot
-	} else if state.isAnswer() {
+	} else if state.isWaitingForAnAnswer() {
 		if sourceBotId != targetBotId {
 			return nil, errors.New("answering message should have same source and target bot")
 		}
@@ -231,10 +231,10 @@ func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBo
 
 	update.State = getNewStateForNextBot(state, nextBot)
 
-	if update.State.isQuestion() {
+	if update.State.isWaitingForAQuestion() {
 		nextIndex := game.currentTurnIndex + 1
 		update.CurrentTurnIndex = &nextIndex
-	} else if update.State.isAnswer() {
+	} else if update.State.isWaitingForAnAnswer() {
 		update.LastQuestion = &text
 		update.LastQuestionTargetBotId = &(nextBot.id)
 	}
@@ -247,13 +247,13 @@ func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBo
 }
 
 func getNewStateForNextBot(currentState gameState, nextBot *Bot) gameState {
-	if currentState.isQuestion() {
+	if currentState.isWaitingForAQuestion() {
 		if nextBot.IsAi() {
 			return waitingForAiAnswer
 		} else if nextBot.IsHuman() {
 			return waitingForHumanAnswer
 		}
-	} else if currentState.isAnswer() {
+	} else if currentState.isWaitingForAnAnswer() {
 		if nextBot.IsAi() {
 			return waitingForAiQuestion
 		} else if nextBot.IsHuman() {
@@ -268,11 +268,11 @@ func (game *Game) expectedSourceBotIdForWaitingMessage() (string, error) {
 		return "", errors.New("this game is not waiting for messages currently")
 	}
 
-	if game.state.isQuestion() {
+	if game.state.isWaitingForAQuestion() {
 		return game.getCurrentTurnBotId(), nil
 	}
 
-	if game.state.isAnswer() {
+	if game.state.isWaitingForAnAnswer() {
 		return game.lastQuestionTargetBotId, nil
 	}
 
@@ -323,10 +323,10 @@ func (game *Game) getCurrentTurnBot() *Bot {
 }
 
 func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
-	if game.state.isQuestion() {
+	if game.state.isWaitingForAQuestion() {
 		return game.getCurrentTurnBot()
 	}
-	if game.state.isAnswer() {
+	if game.state.isWaitingForAnAnswer() {
 		return game.BotWithId(game.lastQuestionTargetBotId)
 	}
 	return nil

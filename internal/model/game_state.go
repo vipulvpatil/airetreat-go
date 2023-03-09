@@ -59,19 +59,19 @@ func (s gameState) Valid() bool {
 	return s.String() != "UNDEFINED"
 }
 
-func (s gameState) isWaitingForAi() bool {
+func (s gameState) isWaitingOnAi() bool {
 	return s == waitingForAiQuestion || s == waitingForAiAnswer
 }
 
-func (s gameState) isWaitingForHuman() bool {
+func (s gameState) isWaitingOnHuman() bool {
 	return s == waitingForHumanQuestion || s == waitingForHumanAnswer
 }
 
-func (s gameState) isQuestion() bool {
+func (s gameState) isWaitingForAQuestion() bool {
 	return s == waitingForAiQuestion || s == waitingForHumanQuestion
 }
 
-func (s gameState) isAnswer() bool {
+func (s gameState) isWaitingForAnAnswer() bool {
 	return s == waitingForAiAnswer || s == waitingForHumanAnswer
 }
 
