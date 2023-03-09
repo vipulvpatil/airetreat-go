@@ -21,6 +21,14 @@ func Test_GameHandlerLoop(t *testing.T) {
 					ReturnData:  [][]string{{"game_id1", "game_id2"}},
 					ReturnCount: 1,
 				},
+				"WAITING_FOR_AI_QUESTION": {
+					ReturnData:  [][]string{{"game_id3", "game_id4"}},
+					ReturnCount: 1,
+				},
+				"WAITING_FOR_AI_ANSWER": {
+					ReturnData:  [][]string{{"game_id5", "game_id6"}},
+					ReturnCount: 1,
+				},
 			},
 		}
 		gamesAccessorGetOldGamesMockCaller := GetOldGamesMockCaller{
@@ -41,6 +49,16 @@ func Test_GameHandlerLoop(t *testing.T) {
 				expectedCallCount: 4,
 			},
 			{
+				name:              "GetUnhandledGameIds for state WAITING_FOR_AI_QUESTION, %s",
+				functionCall:      gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["WAITING_FOR_AI_QUESTION"],
+				expectedCallCount: 4,
+			},
+			{
+				name:              "GetUnhandledGameIds for state WAITING_FOR_AI_ANSWER, %s",
+				functionCall:      gamesAccessorGetUnhandledGameIdsMockCaller.MapByInput["WAITING_FOR_AI_ANSWER"],
+				expectedCallCount: 4,
+			},
+			{
 				name:              "GetOldGames, %s",
 				functionCall:      gamesAccessorGetOldGamesMockCaller,
 				expectedCallCount: 4,
@@ -56,6 +74,20 @@ func Test_GameHandlerLoop(t *testing.T) {
 				jobArgs: []map[string]any{
 					{"gameId": "game_id1"},
 					{"gameId": "game_id2"},
+				},
+			},
+			{
+				jobName: workers.ASK_QUESTION_ON_BEHALF_OF_BOT,
+				jobArgs: []map[string]any{
+					{"gameId": "game_id3"},
+					{"gameId": "game_id4"},
+				},
+			},
+			{
+				jobName: workers.ANSWER_QUESTION_ON_BEHALF_OF_BOT,
+				jobArgs: []map[string]any{
+					{"gameId": "game_id5"},
+					{"gameId": "game_id6"},
 				},
 			},
 			{
@@ -128,10 +160,7 @@ type GetUnhandledGameIdsMockCaller struct {
 }
 
 func (m *GetUnhandledGameIdsMockCaller) getUnhandledGameIdsForStateInternal(gameStateString string) ([]string, error) {
-	f, ok := m.MapByInput[gameStateString]
-	if !ok {
-		f = &functionCallInspectableMock{}
-	}
+	f := m.MapByInput[gameStateString]
 	f.callCount++
 	if f.ReturnCount >= f.callCount {
 		m.MapByInput[gameStateString] = f

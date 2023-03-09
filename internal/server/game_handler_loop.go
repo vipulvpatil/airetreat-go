@@ -19,6 +19,8 @@ func (s *AiRetreatGoService) GameHandlerLoop(ctx context.Context, tickerDuration
 		select {
 		case <-ticker.C:
 			s.beginGames(jobStarter)
+			s.askQuestionsUsingAi(jobStarter)
+			s.answerQuestionsUsingAi(jobStarter)
 			s.deleteExpiredGames(jobStarter)
 		case <-ctx.Done():
 			return
@@ -34,6 +36,34 @@ func (s *AiRetreatGoService) beginGames(jobStarter workers.JobStarter) {
 	}
 	for _, gameId := range gameIds {
 		_, err := jobStarter.EnqueueUnique(workers.START_GAME_ONCE_PLAYERS_HAVE_JOINED, work.Q{"gameId": gameId})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func (s *AiRetreatGoService) askQuestionsUsingAi(jobStarter workers.JobStarter) {
+	gameIds, err := s.storage.GetUnhandledGameIdsForState("WAITING_FOR_AI_QUESTION")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, gameId := range gameIds {
+		_, err := jobStarter.EnqueueUnique(workers.ASK_QUESTION_ON_BEHALF_OF_BOT, work.Q{"gameId": gameId})
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func (s *AiRetreatGoService) answerQuestionsUsingAi(jobStarter workers.JobStarter) {
+	gameIds, err := s.storage.GetUnhandledGameIdsForState("WAITING_FOR_AI_ANSWER")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, gameId := range gameIds {
+		_, err := jobStarter.EnqueueUnique(workers.ANSWER_QUESTION_ON_BEHALF_OF_BOT, work.Q{"gameId": gameId})
 		if err != nil {
 			fmt.Println(err)
 		}
