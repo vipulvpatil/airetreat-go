@@ -57,7 +57,7 @@ func prepareBotViews(bots []*Bot) []BotView {
 }
 
 func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameViewState, string) {
-	targetBot := g.getTargetBot()
+	waitingOnBot := g.getWaitingOnBot()
 	switch g.state {
 	case started, playersJoined:
 		return waitingForPlayersToJoin, "Please wait as players join in"
@@ -65,7 +65,7 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 		return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
 	case waitingForBotAnswer:
 		return waitingOnBotToAnswer,
-			fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
+			fmt.Sprintf("Please wait as %s is answering the question", waitingOnBot.name)
 	case waitingForPlayerQuestion:
 		if g.getCurrentTurnBotId() == myBotId {
 			return waitingOnYouToAskAQuestion, "Please type a question. OR Click suggest for help!"
@@ -77,7 +77,7 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 			return waitingOnYouToAnswer, "Please answer the question. OR Click suggest for help!"
 		} else {
 			return waitingOnBotToAnswer,
-				fmt.Sprintf("Please wait as %s is answering the question", targetBot.name)
+				fmt.Sprintf("Please wait as %s is answering the question", waitingOnBot.name)
 		}
 	case finished:
 		return timeUp, "Time ran out"

@@ -1501,7 +1501,7 @@ func Test_RecentlyUpdated(t *testing.T) {
 	}
 }
 
-func Test_Get(t *testing.T) {
+func Test_GetTargetBotForNextQuestion(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
@@ -1719,6 +1719,55 @@ func Test_Get(t *testing.T) {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
 			}
+		})
+	}
+}
+
+func Test_GetCurrentTurnBot(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput *Bot
+	}{
+		{
+			name: "returns bot for current turn",
+			input: &Game{
+				state:            started,
+				currentTurnIndex: 1,
+				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3"},
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: human,
+						player: &Player{
+							id: "player_id1",
+						},
+					},
+				},
+			},
+			expectedOutput: &Bot{
+				id:        "bot_id2",
+				name:      "bot2",
+				typeOfBot: ai,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.GetCurrentTurnBot()
+			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
 }

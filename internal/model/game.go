@@ -126,10 +126,10 @@ func (game *Game) BotWithPlayerId(playerId string) *Bot {
 	return nil
 }
 
-func (game *Game) getTargetBot() *Bot {
+func (game *Game) getWaitingOnBot() *Bot {
 	switch game.state {
 	case waitingForBotQuestion, waitingForPlayerQuestion:
-		return game.BotWithId(game.getCurrentTurnBotId())
+		return game.GetCurrentTurnBot()
 	case waitingForBotAnswer, waitingForPlayerAnswer:
 		return game.BotWithId(game.lastQuestionTargetBotId)
 	default:
@@ -327,4 +327,8 @@ func getBotsWithLeastNumberOfMessages(bots []*Bot) []*Bot {
 	}
 
 	return botsWithLeastNumberOfMessages
+}
+
+func (game *Game) GetCurrentTurnBot() *Bot {
+	return game.BotWithId(game.getCurrentTurnBotId())
 }
