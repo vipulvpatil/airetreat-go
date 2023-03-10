@@ -60,6 +60,18 @@ func NewGame(opts GameOptions) (*Game, error) {
 		return nil, errors.New("cannot create game with empty bots array")
 	}
 
+	if !utilities.IsBlank(opts.LastQuestionTargetBotId) {
+		targetBotFound := false
+		for _, bot := range opts.Bots {
+			if bot.id == opts.LastQuestionTargetBotId {
+				targetBotFound = true
+			}
+		}
+		if !(targetBotFound) {
+			return nil, errors.New("cannot create game with incorrect last question target bot id")
+		}
+	}
+
 	return &Game{
 		id:                      opts.Id,
 		state:                   state,

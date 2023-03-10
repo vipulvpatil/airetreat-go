@@ -9,7 +9,12 @@ import (
 )
 
 func Test_NewGame(t *testing.T) {
-	bot, _ := NewBot(BotOptions{Id: "botId1"})
+	bot, err := NewBot(BotOptions{
+		Id:        "bot_id1",
+		Name:      "Bot name",
+		TypeOfBot: "AI",
+	})
+	assert.NoError(t, err)
 	tests := []struct {
 		name           string
 		input          GameOptions
@@ -55,18 +60,35 @@ func Test_NewGame(t *testing.T) {
 			errorString:    "cannot create game with empty bots array",
 		},
 		{
+			name: "invalid last question target bot",
+			input: GameOptions{
+				Id:                      "123",
+				State:                   "STARTED",
+				TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				LastQuestionTargetBotId: "bot_id2",
+				Bots:                    []*Bot{bot},
+			},
+			expectedOutput: nil,
+			errorExpected:  true,
+			errorString:    "cannot create game with incorrect last question target bot id",
+		},
+		{
 			name: "Game gets created successfully",
 			input: GameOptions{
-				Id:        "123",
-				State:     "STARTED",
-				TurnOrder: []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
-				Bots:      []*Bot{bot},
+				Id:                      "123",
+				State:                   "STARTED",
+				TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				LastQuestion:            "Question",
+				LastQuestionTargetBotId: "bot_id1",
+				Bots:                    []*Bot{bot},
 			},
 			expectedOutput: &Game{
-				id:        "123",
-				state:     started,
-				turnOrder: []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
-				bots:      []*Bot{bot},
+				id:                      "123",
+				state:                   started,
+				turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				lastQuestion:            "Question",
+				lastQuestionTargetBotId: "bot_id1",
+				bots:                    []*Bot{bot},
 			},
 			errorExpected: false,
 			errorString:   "",
