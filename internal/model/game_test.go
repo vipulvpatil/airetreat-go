@@ -48,7 +48,7 @@ func Test_NewGame(t *testing.T) {
 			input: GameOptions{
 				Id:        "123",
 				State:     "STARTED",
-				TurnOrder: []string{"b", "p1", "b", "p2"},
+				TurnOrder: []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 			},
 			expectedOutput: nil,
 			errorExpected:  true,
@@ -59,13 +59,13 @@ func Test_NewGame(t *testing.T) {
 			input: GameOptions{
 				Id:        "123",
 				State:     "STARTED",
-				TurnOrder: []string{"b", "p1", "b", "p2"},
+				TurnOrder: []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 				Bots:      []*Bot{bot},
 			},
 			expectedOutput: &Game{
 				id:        "123",
 				state:     started,
-				turnOrder: []string{"b", "p1", "b", "p2"},
+				turnOrder: []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 				bots:      []*Bot{bot},
 			},
 			errorExpected: false,
