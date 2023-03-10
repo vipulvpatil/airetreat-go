@@ -14,7 +14,9 @@ func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.currentTurnIndex, actual.currentTurnIndex, "game currentTurnIndex is not equal")
 	assert.Equal(t, expected.turnOrder, actual.turnOrder, "game turnOrder is not equal")
 	assert.Equal(t, expected.stateHandled, actual.stateHandled, "game stateHandled is not equal")
-	assert.Equal(t, expected.stateTotalTime, actual.stateTotalTime, "game id is not equal")
+	assert.Equal(t, expected.stateTotalTime, actual.stateTotalTime, "game stateTotalTime is not equal")
+	assert.Equal(t, expected.lastQuestion, actual.lastQuestion, "game lastQuestion is not equal")
+	assert.Equal(t, expected.lastQuestionTargetBotId, actual.lastQuestionTargetBotId, "game lastQuestionTargetBotId is not equal")
 	assert.Equal(t, expected.id, actual.id, "game id is not equal")
 
 	for i, expectedBot := range expected.bots {

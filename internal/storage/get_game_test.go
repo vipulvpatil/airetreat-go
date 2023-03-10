@@ -66,7 +66,7 @@ func Test_GetGame(t *testing.T) {
 				},
 			},
 			errorExpected: true,
-			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 9, name \"id\": converting NULL to string is unsupported",
+			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 11, name \"id\": converting NULL to string is unsupported",
 		},
 		{
 			name:  "error when found bot with bad data",
@@ -168,6 +168,7 @@ func Test_GetGame(t *testing.T) {
 						botOpts.Messages = []string{
 							"Q1: What is your name?",
 							"A1: Bot 2 Dot 2",
+							"Q2: Second question?",
 						}
 					}
 					bot, _ := model.NewBot(botOpts)
@@ -176,15 +177,17 @@ func Test_GetGame(t *testing.T) {
 				bots[4].ConnectPlayer(player)
 				game, _ := model.NewGame(
 					model.GameOptions{
-						Id:               "game_id1",
-						State:            "STARTED",
-						CurrentTurnIndex: 0,
-						TurnOrder:        []string{"b", "p1", "b", "p2"},
-						StateHandled:     false,
-						StateTotalTime:   0,
-						CreatedAt:        time.Now(),
-						UpdatedAt:        time.Now(),
-						Bots:             bots,
+						Id:                      "game_id1",
+						State:                   "STARTED",
+						CurrentTurnIndex:        0,
+						TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+						StateHandled:            false,
+						StateTotalTime:          0,
+						LastQuestion:            "Q2: Second question?",
+						LastQuestionTargetBotId: "bot_id2",
+						CreatedAt:               time.Now(),
+						UpdatedAt:               time.Now(),
+						Bots:                    bots,
 					},
 				)
 				return game
@@ -195,7 +198,7 @@ func Test_GetGame(t *testing.T) {
 						"id", "state", "current_turn_index", "turn_order", "state_handled", "state_handled_at"
 					)
 					VALUES (
-						'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false, current_timestamp
+						'game_id1', 'STARTED', 0, Array['bot_id1', 'bot_id2', 'bot_id3', 'bot_id4', 'bot_id5'], false, current_timestamp
 					)`,
 				},
 				{
@@ -251,6 +254,13 @@ func Test_GetGame(t *testing.T) {
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id4', 'bot_id2', 'A1: Bot 2 Dot 2')`},
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id5', 'bot_id1', 'Q2: Where is the gold?')`},
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id6', 'bot_id1', 'A2: what gold!')`},
+				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id7', 'bot_id2', 'Q2: Second question?')`},
+				{
+					Query: `UPDATE public."games" SET
+					"last_question" = 'Q2: Second question?',
+					"last_question_target_bot_id" = 'bot_id2'
+					WHERE id = 'game_id1'`,
+				},
 			},
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
@@ -324,6 +334,7 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 						botOpts.Messages = []string{
 							"Q1: What is your name?",
 							"A1: Bot 2 Dot 2",
+							"Q2: Second question?",
 						}
 					}
 					bot, _ := model.NewBot(botOpts)
@@ -332,15 +343,17 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 				bots[4].ConnectPlayer(player)
 				game, _ := model.NewGame(
 					model.GameOptions{
-						Id:               "game_id1",
-						State:            "STARTED",
-						CurrentTurnIndex: 0,
-						TurnOrder:        []string{"b", "p1", "b", "p2"},
-						StateHandled:     false,
-						StateTotalTime:   0,
-						CreatedAt:        time.Now(),
-						UpdatedAt:        time.Now(),
-						Bots:             bots,
+						Id:                      "game_id1",
+						State:                   "STARTED",
+						CurrentTurnIndex:        0,
+						TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+						StateHandled:            false,
+						StateTotalTime:          0,
+						LastQuestion:            "Q2: Second question?",
+						LastQuestionTargetBotId: "bot_id2",
+						CreatedAt:               time.Now(),
+						UpdatedAt:               time.Now(),
+						Bots:                    bots,
 					},
 				)
 				return game
@@ -351,7 +364,7 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 						"id", "state", "current_turn_index", "turn_order", "state_handled", "state_handled_at"
 					)
 					VALUES (
-						'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false, current_timestamp
+						'game_id1', 'STARTED', 0, Array['bot_id1', 'bot_id2', 'bot_id3', 'bot_id4', 'bot_id5'], false, current_timestamp
 					)`,
 				},
 				{
@@ -407,6 +420,13 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id4', 'bot_id2', 'A1: Bot 2 Dot 2')`},
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id5', 'bot_id1', 'Q2: Where is the gold?')`},
 				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id6', 'bot_id1', 'A2: what gold!')`},
+				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id7', 'bot_id2', 'Q2: Second question?')`},
+				{
+					Query: `UPDATE public."games" SET
+					"last_question" = 'Q2: Second question?',
+					"last_question_target_bot_id" = 'bot_id2'
+					WHERE id = 'game_id1'`,
+				},
 			},
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},

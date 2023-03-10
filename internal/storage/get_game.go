@@ -30,6 +30,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 		`SELECT
 		g.id, g.state, g.current_turn_index, g.turn_order,
 		g.state_handled, g.state_handled_at, g.state_total_time,
+		g.last_question, g.last_question_target_bot_id,
 		g.created_at, g.updated_at,
 		b.id, b.name, b.type, b.player_id, m.text
 		FROM public."games" AS g
@@ -50,6 +51,8 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 		var botOpts model.BotOptions
 		var playerId sql.NullString
 		var message sql.NullString
+		var lastQuestion sql.NullString
+		var lastQuestionTargetBotId sql.NullString
 		err := rows.Scan(
 			&opts.Id,
 			&opts.State,
@@ -58,6 +61,8 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 			&opts.StateHandled,
 			&stateHandledAt,
 			&opts.StateTotalTime,
+			&lastQuestion,
+			&lastQuestionTargetBotId,
 			&opts.CreatedAt,
 			&opts.UpdatedAt,
 			&botOpts.Id,
@@ -66,6 +71,13 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 			&playerId,
 			&message,
 		)
+
+		if lastQuestion.Valid {
+			opts.LastQuestion = lastQuestion.String
+		}
+		if lastQuestionTargetBotId.Valid {
+			opts.LastQuestionTargetBotId = lastQuestionTargetBotId.String
+		}
 
 		if err != nil {
 			return nil, utilities.WrapBadError(err, "failed while scanning rows")
