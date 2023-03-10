@@ -23,7 +23,6 @@ type Game struct {
 	createdAt               time.Time
 	updatedAt               time.Time
 	bots                    []*Bot
-	lastQuestionTargetBot   *Bot
 }
 
 type GameOptions struct {
@@ -39,7 +38,6 @@ type GameOptions struct {
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
 	Bots                    []*Bot
-	LastQuestionTargetBot   *Bot
 }
 
 func NewGame(opts GameOptions) (*Game, error) {
@@ -85,7 +83,6 @@ func NewGame(opts GameOptions) (*Game, error) {
 		createdAt:               opts.CreatedAt,
 		updatedAt:               opts.UpdatedAt,
 		bots:                    opts.Bots,
-		lastQuestionTargetBot:   opts.LastQuestionTargetBot,
 	}, nil
 }
 
