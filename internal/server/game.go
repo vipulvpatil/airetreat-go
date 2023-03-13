@@ -5,6 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -58,12 +60,12 @@ func (s *AiRetreatGoService) JoinGame(ctx context.Context, req *pb.JoinGameReque
 func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGameForPlayerRequest) (*pb.GetGameForPlayerResponse, error) {
 	game, err := s.storage.GetGame(req.GetGameId())
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	gameView := game.GameViewForPlayer(req.GetPlayerId())
 	if gameView == nil {
-		return nil, errors.Errorf("Unable to get game %s for player %s", req.GetGameId(), req.GetPlayerId())
+		return nil, status.Errorf(codes.NotFound, "Unable to get game %s for player %s", req.GetGameId(), req.GetPlayerId())
 	}
 
 	var stateStartedAt *timestamppb.Timestamp
