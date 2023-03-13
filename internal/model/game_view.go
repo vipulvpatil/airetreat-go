@@ -37,7 +37,7 @@ func (g *Game) GameViewForPlayer(playerId string) *GameView {
 		DisplayMessage: displayMessage,
 		StateStartedAt: g.stateHandledAt,
 		StateTotalTime: g.stateTotalTime,
-		LastQuestion:   "no question",
+		LastQuestion:   g.lastQuestion,
 		MyBotId:        myBotId,
 		Bots:           bots,
 	}
