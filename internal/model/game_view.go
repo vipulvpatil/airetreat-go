@@ -15,6 +15,7 @@ type GameView struct {
 	LastQuestion   string
 	MyBotId        string
 	Bots           []BotView
+	Conversation   []string
 }
 
 func (g *Game) GameViewForPlayer(playerId string) *GameView {
@@ -40,6 +41,7 @@ func (g *Game) GameViewForPlayer(playerId string) *GameView {
 		LastQuestion:   g.lastQuestion,
 		MyBotId:        myBotId,
 		Bots:           bots,
+		Conversation:   g.GetCoversation(),
 	}
 }
 

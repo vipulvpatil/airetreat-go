@@ -2,6 +2,7 @@ package model
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -47,10 +48,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 					},
 				},
@@ -61,6 +70,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -77,10 +92,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -117,10 +140,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -134,6 +165,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -150,10 +187,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -190,10 +235,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -207,6 +260,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -223,10 +282,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -264,10 +331,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -281,6 +356,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -297,10 +378,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -338,10 +427,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -355,6 +452,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -371,10 +474,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -412,10 +523,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -429,6 +548,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -445,10 +570,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -486,10 +619,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -503,6 +644,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -519,10 +666,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -560,10 +715,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -577,6 +740,12 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
+				Conversation: []string{
+					"Question: A question",
+					"bot4: My answer",
+					"Question: A question",
+					"bot5: My answer",
+				},
 				Bots: []BotView{
 					{
 						Id:   "bot_id1",
@@ -593,10 +762,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
+						Messages: []string{
+							"A question",
+							"My answer",
+						},
 					},
 				},
 			},
@@ -633,10 +810,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
@@ -677,10 +862,18 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
+							messages: []Message{
+								{Text: "A question", CreatedAt: time.Now()},
+								{Text: "My answer", CreatedAt: time.Now()},
+							},
 							player: &Player{
 								id: "player_id2",
 							},
