@@ -96,6 +96,7 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 		LastQuestion:   gameView.LastQuestion,
 		MyBotId:        gameView.MyBotId,
 		Bots:           bots,
+		Conversation:   gameView.Conversation,
 	}, nil
 }
 

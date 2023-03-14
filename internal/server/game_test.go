@@ -450,15 +450,15 @@ func Test_GetGameForPlayer(t *testing.T) {
 		switch botOpts.Id {
 		case "bot_id1":
 			botOpts.Messages = []model.Message{
-				{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-				{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-				{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-				{Text: "A2: what gold!", CreatedAt: time.Now()},
+				{Text: "what is your name?", CreatedAt: time.Now()},
+				{Text: "My name is Antony Gonsalvez", CreatedAt: time.Now()},
+				{Text: "Where is the gold?", CreatedAt: time.Now()},
+				{Text: "what gold!", CreatedAt: time.Now()},
 			}
 		case "bot_id2":
 			botOpts.Messages = []model.Message{
-				{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-				{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+				{Text: "What is your name?", CreatedAt: time.Now()},
+				{Text: "Bot 2 Dot 2", CreatedAt: time.Now()},
 			}
 		}
 		bot, _ := model.NewBot(botOpts)
@@ -529,18 +529,18 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Id:   "bot_id1",
 						Name: "bot1",
 						BotMessages: []*pb.BotMessage{
-							{Text: "Q1: what is your name?"},
-							{Text: "A1: My name is Antony Gonsalvez"},
-							{Text: "Q2: Where is the gold?"},
-							{Text: "A2: what gold!"},
+							{Text: "what is your name?"},
+							{Text: "My name is Antony Gonsalvez"},
+							{Text: "Where is the gold?"},
+							{Text: "what gold!"},
 						},
 					},
 					{
 						Id:   "bot_id2",
 						Name: "bot2",
 						BotMessages: []*pb.BotMessage{
-							{Text: "Q1: What is your name?"},
-							{Text: "A1: Bot 2 Dot 2"},
+							{Text: "What is your name?"},
+							{Text: "Bot 2 Dot 2"},
 						},
 					},
 					{
@@ -558,6 +558,14 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Name:        "bot5",
 						BotMessages: []*pb.BotMessage{},
 					},
+				},
+				Conversation: []string{
+					"Question: what is your name?",
+					"bot1: My name is Antony Gonsalvez",
+					"Question: Where is the gold?",
+					"bot1: what gold!",
+					"Question: What is your name?",
+					"bot2: Bot 2 Dot 2",
 				},
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
@@ -582,18 +590,18 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Id:   "bot_id1",
 						Name: "bot1",
 						BotMessages: []*pb.BotMessage{
-							{Text: "Q1: what is your name?"},
-							{Text: "A1: My name is Antony Gonsalvez"},
-							{Text: "Q2: Where is the gold?"},
-							{Text: "A2: what gold!"},
+							{Text: "what is your name?"},
+							{Text: "My name is Antony Gonsalvez"},
+							{Text: "Where is the gold?"},
+							{Text: "what gold!"},
 						},
 					},
 					{
 						Id:   "bot_id2",
 						Name: "bot2",
 						BotMessages: []*pb.BotMessage{
-							{Text: "Q1: What is your name?"},
-							{Text: "A1: Bot 2 Dot 2"},
+							{Text: "What is your name?"},
+							{Text: "Bot 2 Dot 2"},
 						},
 					},
 					{
@@ -611,6 +619,14 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Name:        "bot5",
 						BotMessages: []*pb.BotMessage{},
 					},
+				},
+				Conversation: []string{
+					"Question: what is your name?",
+					"bot1: My name is Antony Gonsalvez",
+					"Question: Where is the gold?",
+					"bot1: what gold!",
+					"Question: What is your name?",
+					"bot2: Bot 2 Dot 2",
 				},
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},

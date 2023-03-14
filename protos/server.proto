@@ -56,6 +56,7 @@ message GetGameForPlayerResponse {
 	string lastQuestion = 5;
 	string myBotId = 7;
 	repeated Bot bots = 8;
+  repeated string conversation = 9;
 }
 
 message Bot {
