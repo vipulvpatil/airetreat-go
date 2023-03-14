@@ -32,7 +32,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 		g.state_handled, g.state_handled_at, g.state_total_time,
 		g.last_question, g.last_question_target_bot_id,
 		g.created_at, g.updated_at,
-		b.id, b.name, b.type, b.player_id, m.text
+		b.id, b.name, b.type, b.player_id, m.text, m.created_at
 		FROM public."games" AS g
 		LEFT JOIN public."bots" AS b ON b.game_id = g.id
 		LEFT JOIN public."messages" AS m ON m.bot_id = b.id
@@ -53,6 +53,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 		var message sql.NullString
 		var lastQuestion sql.NullString
 		var lastQuestionTargetBotId sql.NullString
+		var messageCreatedAt sql.NullTime
 		err := rows.Scan(
 			&opts.Id,
 			&opts.State,
@@ -70,6 +71,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 			&botOpts.TypeOfBot,
 			&playerId,
 			&message,
+			&messageCreatedAt,
 		)
 
 		if lastQuestion.Valid {
@@ -98,7 +100,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 			}
 			if message.Valid {
 				botOpts = botOptsMap[botOpts.Id]
-				botOpts.Messages = append(botOpts.Messages, message.String)
+				botOpts.Messages = append(botOpts.Messages, model.Message{Text: message.String, CreatedAt: messageCreatedAt.Time})
 				botOptsMap[botOpts.Id] = botOpts
 			}
 		}

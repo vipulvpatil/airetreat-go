@@ -49,7 +49,7 @@ func prepareBotViews(bots []*Bot) []BotView {
 		botViews = append(botViews, BotView{
 			Id:       bot.id,
 			Name:     bot.name,
-			Messages: bot.messages,
+			Messages: bot.messageTexts(),
 		})
 	}
 

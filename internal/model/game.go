@@ -2,6 +2,7 @@ package model
 
 import (
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/pkg/errors"
@@ -339,4 +340,29 @@ func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
 		return game.BotWithId(game.lastQuestionTargetBotId)
 	}
 	return nil
+}
+
+func (game *Game) GetCoversation() []string {
+	messages := []Message{}
+	for _, bot := range game.bots {
+		messages = append(messages, bot.messages...)
+	}
+	sort.Sort(byCreatedAt(messages))
+	conversation := []string{}
+	for _, message := range messages {
+		conversation = append(conversation, message.Text)
+	}
+	return conversation
+}
+
+type byCreatedAt []Message
+
+func (m byCreatedAt) Len() int {
+	return len(m)
+}
+func (m byCreatedAt) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+func (m byCreatedAt) Less(i, j int) bool {
+	return m[i].CreatedAt.Before(m[j].CreatedAt)
 }

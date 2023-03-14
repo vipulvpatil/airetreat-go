@@ -158,17 +158,17 @@ func Test_GetGame(t *testing.T) {
 					}
 					switch botOpts.Id {
 					case "bot_id1":
-						botOpts.Messages = []string{
-							"Q1: what is your name?",
-							"A1: My name is Antony Gonsalvez",
-							"Q2: Where is the gold?",
-							"A2: what gold!",
+						botOpts.Messages = []model.Message{
+							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+							{Text: "A2: what gold!", CreatedAt: time.Now()},
 						}
 					case "bot_id2":
-						botOpts.Messages = []string{
-							"Q1: What is your name?",
-							"A1: Bot 2 Dot 2",
-							"Q2: Second question?",
+						botOpts.Messages = []model.Message{
+							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							{Text: "Q2: Second question?", CreatedAt: time.Now()},
 						}
 					}
 					bot, _ := model.NewBot(botOpts)
@@ -324,17 +324,17 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 					}
 					switch botOpts.Id {
 					case "bot_id1":
-						botOpts.Messages = []string{
-							"Q1: what is your name?",
-							"A1: My name is Antony Gonsalvez",
-							"Q2: Where is the gold?",
-							"A2: what gold!",
+						botOpts.Messages = []model.Message{
+							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+							{Text: "A2: what gold!", CreatedAt: time.Now()},
 						}
 					case "bot_id2":
-						botOpts.Messages = []string{
-							"Q1: What is your name?",
-							"A1: Bot 2 Dot 2",
-							"Q2: Second question?",
+						botOpts.Messages = []model.Message{
+							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							{Text: "Q2: Second question?", CreatedAt: time.Now()},
 						}
 					}
 					bot, _ := model.NewBot(botOpts)

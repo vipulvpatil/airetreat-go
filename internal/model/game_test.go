@@ -1571,63 +1571,63 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 						id:        "bot_id1",
 						name:      "bot1",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
-							"question 3",
-							"answer 3",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
+							{Text: "question 3", CreatedAt: time.Now()},
+							{Text: "answer 3", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id2",
 						name:      "bot2",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id3",
 						name:      "bot3",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
-							"question 3",
-							"answer 3",
-							"question 4",
-							"answer 4",
-							"question 5",
-							"answer 5",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
+							{Text: "question 3", CreatedAt: time.Now()},
+							{Text: "answer 3", CreatedAt: time.Now()},
+							{Text: "question 4", CreatedAt: time.Now()},
+							{Text: "answer 4", CreatedAt: time.Now()},
+							{Text: "question 5", CreatedAt: time.Now()},
+							{Text: "answer 5", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id4",
 						name:      "bot4",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id5",
 						name:      "bot5",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 				},
@@ -1636,11 +1636,11 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 				id:        "bot_id4",
 				name:      "bot4",
 				typeOfBot: ai,
-				messages: []string{
-					"question 1",
-					"answer 1",
-					"question 2",
-					"answer 2",
+				messages: []Message{
+					{Text: "question 1", CreatedAt: time.Now()},
+					{Text: "answer 1", CreatedAt: time.Now()},
+					{Text: "question 2", CreatedAt: time.Now()},
+					{Text: "answer 2", CreatedAt: time.Now()},
 				},
 			},
 			errorExpected: false,
@@ -1657,59 +1657,59 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 						id:        "bot_id1",
 						name:      "bot1",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id2",
 						name:      "bot2",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id3",
 						name:      "bot3",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id4",
 						name:      "bot4",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
 						},
 					},
 					{
 						id:        "bot_id5",
 						name:      "bot5",
 						typeOfBot: ai,
-						messages: []string{
-							"question 1",
-							"answer 1",
-							"question 2",
-							"answer 2",
-							"question 3",
-							"answer 3",
-							"question 4",
-							"answer 4",
-							"question 5",
-							"answer 5",
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now()},
+							{Text: "answer 1", CreatedAt: time.Now()},
+							{Text: "question 2", CreatedAt: time.Now()},
+							{Text: "answer 2", CreatedAt: time.Now()},
+							{Text: "question 3", CreatedAt: time.Now()},
+							{Text: "answer 3", CreatedAt: time.Now()},
+							{Text: "question 4", CreatedAt: time.Now()},
+							{Text: "answer 4", CreatedAt: time.Now()},
+							{Text: "question 5", CreatedAt: time.Now()},
+							{Text: "answer 5", CreatedAt: time.Now()},
 						},
 					},
 				},
@@ -1718,11 +1718,11 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 				id:        "bot_id3",
 				name:      "bot3",
 				typeOfBot: ai,
-				messages: []string{
-					"question 1",
-					"answer 1",
-					"question 2",
-					"answer 2",
+				messages: []Message{
+					{Text: "question 1", CreatedAt: time.Now()},
+					{Text: "answer 1", CreatedAt: time.Now()},
+					{Text: "question 2", CreatedAt: time.Now()},
+					{Text: "answer 2", CreatedAt: time.Now()},
 				},
 			},
 			errorExpected: false,
@@ -1736,7 +1736,7 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 			result, err := tt.input.GetTargetBotForNextQuestion()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.expectedOutput, result)
+				AssertEqualBot(t, tt.expectedOutput, result)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
@@ -1926,6 +1926,118 @@ func Test_GetBotThatGameIsWaitingOn(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.GetBotThatGameIsWaitingOn()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_GetConversation(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput []string
+	}{
+		{
+			name: "returns correctly ordered conversation",
+			input: &Game{
+				state:            started,
+				turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+				currentTurnIndex: 1,
+				bots: []*Bot{
+					{
+						id:        "bot_id1",
+						name:      "bot1",
+						typeOfBot: ai,
+						messages: []Message{
+							{Text: "question 1", CreatedAt: time.Now().Add(10 * time.Second)},
+							{Text: "answer 1", CreatedAt: time.Now().Add(15 * time.Second)},
+							{Text: "question 11", CreatedAt: time.Now().Add(110 * time.Second)},
+							{Text: "answer 11", CreatedAt: time.Now().Add(115 * time.Second)},
+						},
+					},
+					{
+						id:        "bot_id2",
+						name:      "bot2",
+						typeOfBot: ai,
+						messages: []Message{
+							{Text: "question 2", CreatedAt: time.Now().Add(20 * time.Second)},
+							{Text: "answer 2", CreatedAt: time.Now().Add(25 * time.Second)},
+						},
+					},
+					{
+						id:        "bot_id3",
+						name:      "bot3",
+						typeOfBot: ai,
+						messages: []Message{
+							{Text: "question 3", CreatedAt: time.Now().Add(30 * time.Second)},
+							{Text: "answer 3", CreatedAt: time.Now().Add(35 * time.Second)},
+							{Text: "question 5", CreatedAt: time.Now().Add(50 * time.Second)},
+							{Text: "answer 5", CreatedAt: time.Now().Add(55 * time.Second)},
+						},
+					},
+					{
+						id:        "bot_id4",
+						name:      "bot4",
+						typeOfBot: ai,
+						messages: []Message{
+							{Text: "question 6", CreatedAt: time.Now().Add(60 * time.Second)},
+							{Text: "answer 6", CreatedAt: time.Now().Add(65 * time.Second)},
+							{Text: "question 7", CreatedAt: time.Now().Add(70 * time.Second)},
+							{Text: "answer 7", CreatedAt: time.Now().Add(75 * time.Second)},
+						},
+					},
+					{
+						id:        "bot_id5",
+						name:      "bot5",
+						typeOfBot: ai,
+						messages: []Message{
+							{Text: "question 4", CreatedAt: time.Now().Add(40 * time.Second)},
+							{Text: "answer 4", CreatedAt: time.Now().Add(45 * time.Second)},
+							{Text: "question 8", CreatedAt: time.Now().Add(80 * time.Second)},
+							{Text: "answer 8", CreatedAt: time.Now().Add(85 * time.Second)},
+							{Text: "question 9", CreatedAt: time.Now().Add(90 * time.Second)},
+							{Text: "answer 9", CreatedAt: time.Now().Add(95 * time.Second)},
+							{Text: "question 10", CreatedAt: time.Now().Add(100 * time.Second)},
+							{Text: "answer 10", CreatedAt: time.Now().Add(105 * time.Second)},
+							{Text: "question 12", CreatedAt: time.Now().Add(120 * time.Second)},
+							{Text: "answer 12", CreatedAt: time.Now().Add(125 * time.Second)},
+						},
+					},
+				},
+			},
+			expectedOutput: []string{
+				"Question: question 1",
+				"answer 1",
+				"Question: question 2",
+				"answer 2",
+				"Question: question 3",
+				"answer 3",
+				"Question: question 4",
+				"answer 4",
+				"Question: question 5",
+				"answer 5",
+				"Question: question 6",
+				"answer 6",
+				"Question: question 7",
+				"answer 7",
+				"Question: question 8",
+				"answer 8",
+				"Question: question 9",
+				"answer 9",
+				"Question: question 10",
+				"answer 10",
+				"Question: question 11",
+				"answer 11",
+				"Question: question 12",
+				"answer 12",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rand.Seed(0)
+			result := tt.input.GetCoversation()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
