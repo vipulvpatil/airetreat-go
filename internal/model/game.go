@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 	"time"
@@ -345,7 +346,15 @@ func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
 func (game *Game) GetCoversation() []string {
 	messages := []Message{}
 	for _, bot := range game.bots {
-		messages = append(messages, bot.messages...)
+		// TODO: this is brittle. and based on the assumption that the messages are always question followed by answer.
+		for j, message := range bot.messages {
+			if j%2 == 0 {
+				message.Text = fmt.Sprintf("Question: %s", message.Text)
+			} else {
+				message.Text = fmt.Sprintf("%s: %s", bot.name, message.Text)
+			}
+			messages = append(messages, message)
+		}
 	}
 	sort.Sort(byCreatedAt(messages))
 	conversation := []string{}
