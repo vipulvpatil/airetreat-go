@@ -27,6 +27,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex: 1,
 					stateTotalTime:   60,
+					lastQuestion:     "last question",
 					bots: []*Bot{
 						{
 							id:   "bot_id1",
@@ -58,7 +59,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingForPlayersToJoin,
 				DisplayMessage: "Please wait as players join in",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -96,6 +97,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex: 1,
 					stateTotalTime:   60,
+					lastQuestion:     "last question",
 					bots: []*Bot{
 						{
 							id:   "bot_id1",
@@ -130,7 +132,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingForPlayersToJoin,
 				DisplayMessage: "Please wait as players join in",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -168,6 +170,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex: 1,
 					stateTotalTime:   60,
+					lastQuestion:     "last question",
 					bots: []*Bot{
 						{
 							id:   "bot_id1",
@@ -202,7 +205,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingOnBotToAskAQuestion,
 				DisplayMessage: "Please wait as someone is asking a question",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -240,6 +243,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        4,
 					stateTotalTime:          60,
+					lastQuestion:            "last question",
 					lastQuestionTargetBotId: "bot_id2",
 					bots: []*Bot{
 						{
@@ -275,7 +279,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingOnBotToAnswer,
 				DisplayMessage: "Please wait as bot2 is answering the question",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -313,6 +317,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        10,
 					stateTotalTime:          60,
+					lastQuestion:            "last question",
 					lastQuestionTargetBotId: "bot_id2",
 					bots: []*Bot{
 						{
@@ -346,9 +351,9 @@ func Test_GameViewForPlayer(t *testing.T) {
 			},
 			output: &GameView{
 				State:          waitingOnYouToAskAQuestion,
-				DisplayMessage: "Please type a question. OR Click suggest for help!",
+				DisplayMessage: "Please pick a bot and ask a question. OR Click suggest for help!",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -386,6 +391,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        3,
 					stateTotalTime:          60,
+					lastQuestion:            "last question",
 					lastQuestionTargetBotId: "bot_id1",
 					bots: []*Bot{
 						{
@@ -421,7 +427,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingOnYouToAnswer,
 				DisplayMessage: "Please answer the question. OR Click suggest for help!",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
 				Bots: []BotView{
 					{
@@ -459,6 +465,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        10,
 					stateTotalTime:          60,
+					lastQuestion:            "last question",
 					lastQuestionTargetBotId: "bot_id2",
 					bots: []*Bot{
 						{
@@ -494,7 +501,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingOnBotToAskAQuestion,
 				DisplayMessage: "Please wait as someone is asking a question",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
 				Bots: []BotView{
 					{
@@ -532,6 +539,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 					turnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 					currentTurnIndex:        3,
 					stateTotalTime:          60,
+					lastQuestion:            "last question",
 					lastQuestionTargetBotId: "bot_id1",
 					bots: []*Bot{
 						{
@@ -567,7 +575,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 				State:          waitingOnBotToAnswer,
 				DisplayMessage: "Please wait as bot1 is answering the question",
 				StateTotalTime: 60,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
 				Bots: []BotView{
 					{

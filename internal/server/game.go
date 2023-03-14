@@ -65,7 +65,7 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 
 	gameView := game.GameViewForPlayer(req.GetPlayerId())
 	if gameView == nil {
-		return nil, status.Errorf(codes.NotFound, "Unable to get game %s for player %s", req.GetGameId(), req.GetPlayerId())
+		return nil, status.Errorf(codes.NotFound, "unable to get game %s for player %s", req.GetGameId(), req.GetPlayerId())
 	}
 
 	var stateStartedAt *timestamppb.Timestamp

@@ -476,6 +476,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 			StateHandled:     false,
 			StateHandledAt:   &stateHandledTime,
 			StateTotalTime:   30,
+			LastQuestion:     "last question",
 			CreatedAt:        time.Now(),
 			UpdatedAt:        time.Now(),
 			Bots:             bots,
@@ -497,7 +498,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 			output:         nil,
 			gameGetterMock: &storage.GameGetterMockFailure{},
 			errorExpected:  true,
-			errorString:    "unable to get game",
+			errorString:    "rpc error: code = NotFound desc = unable to get game",
 		},
 		{
 			name: "errors if player is not in the game",
@@ -508,7 +509,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 			output:         nil,
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
 			errorExpected:  true,
-			errorString:    "Unable to get game game_id1 for player player_id3",
+			errorString:    "rpc error: code = NotFound desc = unable to get game game_id1 for player player_id3",
 		},
 		{
 			name: "returns correct game view for player 1",
@@ -518,10 +519,10 @@ func Test_GetGameForPlayer(t *testing.T) {
 			},
 			output: &pb.GetGameForPlayerResponse{
 				State:          "WAITING_ON_YOU_TO_ASK_A_QUESTION",
-				DisplayMessage: "Please type a question. OR Click suggest for help!",
+				DisplayMessage: "Please pick a bot and ask a question. OR Click suggest for help!",
 				StateStartedAt: timestamppb.New(stateHandledTime),
 				StateTotalTime: 30,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
 				Bots: []*pb.Bot{
 					{
@@ -574,7 +575,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 				DisplayMessage: "Please wait as someone is asking a question",
 				StateStartedAt: timestamppb.New(stateHandledTime),
 				StateTotalTime: 30,
-				LastQuestion:   "no question",
+				LastQuestion:   "last question",
 				MyBotId:        "bot_id4",
 				Bots: []*pb.Bot{
 					{
