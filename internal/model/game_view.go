@@ -62,24 +62,24 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 	waitingOnBot := g.GetBotThatGameIsWaitingOn()
 	switch g.state {
 	case started, playersJoined:
-		return waitingForPlayersToJoin, "Please wait as players join in"
+		return waitingForPlayersToJoin, "Waiting for players join in"
 	case waitingForAiQuestion:
-		return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
+		return waitingOnBotToAskAQuestion, "Someone is asking a question"
 	case waitingForAiAnswer:
 		return waitingOnBotToAnswer,
-			fmt.Sprintf("Please wait as %s is answering the question", waitingOnBot.name)
+			fmt.Sprintf("%s is answering the question", waitingOnBot.name)
 	case waitingForHumanQuestion:
 		if g.getCurrentTurnBotId() == myBotId {
-			return waitingOnYouToAskAQuestion, "Please pick a bot and ask a question. OR Click suggest for help!"
+			return waitingOnYouToAskAQuestion, "Ask a question. OR Click suggest for help!"
 		} else {
-			return waitingOnBotToAskAQuestion, "Please wait as someone is asking a question"
+			return waitingOnBotToAskAQuestion, "Someone is asking a question"
 		}
 	case waitingForHumanAnswer:
 		if g.lastQuestionTargetBotId == myBotId {
-			return waitingOnYouToAnswer, "Please answer the question. OR Click suggest for help!"
+			return waitingOnYouToAnswer, "Answer the question. OR Click suggest for help!"
 		} else {
 			return waitingOnBotToAnswer,
-				fmt.Sprintf("Please wait as %s is answering the question", waitingOnBot.name)
+				fmt.Sprintf("%s is answering the question", waitingOnBot.name)
 		}
 	case finished:
 		return timeUp, "Time ran out"
