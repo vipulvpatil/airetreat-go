@@ -70,11 +70,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -165,11 +181,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -260,11 +292,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -356,11 +404,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -452,11 +516,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -548,11 +628,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -644,11 +740,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{
@@ -740,11 +852,27 @@ func Test_GameViewForPlayer(t *testing.T) {
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
-				Conversation: []string{
-					"Question: A question",
-					"bot4: My answer",
-					"Question: A question",
-					"bot5: My answer",
+				Conversation: []ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id4",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id4",
+						Text:       "My answer",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id5",
+						Text:       "A question",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id5",
+						Text:       "My answer",
+					},
 				},
 				Bots: []BotView{
 					{

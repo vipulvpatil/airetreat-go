@@ -1935,7 +1935,7 @@ func Test_GetConversation(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
-		expectedOutput []string
+		expectedOutput []ConversationElement
 	}{
 		{
 			name: "returns correctly ordered conversation",
@@ -2005,31 +2005,127 @@ func Test_GetConversation(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: []string{
-				"Question: question 1",
-				"bot1: answer 1",
-				"Question: question 2",
-				"bot2: answer 2",
-				"Question: question 3",
-				"bot3: answer 3",
-				"Question: question 4",
-				"bot5: answer 4",
-				"Question: question 5",
-				"bot3: answer 5",
-				"Question: question 6",
-				"bot4: answer 6",
-				"Question: question 7",
-				"bot4: answer 7",
-				"Question: question 8",
-				"bot5: answer 8",
-				"Question: question 9",
-				"bot5: answer 9",
-				"Question: question 10",
-				"bot5: answer 10",
-				"Question: question 11",
-				"bot1: answer 11",
-				"Question: question 12",
-				"bot5: answer 12",
+			expectedOutput: []ConversationElement{
+				{
+					IsQuestion: true,
+					BotId:      "bot_id1",
+					Text:       "question 1",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id1",
+					Text:       "answer 1",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id2",
+					Text:       "question 2",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id2",
+					Text:       "answer 2",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id3",
+					Text:       "question 3",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id3",
+					Text:       "answer 3",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id5",
+					Text:       "question 4",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id5",
+					Text:       "answer 4",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id3",
+					Text:       "question 5",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id3",
+					Text:       "answer 5",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id4",
+					Text:       "question 6",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id4",
+					Text:       "answer 6",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id4",
+					Text:       "question 7",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id4",
+					Text:       "answer 7",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id5",
+					Text:       "question 8",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id5",
+					Text:       "answer 8",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id5",
+					Text:       "question 9",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id5",
+					Text:       "answer 9",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id5",
+					Text:       "question 10",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id5",
+					Text:       "answer 10",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id1",
+					Text:       "question 11",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id1",
+					Text:       "answer 11",
+				},
+				{
+					IsQuestion: true,
+					BotId:      "bot_id5",
+					Text:       "question 12",
+				},
+				{
+					IsQuestion: false,
+					BotId:      "bot_id5",
+					Text:       "answer 12",
+				},
 			},
 		},
 	}
@@ -2037,7 +2133,7 @@ func Test_GetConversation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rand.Seed(0)
-			result := tt.input.GetCoversation()
+			result := tt.input.GetConversation()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}

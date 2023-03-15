@@ -1,9 +1,7 @@
 package model
 
 import (
-	"fmt"
 	"math/rand"
-	"sort"
 	"time"
 
 	"github.com/pkg/errors"
@@ -343,35 +341,22 @@ func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
 	return nil
 }
 
-func (game *Game) GetCoversation() []string {
-	messages := []Message{}
+func (game *Game) GetConversation() []ConversationElement {
+	sortedConversation := conversationSortByCreatedAt{}
 	for _, bot := range game.bots {
 		// TODO: this is brittle. and based on the assumption that the messages are always question followed by answer.
+		sortedConversationElement := sortedConversationElement{}
 		for j, message := range bot.messages {
 			if j%2 == 0 {
-				message.Text = fmt.Sprintf("Question: %s", message.Text)
+				sortedConversationElement.IsQuestion = true
 			} else {
-				message.Text = fmt.Sprintf("%s: %s", bot.name, message.Text)
+				sortedConversationElement.IsQuestion = false
 			}
-			messages = append(messages, message)
+			sortedConversationElement.BotId = bot.id
+			sortedConversationElement.Text = message.Text
+			sortedConversationElement.CreatedAt = message.CreatedAt
+			sortedConversation = append(sortedConversation, sortedConversationElement)
 		}
 	}
-	sort.Sort(byCreatedAt(messages))
-	conversation := []string{}
-	for _, message := range messages {
-		conversation = append(conversation, message.Text)
-	}
-	return conversation
-}
-
-type byCreatedAt []Message
-
-func (m byCreatedAt) Len() int {
-	return len(m)
-}
-func (m byCreatedAt) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-func (m byCreatedAt) Less(i, j int) bool {
-	return m[i].CreatedAt.Before(m[j].CreatedAt)
+	return sortedConversation.sortAndConvertToConversation()
 }

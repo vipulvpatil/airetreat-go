@@ -559,13 +559,37 @@ func Test_GetGameForPlayer(t *testing.T) {
 						BotMessages: []*pb.BotMessage{},
 					},
 				},
-				Conversation: []string{
-					"Question: what is your name?",
-					"bot1: My name is Antony Gonsalvez",
-					"Question: Where is the gold?",
-					"bot1: what gold!",
-					"Question: What is your name?",
-					"bot2: Bot 2 Dot 2",
+				Conversation: []*pb.ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id1",
+						Text:       "what is your name?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id1",
+						Text:       "My name is Antony Gonsalvez",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id1",
+						Text:       "Where is the gold?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id1",
+						Text:       "what gold!",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id2",
+						Text:       "What is your name?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id2",
+						Text:       "Bot 2 Dot 2",
+					},
 				},
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
@@ -620,13 +644,37 @@ func Test_GetGameForPlayer(t *testing.T) {
 						BotMessages: []*pb.BotMessage{},
 					},
 				},
-				Conversation: []string{
-					"Question: what is your name?",
-					"bot1: My name is Antony Gonsalvez",
-					"Question: Where is the gold?",
-					"bot1: what gold!",
-					"Question: What is your name?",
-					"bot2: Bot 2 Dot 2",
+				Conversation: []*pb.ConversationElement{
+					{
+						IsQuestion: true,
+						BotId:      "bot_id1",
+						Text:       "what is your name?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id1",
+						Text:       "My name is Antony Gonsalvez",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id1",
+						Text:       "Where is the gold?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id1",
+						Text:       "what gold!",
+					},
+					{
+						IsQuestion: true,
+						BotId:      "bot_id2",
+						Text:       "What is your name?",
+					},
+					{
+						IsQuestion: false,
+						BotId:      "bot_id2",
+						Text:       "Bot 2 Dot 2",
+					},
 				},
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},

@@ -56,7 +56,7 @@ message GetGameForPlayerResponse {
 	string lastQuestion = 5;
 	string myBotId = 7;
 	repeated Bot bots = 8;
-  repeated string conversation = 9;
+  repeated ConversationElement conversation = 9;
 }
 
 message Bot {
@@ -67,6 +67,12 @@ message Bot {
 
 message BotMessage {
   string text = 1;
+}
+
+message ConversationElement {
+  bool isQuestion = 1;
+	string botId = 2;
+	string text = 3;
 }
 
 message GetGamesForPlayerRequest {
