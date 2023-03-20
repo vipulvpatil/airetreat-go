@@ -353,6 +353,7 @@ func (game *Game) GetConversation() []ConversationElement {
 				sortedConversationElement.IsQuestion = false
 			}
 			sortedConversationElement.BotId = bot.id
+			sortedConversationElement.BotName = bot.name
 			sortedConversationElement.Text = message.Text
 			sortedConversationElement.CreatedAt = message.CreatedAt
 			sortedConversation = append(sortedConversation, sortedConversationElement)

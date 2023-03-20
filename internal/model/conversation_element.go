@@ -8,12 +8,14 @@ import (
 type ConversationElement struct {
 	IsQuestion bool
 	BotId      string
+	BotName    string
 	Text       string
 }
 
 type sortedConversationElement struct {
 	IsQuestion bool
 	BotId      string
+	BotName    string
 	Text       string
 	CreatedAt  time.Time
 }
@@ -39,6 +41,7 @@ func (m conversationSortByCreatedAt) sortAndConvertToConversation() []Conversati
 		conversation = append(conversation, ConversationElement{
 			IsQuestion: elem.IsQuestion,
 			BotId:      elem.BotId,
+			BotName:    elem.BotName,
 			Text:       elem.Text,
 		})
 	}
