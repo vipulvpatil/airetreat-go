@@ -3,6 +3,7 @@ package workers
 import (
 	"github.com/gocraft/work"
 	"github.com/gomodule/redigo/redis"
+	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 )
 
@@ -12,11 +13,13 @@ const ANSWER_QUESTION_ON_BEHALF_OF_BOT = "answer_question_on_behalf_of_bot"
 const DELETE_EXPIRED_GAMES = "delete_expired_games"
 
 var workerStorage storage.StorageAccessor
+var openAiClient openai.Client
 
 type PoolDependencies struct {
-	Namespace string
-	RedisPool *redis.Pool
-	Storage   storage.StorageAccessor
+	Namespace    string
+	RedisPool    *redis.Pool
+	Storage      storage.StorageAccessor
+	OpenAiApiKey string
 }
 
 func NewPool(deps PoolDependencies) *work.WorkerPool {
@@ -29,5 +32,6 @@ func NewPool(deps PoolDependencies) *work.WorkerPool {
 
 	// TODO: Not sure if this is the best way to do this. But using Package variables for all dependencies required inside any of the jobs.
 	workerStorage = deps.Storage
+	openAiClient = openai.NewClient(openai.OpenAiClientOptions{ApiKey: deps.OpenAiApiKey})
 	return pool
 }

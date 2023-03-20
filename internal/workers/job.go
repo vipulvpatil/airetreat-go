@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
+	aibot "github.com/vipulvpatil/airetreat-go/services/ai-bot"
 )
 
 type jobContext struct{}
@@ -83,8 +84,14 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	// TODO: Get question from OpenAiClient
-	question := "Some question from AI"
+	aiBot := aibot.NewAiQuestionGenerator(
+		aibot.AiBotOptions{
+			BotId:        sourceBot.Id(),
+			Game:         game,
+			OpenAiClient: openAiClient,
+		},
+	)
+	question := aiBot.GetNextQuestion()
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBot.Id(), question)
 	if err != nil {
 		return err
@@ -141,8 +148,14 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()
 
-	// TODO: Get question from OpenAiClient
-	answer := "Some answer from AI"
+	aiBot := aibot.NewAiAnswerGenerator(
+		aibot.AiBotOptions{
+			BotId:        sourceBot.Id(),
+			Game:         game,
+			OpenAiClient: openAiClient,
+		},
+	)
+	answer := aiBot.GetNextAnswer()
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), sourceBot.Id(), answer)
 	if err != nil {
 		return err

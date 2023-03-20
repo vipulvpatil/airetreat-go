@@ -361,3 +361,11 @@ func (game *Game) GetConversation() []ConversationElement {
 	}
 	return sortedConversation.sortAndConvertToConversation()
 }
+
+func (game *Game) GetBotNames() []string {
+	botNames := []string{}
+	for _, bot := range game.bots {
+		botNames = append(botNames, bot.name)
+	}
+	return botNames
+}

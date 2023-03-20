@@ -63,6 +63,10 @@ func (b *Bot) Id() string {
 	return b.id
 }
 
+func (b *Bot) Name() string {
+	return b.name
+}
+
 func (b *Bot) IsAi() bool {
 	return b.typeOfBot == ai
 }

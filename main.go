@@ -76,9 +76,10 @@ func main() {
 	grpcHealthServer := setupGrpcHealthServer(hs, cfg)
 
 	workerPooldeps := workers.PoolDependencies{
-		RedisPool: redisPool,
-		Namespace: WORKER_NAMESPACE,
-		Storage:   dbStorage,
+		RedisPool:    redisPool,
+		Namespace:    WORKER_NAMESPACE,
+		Storage:      dbStorage,
+		OpenAiApiKey: cfg.OpenAiApiKey,
 	}
 	workerPool := workers.NewPool(workerPooldeps)
 	workerPool.Start()

@@ -16,6 +16,7 @@ type Config struct {
 	ServerCertBase64 string
 	ServerKeyBase64  string
 	AllowUnauthed    bool
+	OpenAiApiKey     string
 }
 
 func envVarLoaderBool(envVarName string, required bool, errorCollector *[]error) bool {
@@ -54,6 +55,7 @@ func NewConfigFromEnvVars() (*Config, []error) {
 	c.ServerCertBase64 = envVarLoaderString("SERVER_CERT_BASE64", true, &errs)
 	c.ServerKeyBase64 = envVarLoaderString("SERVER_KEY_BASE64", true, &errs)
 	c.AllowUnauthed = envVarLoaderBool("ALLOW_UNAUTHED", true, &errs)
+	c.OpenAiApiKey = envVarLoaderString("OPENAI_API_KEY", true, &errs)
 
 	return &c, errs
 }
