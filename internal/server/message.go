@@ -49,6 +49,6 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 		return nil, err
 	}
 
-	tx.Commit()
-	return &pb.SendMessageResponse{}, nil
+	err = tx.Commit()
+	return &pb.SendMessageResponse{}, err
 }

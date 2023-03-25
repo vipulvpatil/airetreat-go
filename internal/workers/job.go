@@ -3,9 +3,9 @@ package workers
 import (
 	"github.com/gocraft/work"
 	"github.com/pkg/errors"
+	aibot "github.com/vipulvpatil/airetreat-go/internal/services/ai-bot"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
-	aibot "github.com/vipulvpatil/airetreat-go/services/ai-bot"
 )
 
 type jobContext struct{}
@@ -116,8 +116,8 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	tx.Commit()
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
@@ -180,8 +180,8 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	tx.Commit()
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (j *jobContext) deleteExpiredGames(job *work.Job) error {

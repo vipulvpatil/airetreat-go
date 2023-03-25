@@ -591,7 +591,7 @@ func Test_Game_UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(t *testi
 			assert.NoError(t, err)
 
 			err = s.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(tt.input, tx)
-			tx.Commit()
+			err = tx.Commit()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 			} else {

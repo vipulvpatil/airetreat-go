@@ -76,11 +76,14 @@ func NewAiAnswerGenerator(opts AiBotOptions) AiAnswerGenerator {
 }
 
 func (ab *aiBot) GetNextQuestion() string {
+	fmt.Println("generating question")
+	fmt.Println(ab.name)
 	var openAiPrompt string
+	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
 	if utilities.IsBlank(ab.conversationSoFar) {
-		openAiPrompt = generateFirstQuestionRequestForOpenAi(ab.allBotNames, ab.name)
+		openAiPrompt = createFirstQuestionPromptWithContext(promptContext)
 	} else {
-		openAiPrompt = generateQuestionRequestForOpenAi(ab.allBotNames, ab.name, ab.conversationSoFar)
+		openAiPrompt = createQuestionPromptWithContext(promptContext, ab.conversationSoFar)
 	}
 	question, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
 	if err != nil {
@@ -91,7 +94,10 @@ func (ab *aiBot) GetNextQuestion() string {
 }
 
 func (ab *aiBot) GetNextAnswer() string {
-	openAiPrompt := generateAnswerRequestForOpenAi(ab.allBotNames, ab.name, ab.conversationSoFar)
+	fmt.Println("generating answer")
+	fmt.Println(ab.name)
+	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
+	openAiPrompt := createAnswerPromptWithContext(promptContext, ab.conversationSoFar)
 	answer, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
 	if err != nil {
 		return randomFallbackAnswer()
@@ -123,38 +129,23 @@ func constructConversationText(conversation []model.ConversationElement) string 
 	return strings.Join(conversationTextList, "\n")
 }
 
-func generateFirstQuestionRequestForOpenAi(botNames []string, myBotName string) string {
+func createFirstQuestionPromptWithContext(promptContext string) string {
 	randomTopic := TOPICS[rand.Intn(len(TOPICS))]
-	contextBotNamesWithMyBotName := append(botNames, myBotName)
-	context := fmt.Sprintf(
-		CONTEXT_TEXT,
-		contextBotNamesWithMyBotName[0],
-		contextBotNamesWithMyBotName[1],
-		contextBotNamesWithMyBotName[2],
-		contextBotNamesWithMyBotName[3],
-		contextBotNamesWithMyBotName[4],
-		myBotName,
-	)
-	task := fmt.Sprintf("Begin the conversation by asking a question inspired by the topic of %s.\n", randomTopic)
-	return fmt.Sprintf("%s %s", context, task)
+	task := fmt.Sprintf("Begin the conversation by asking a question inspired by the topic of %s.\nQuestion:", randomTopic)
+	return fmt.Sprintf("%s %s", promptContext, task)
 }
 
-func generateQuestionRequestForOpenAi(botNames []string, myBotName string, conversationSoFar string) string {
-	contextBotNamesWithMyBotName := append(botNames, myBotName)
-	context := fmt.Sprintf(
-		CONTEXT_TEXT,
-		contextBotNamesWithMyBotName[0],
-		contextBotNamesWithMyBotName[1],
-		contextBotNamesWithMyBotName[2],
-		contextBotNamesWithMyBotName[3],
-		contextBotNamesWithMyBotName[4],
-		myBotName,
-	)
-	task := fmt.Sprintf("Conversation so far is \n%s\n. Continue the conversation by asking a question.\n", conversationSoFar)
-	return fmt.Sprintf("%s %s", context, task)
+func createQuestionPromptWithContext(promptContext, conversationSoFar string) string {
+	task := fmt.Sprintf("Conversation so far is \n%s\n. Continue the conversation by asking a question.\nQuestion:", conversationSoFar)
+	return fmt.Sprintf("%s %s", promptContext, task)
 }
 
-func generateAnswerRequestForOpenAi(botNames []string, myBotName string, conversationSoFar string) string {
+func createAnswerPromptWithContext(promptContext, conversationSoFar string) string {
+	task := fmt.Sprintf("Conversation so far is \n%s\n. Continue the conversation by answering the question.\nAnswer:", conversationSoFar)
+	return fmt.Sprintf("%s %s", promptContext, task)
+}
+
+func createContextUsingBots(botNames []string, myBotName string) string {
 	contextBotNamesWithMyBotName := append(botNames, myBotName)
 	context := fmt.Sprintf(
 		CONTEXT_TEXT,
@@ -165,8 +156,7 @@ func generateAnswerRequestForOpenAi(botNames []string, myBotName string, convers
 		contextBotNamesWithMyBotName[4],
 		myBotName,
 	)
-	task := fmt.Sprintf("Conversation so far is \n%s\n. Continue the conversation by answering the question.\n", conversationSoFar)
-	return fmt.Sprintf("%s %s", context, task)
+	return context
 }
 
 // Rules of conversation are.
