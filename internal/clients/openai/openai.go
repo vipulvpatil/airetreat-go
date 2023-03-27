@@ -41,6 +41,5 @@ func (c *client) CallCompletionApi(prompt string) (string, error) {
 		fmt.Printf("Completion error: %v\n", err)
 		return "", errors.Wrap(err, "Open Ai error")
 	}
-	fmt.Println(resp.Choices[0])
 	return resp.Choices[0].Text, nil
 }

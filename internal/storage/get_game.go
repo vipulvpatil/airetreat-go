@@ -10,14 +10,14 @@ import (
 )
 
 func (s *Storage) GetGame(gameId string) (*model.Game, error) {
-	return getGameUsingCustomDbHandler(s.db, gameId)
+	return getGameUsingCustomDbHandler(s.db, gameId, false)
 }
 
 func (s *Storage) GetGameUsingTransaction(gameId string, transaction DatabaseTransaction) (*model.Game, error) {
-	return getGameUsingCustomDbHandler(transaction, gameId)
+	return getGameUsingCustomDbHandler(transaction, gameId, true)
 }
 
-func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*model.Game, error) {
+func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclusiveLock bool) (*model.Game, error) {
 	if utilities.IsBlank(gameId) {
 		return nil, errors.New("cannot getGame for a blank gameId")
 	}
@@ -26,19 +26,41 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string) (*mode
 		opts           model.GameOptions
 		stateHandledAt sql.NullTime
 	)
-	rows, err := customDb.Query(
-		`SELECT
-		g.id, g.state, g.current_turn_index, g.turn_order,
-		g.state_handled, g.state_handled_at, g.state_total_time,
-		g.last_question, g.last_question_target_bot_id,
-		g.created_at, g.updated_at,
-		b.id, b.name, b.type, b.player_id, m.text, m.created_at
-		FROM public."games" AS g
-		LEFT JOIN public."bots" AS b ON b.game_id = g.id
-		LEFT JOIN public."messages" AS m ON m.bot_id = b.id
-		WHERE g.id = $1
-		ORDER BY b.created_at ASC, b.id, m.created_at, m.id`, gameId,
-	)
+
+	queryWithoutLock := `SELECT
+	g.id, g.state, g.current_turn_index, g.turn_order,
+	g.state_handled, g.state_handled_at, g.state_total_time,
+	g.last_question, g.last_question_target_bot_id,
+	g.created_at, g.updated_at,
+	b.id, b.name, b.type, b.player_id, m.text, m.created_at
+	FROM public."games" AS g
+	LEFT JOIN public."bots" AS b ON b.game_id = g.id
+	LEFT JOIN public."messages" AS m ON m.bot_id = b.id
+	WHERE g.id = $1
+	ORDER BY b.created_at ASC, b.id, m.created_at, m.id`
+
+	queryWithLock := `SELECT
+	g.id, g.state, g.current_turn_index, g.turn_order,
+	g.state_handled, g.state_handled_at, g.state_total_time,
+	g.last_question, g.last_question_target_bot_id,
+	g.created_at, g.updated_at,
+	b.id, b.name, b.type, b.player_id, m.text, m.created_at
+	FROM public."games" AS g
+	LEFT JOIN public."bots" AS b ON b.game_id = g.id
+	LEFT JOIN public."messages" AS m ON m.bot_id = b.id
+	WHERE g.id = $1
+	ORDER BY b.created_at ASC, b.id, m.created_at, m.id
+	FOR UPDATE OF g`
+
+	var query string
+
+	if exclusiveLock {
+		query = queryWithLock
+	} else {
+		query = queryWithoutLock
+	}
+
+	rows, err := customDb.Query(query, gameId)
 	if err != nil {
 		return nil, utilities.WrapBadError(err, "failed to select game")
 	}
