@@ -33,7 +33,7 @@ func (c *client) CallCompletionApi(prompt string) (string, error) {
 
 	req := openaigo.CompletionRequest{
 		Model:     openaigo.GPT3TextDavinci003,
-		MaxTokens: 5,
+		MaxTokens: 50,
 		Prompt:    prompt,
 	}
 	resp, err := openAiGoClient.CreateCompletion(ctx, req)
