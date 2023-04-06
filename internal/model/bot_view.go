@@ -1,7 +1,6 @@
 package model
 
 type BotView struct {
-	Id       string
-	Name     string
-	Messages []string
+	Id   string
+	Name string
 }

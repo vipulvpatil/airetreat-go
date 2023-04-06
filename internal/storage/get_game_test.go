@@ -156,21 +156,6 @@ func Test_GetGame(t *testing.T) {
 						Name:      fmt.Sprintf("bot%d", i+1),
 						TypeOfBot: "AI",
 					}
-					switch botOpts.Id {
-					case "bot_id1":
-						botOpts.Messages = []model.Message{
-							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-							{Text: "A2: what gold!", CreatedAt: time.Now()},
-						}
-					case "bot_id2":
-						botOpts.Messages = []model.Message{
-							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							{Text: "Q2: Second question?", CreatedAt: time.Now()},
-						}
-					}
 					bot, _ := model.NewBot(botOpts)
 					bots = append(bots, bot)
 				}
@@ -188,6 +173,15 @@ func Test_GetGame(t *testing.T) {
 						CreatedAt:               time.Now(),
 						UpdatedAt:               time.Now(),
 						Bots:                    bots,
+						Messages: []*model.Message{
+							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+							{Text: "A2: what gold!", CreatedAt: time.Now()},
+							{Text: "Q2: Second question?", CreatedAt: time.Now()},
+						},
 					},
 				)
 				return game
@@ -248,13 +242,13 @@ func Test_GetGame(t *testing.T) {
 					"type" = 'HUMAN'
 					WHERE id = 'bot_id5'`,
 				},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id1', 'bot_id1', 'Q1: what is your name?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id2', 'bot_id1', 'A1: My name is Antony Gonsalvez')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id3', 'bot_id2', 'Q1: What is your name?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id4', 'bot_id2', 'A1: Bot 2 Dot 2')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id5', 'bot_id1', 'Q2: Where is the gold?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id6', 'bot_id1', 'A2: what gold!')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id7', 'bot_id2', 'Q2: Second question?')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id1', 'bot_id2', 'bot_id1', 'Q1: what is your name?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id2', 'bot_id1', 'bot_id1', 'A1: My name is Antony Gonsalvez', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id3', 'bot_id1', 'bot_id2', 'Q1: What is your name?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id4', 'bot_id2', 'bot_id2', 'A1: Bot 2 Dot 2', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id5', 'bot_id2', 'bot_id1', 'Q2: Where is the gold?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id6', 'bot_id1', 'bot_id1', 'A2: what gold!', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id7', 'bot_id1', 'bot_id2', 'Q2: Second question?', 'question')`},
 				{
 					Query: `UPDATE public."games" SET
 					"last_question" = 'Q2: Second question?',
@@ -322,21 +316,6 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 						Name:      fmt.Sprintf("bot%d", i+1),
 						TypeOfBot: "AI",
 					}
-					switch botOpts.Id {
-					case "bot_id1":
-						botOpts.Messages = []model.Message{
-							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-							{Text: "A2: what gold!", CreatedAt: time.Now()},
-						}
-					case "bot_id2":
-						botOpts.Messages = []model.Message{
-							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							{Text: "Q2: Second question?", CreatedAt: time.Now()},
-						}
-					}
 					bot, _ := model.NewBot(botOpts)
 					bots = append(bots, bot)
 				}
@@ -354,6 +333,15 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 						CreatedAt:               time.Now(),
 						UpdatedAt:               time.Now(),
 						Bots:                    bots,
+						Messages: []*model.Message{
+							{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+							{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+							{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+							{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+							{Text: "A2: what gold!", CreatedAt: time.Now()},
+							{Text: "Q2: Second question?", CreatedAt: time.Now()},
+						},
 					},
 				)
 				return game
@@ -414,13 +402,13 @@ func Test_GetGameUsingTransaction(t *testing.T) {
 					"type" = 'HUMAN'
 					WHERE id = 'bot_id5'`,
 				},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id1', 'bot_id1', 'Q1: what is your name?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id2', 'bot_id1', 'A1: My name is Antony Gonsalvez')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id3', 'bot_id2', 'Q1: What is your name?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id4', 'bot_id2', 'A1: Bot 2 Dot 2')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id5', 'bot_id1', 'Q2: Where is the gold?')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id6', 'bot_id1', 'A2: what gold!')`},
-				{Query: `INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ('message_id7', 'bot_id2', 'Q2: Second question?')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id1', 'bot_id2', 'bot_id1', 'Q1: what is your name?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id2', 'bot_id1', 'bot_id1', 'A1: My name is Antony Gonsalvez', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id3', 'bot_id1', 'bot_id2', 'Q1: What is your name?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id4', 'bot_id2', 'bot_id2', 'A1: Bot 2 Dot 2', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id5', 'bot_id2', 'bot_id1', 'Q2: Where is the gold?', 'question')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id6', 'bot_id1', 'bot_id1', 'A2: what gold!', 'answer')`},
+				{Query: `INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ('message_id7', 'bot_id1', 'bot_id2', 'Q2: Second question?', 'question')`},
 				{
 					Query: `UPDATE public."games" SET
 					"last_question" = 'Q2: Second question?',

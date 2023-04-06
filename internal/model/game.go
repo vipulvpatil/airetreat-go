@@ -23,6 +23,7 @@ type Game struct {
 	createdAt               time.Time
 	updatedAt               time.Time
 	bots                    []*Bot
+	messages                []*Message
 }
 
 type GameOptions struct {
@@ -38,6 +39,7 @@ type GameOptions struct {
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
 	Bots                    []*Bot
+	Messages                []*Message
 }
 
 func NewGame(opts GameOptions) (*Game, error) {
@@ -83,6 +85,7 @@ func NewGame(opts GameOptions) (*Game, error) {
 		createdAt:               opts.CreatedAt,
 		updatedAt:               opts.UpdatedAt,
 		bots:                    opts.Bots,
+		messages:                opts.Messages,
 	}, nil
 }
 
@@ -307,24 +310,26 @@ func (game *Game) GetTargetBotForNextQuestion() (*Bot, error) {
 }
 
 func getBotsWithLeastNumberOfMessages(bots []*Bot) []*Bot {
-	if len(bots) == 0 {
-		return bots
-	}
-	leastNumberOfMessages := len(bots[0].messages)
-	for _, bot := range bots {
-		if len(bot.messages) < leastNumberOfMessages {
-			leastNumberOfMessages = len(bot.messages)
-		}
-	}
+	// if len(bots) == 0 {
+	// 	return bots
+	// }
+	// leastNumberOfMessages := len(bots[0].messages)
+	// for _, bot := range bots {
+	// 	if len(bot.messages) < leastNumberOfMessages {
+	// 		leastNumberOfMessages = len(bot.messages)
+	// 	}
+	// }
 
-	botsWithLeastNumberOfMessages := []*Bot{}
-	for _, bot := range bots {
-		if len(bot.messages) == leastNumberOfMessages {
-			botsWithLeastNumberOfMessages = append(botsWithLeastNumberOfMessages, bot)
-		}
-	}
+	// botsWithLeastNumberOfMessages := []*Bot{}
+	// for _, bot := range bots {
+	// 	if len(bot.messages) == leastNumberOfMessages {
+	// 		botsWithLeastNumberOfMessages = append(botsWithLeastNumberOfMessages, bot)
+	// 	}
+	// }
 
-	return botsWithLeastNumberOfMessages
+	// return botsWithLeastNumberOfMessages
+	// TODO: this is temporary code. Fix after messages are coming through correctly
+	return bots
 }
 
 func (game *Game) getCurrentTurnBot() *Bot {
@@ -342,24 +347,7 @@ func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
 }
 
 func (game *Game) GetConversation() []ConversationElement {
-	sortedConversation := conversationSortByCreatedAt{}
-	for _, bot := range game.bots {
-		// TODO: this is brittle. and based on the assumption that the messages are always question followed by answer.
-		sortedConversationElement := sortedConversationElement{}
-		for j, message := range bot.messages {
-			if j%2 == 0 {
-				sortedConversationElement.IsQuestion = true
-			} else {
-				sortedConversationElement.IsQuestion = false
-			}
-			sortedConversationElement.BotId = bot.id
-			sortedConversationElement.BotName = bot.name
-			sortedConversationElement.Text = message.Text
-			sortedConversationElement.CreatedAt = message.CreatedAt
-			sortedConversation = append(sortedConversation, sortedConversationElement)
-		}
-	}
-	return sortedConversation.sortAndConvertToConversation()
+	return nil
 }
 
 func (game *Game) GetBotNames() []string {

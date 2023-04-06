@@ -14,7 +14,6 @@ type Bot struct {
 	name      string
 	typeOfBot botType
 	player    *Player
-	messages  []Message
 }
 
 type BotOptions struct {
@@ -22,7 +21,6 @@ type BotOptions struct {
 	Name            string
 	TypeOfBot       string
 	ConnectedPlayer *Player
-	Messages        []Message
 }
 
 func NewBot(opts BotOptions) (*Bot, error) {
@@ -55,7 +53,6 @@ func NewBot(opts BotOptions) (*Bot, error) {
 		name:      opts.Name,
 		typeOfBot: typeOfBot,
 		player:    opts.ConnectedPlayer,
-		messages:  opts.Messages,
 	}, nil
 }
 
@@ -101,12 +98,4 @@ func RandomBotNames() []string {
 		botNames[i], botNames[j] = botNames[j], botNames[i]
 	})
 	return botNames[0:totalNumberOfBotsPerGame]
-}
-
-func (b *Bot) messageTexts() []string {
-	var texts []string
-	for _, message := range b.messages {
-		texts = append(texts, message.Text)
-	}
-	return texts
 }

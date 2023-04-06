@@ -49,9 +49,8 @@ func prepareBotViews(bots []*Bot) []BotView {
 	botViews := []BotView{}
 	for _, bot := range bots {
 		botViews = append(botViews, BotView{
-			Id:       bot.id,
-			Name:     bot.name,
-			Messages: bot.messageTexts(),
+			Id:   bot.id,
+			Name: bot.name,
 		})
 	}
 

@@ -32,7 +32,8 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
 	g.created_at, g.updated_at,
-	b.id, b.name, b.type, b.player_id, m.text, m.created_at
+	b.id, b.name, b.type, b.player_id,
+	m.source_bot_id, m.target_bot_id, m.text, m.created_at
 	FROM public."games" AS g
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
 	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
@@ -44,12 +45,13 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
 	g.created_at, g.updated_at,
-	b.id, b.name, b.type, b.player_id, m.text, m.created_at
+	b.id, b.name, b.type, b.player_id,
+	m.source_bot_id, m.target_bot_id, m.text, m.created_at
 	FROM public."games" AS g
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
 	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
 	WHERE g.id = $1
-	ORDER BY b.created_at ASC, b.id, m.created_at, m.id
+	ORDER BY b.created_at ASC, b.id, m.created_at ASC, m.id
 	FOR UPDATE OF g`
 
 	var query string
@@ -72,7 +74,9 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	for rows.Next() {
 		var botOpts model.BotOptions
 		var playerId sql.NullString
-		var message sql.NullString
+		var messageSourceBotId sql.NullString
+		var messageTargetBotId sql.NullString
+		var messageText sql.NullString
 		var lastQuestion sql.NullString
 		var lastQuestionTargetBotId sql.NullString
 		var messageCreatedAt sql.NullTime
@@ -92,7 +96,9 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 			&botOpts.Name,
 			&botOpts.TypeOfBot,
 			&playerId,
-			&message,
+			&messageSourceBotId,
+			&messageTargetBotId,
+			&messageText,
 			&messageCreatedAt,
 		)
 
@@ -120,10 +126,14 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 				botOptsOrderedIds = append(botOptsOrderedIds, botOpts.Id)
 				botOptsMap[botOpts.Id] = botOpts
 			}
-			if message.Valid {
-				botOpts = botOptsMap[botOpts.Id]
-				botOpts.Messages = append(botOpts.Messages, model.Message{Text: message.String, CreatedAt: messageCreatedAt.Time})
-				botOptsMap[botOpts.Id] = botOpts
+			if messageText.Valid {
+				message := model.Message{
+					SourceBotId: messageSourceBotId.String,
+					TargetBotId: messageTargetBotId.String,
+					Text:        messageText.String,
+					CreatedAt:   messageCreatedAt.Time,
+				}
+				opts.Messages = append(opts.Messages, &message)
 			}
 		}
 	}

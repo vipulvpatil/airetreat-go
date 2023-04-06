@@ -8,21 +8,21 @@ import (
 )
 
 type MessageCreator interface {
-	CreateMessage(sourceBotId, targetBotId, text string) error
-	CreateMessageUsingTransaction(sourceBotId, targetBotId, text string, transaction DatabaseTransaction) error
+	CreateMessage(sourceBotId, targetBotId, text, messageType string) error
+	CreateMessageUsingTransaction(sourceBotId, targetBotId, text, messageType string, transaction DatabaseTransaction) error
 }
 
-func (s *Storage) CreateMessage(sourceBotId, targetBotId, text string) error {
+func (s *Storage) CreateMessage(sourceBotId, targetBotId, text, messageType string) error {
 	id := s.IdGenerator.Generate()
-	return createMessageUsingCustomDbHandler(s.db, id, sourceBotId, targetBotId, text)
+	return createMessageUsingCustomDbHandler(s.db, id, sourceBotId, targetBotId, text, messageType)
 }
 
-func (s *Storage) CreateMessageUsingTransaction(sourceBotId, targetBotId, text string, transaction DatabaseTransaction) error {
+func (s *Storage) CreateMessageUsingTransaction(sourceBotId, targetBotId, text, messageType string, transaction DatabaseTransaction) error {
 	id := s.IdGenerator.Generate()
-	return createMessageUsingCustomDbHandler(transaction, id, sourceBotId, targetBotId, text)
+	return createMessageUsingCustomDbHandler(transaction, id, sourceBotId, targetBotId, text, messageType)
 }
 
-func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId, targetBotId, text string) error {
+func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId, targetBotId, text, messageType string) error {
 	if utilities.IsBlank(sourceBotId) {
 		return errors.New("sourceBotId cannot be blank")
 	}
@@ -35,8 +35,21 @@ func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId
 		return errors.New("text cannot be blank")
 	}
 
+	switch messageType {
+	case "question":
+		if sourceBotId == targetBotId {
+			return errors.Errorf("question source and target bot cannot be same. %s %s", sourceBotId, targetBotId)
+		}
+	case "answer":
+		if sourceBotId != targetBotId {
+			return errors.Errorf("answer source and target bot should be same. %s %s", sourceBotId, targetBotId)
+		}
+	default:
+		return errors.New("invalid messageType")
+	}
+
 	result, err := customDb.Exec(
-		`INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text") VALUES ($1, $2, $3, $4)`, id, sourceBotId, targetBotId, text,
+		`INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text", "type") VALUES ($1, $2, $3, $4, $5)`, id, sourceBotId, targetBotId, text, messageType,
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message: %s %s %s", sourceBotId, targetBotId, text))

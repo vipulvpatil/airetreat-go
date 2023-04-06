@@ -70,7 +70,7 @@ func Test_CreateGame(t *testing.T) {
 				defer rows.Close()
 
 				botIndex := 0
-				expectedBotNames := []string{"Electronic Device-209", "ED-I", "B.O.B.Z", "T-800X", "GLaDOODLES"}
+				expectedBotNames := []string{"T-800X", "Davide", "ED-I", "Sort", "Avis"}
 
 				for rows.Next() {
 					var (

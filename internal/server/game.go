@@ -75,16 +75,15 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 
 	bots := []*pb.Bot{}
 	for _, bot := range gameView.Bots {
-		messages := []*pb.BotMessage{}
-		for _, message := range bot.Messages {
-			messages = append(messages, &pb.BotMessage{
-				Text: message,
-			})
-		}
+		// messages := []*pb.BotMessage{}
+		// for _, message := range bot.Messages {
+		// 	messages = append(messages, &pb.BotMessage{
+		// 		Text: message,
+		// 	})
+		// }
 		bots = append(bots, &pb.Bot{
-			Id:          bot.Id,
-			Name:        bot.Name,
-			BotMessages: messages,
+			Id:   bot.Id,
+			Name: bot.Name,
 		})
 	}
 

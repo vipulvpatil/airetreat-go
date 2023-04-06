@@ -56,23 +56,19 @@ message GetGameForPlayerResponse {
 	string lastQuestion = 5;
 	string myBotId = 7;
 	repeated Bot bots = 8;
-  repeated ConversationElement conversation = 9;
+  repeated GameMessage messages = 9;
 }
 
 message Bot {
   string id = 1;
   string name = 2;
-  repeated BotMessage botMessages = 3;
 }
 
-message BotMessage {
-  string text = 1;
-}
-
-message ConversationElement {
-  bool isQuestion = 1;
-	string botId = 2;
-	string text = 3;
+message GameMessage {
+  string sourceBotId = 1;
+  string targetBotId = 2;
+  string text = 3;
+  string type = 4;
 }
 
 message GetGamesForPlayerRequest {
