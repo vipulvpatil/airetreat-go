@@ -75,24 +75,19 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 
 	bots := []*pb.Bot{}
 	for _, bot := range gameView.Bots {
-		// messages := []*pb.BotMessage{}
-		// for _, message := range bot.Messages {
-		// 	messages = append(messages, &pb.BotMessage{
-		// 		Text: message,
-		// 	})
-		// }
 		bots = append(bots, &pb.Bot{
 			Id:   bot.Id,
 			Name: bot.Name,
 		})
 	}
 
-	conversation := []*pb.ConversationElement{}
-	for _, conversationElement := range gameView.Conversation {
-		conversation = append(conversation, &pb.ConversationElement{
-			IsQuestion: conversationElement.IsQuestion,
-			BotId:      conversationElement.BotId,
-			Text:       conversationElement.Text,
+	gameMessages := []*pb.GameMessage{}
+	for _, detailedMessage := range gameView.DetailedMessages {
+		gameMessages = append(gameMessages, &pb.GameMessage{
+			SourceBotId: detailedMessage.SourceBotId,
+			TargetBotId: detailedMessage.TargetBotId,
+			Text:        detailedMessage.Text,
+			Type:        detailedMessage.MessageType,
 		})
 	}
 
@@ -104,7 +99,7 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 		LastQuestion:   gameView.LastQuestion,
 		MyBotId:        gameView.MyBotId,
 		Bots:           bots,
-		Conversation:   conversation,
+		Messages:       gameMessages,
 	}, nil
 }
 

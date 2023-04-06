@@ -346,8 +346,28 @@ func (game *Game) GetBotThatGameIsWaitingOn() *Bot {
 	return nil
 }
 
-func (game *Game) GetConversation() []ConversationElement {
-	return nil
+func (game *Game) GetDetailedMessages() []DetailedMessage {
+	botNameMap := make(map[string]string)
+	for _, bot := range game.bots {
+		botNameMap[bot.id] = bot.name
+	}
+
+	unsortedDetailedMessages := []DetailedMessage{}
+	for _, message := range game.messages {
+		unsortedDetailedMessages = append(unsortedDetailedMessages, DetailedMessage{
+			Text:          message.Text,
+			CreatedAt:     message.CreatedAt,
+			SourceBotId:   message.SourceBotId,
+			SourceBotName: botNameMap[message.SourceBotId],
+			TargetBotId:   message.TargetBotId,
+			TargetBotName: botNameMap[message.TargetBotId],
+			MessageType:   message.MessageType,
+		})
+	}
+
+	var sortedDetailedMessages detailedMessageSortByCreatedAt = unsortedDetailedMessages
+	sortedDetailedMessages.sort()
+	return sortedDetailedMessages
 }
 
 func (game *Game) GetBotNames() []string {

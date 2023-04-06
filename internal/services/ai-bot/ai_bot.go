@@ -45,8 +45,8 @@ func NewAiQuestionGenerator(opts AiBotOptions) AiQuestionGenerator {
 		return nil
 	}
 
-	conversation := opts.Game.GetConversation()
-	conversationText := constructConversationText(conversation)
+	detailedMessages := opts.Game.GetDetailedMessages()
+	conversationText := constructConversationText(detailedMessages)
 	return &aiBot{
 		name:              questionerBot.Name(),
 		conversationSoFar: conversationText,
@@ -65,8 +65,8 @@ func NewAiAnswerGenerator(opts AiBotOptions) AiAnswerGenerator {
 		return nil
 	}
 
-	conversation := opts.Game.GetConversation()
-	conversationText := constructConversationText(conversation)
+	detailedMessages := opts.Game.GetDetailedMessages()
+	conversationText := constructConversationText(detailedMessages)
 	return &aiBot{
 		name:              answeringBot.Name(),
 		conversationSoFar: conversationText,
@@ -114,19 +114,14 @@ func randomFallbackAnswer() string {
 	return "I am unsure how to answer that"
 }
 
-func constructConversationText(conversation []model.ConversationElement) string {
-	conversationTextList := []string{}
-	for _, conversationElement := range conversation {
-		prefix := ""
-		if conversationElement.IsQuestion {
-			prefix = "Question"
-		} else {
-			prefix = conversationElement.BotName
-		}
-		nextConversationText := fmt.Sprintf("%s: %s", prefix, conversationElement.Text)
-		conversationTextList = append(conversationTextList, nextConversationText)
+func constructConversationText(detailedMessages []model.DetailedMessage) string {
+	conversationMessageList := []string{}
+	for _, detailedMessage := range detailedMessages {
+		prefix := detailedMessage.SourceBotName
+		nextConversationMessage := fmt.Sprintf("%s: %s", prefix, detailedMessage.Text)
+		conversationMessageList = append(conversationMessageList, nextConversationMessage)
 	}
-	return strings.Join(conversationTextList, "\n")
+	return strings.Join(conversationMessageList, "\n")
 }
 
 func createFirstQuestionPromptWithContext(promptContext string) string {

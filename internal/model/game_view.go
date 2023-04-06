@@ -8,14 +8,14 @@ import (
 )
 
 type GameView struct {
-	State          gameViewState
-	DisplayMessage string
-	StateStartedAt *time.Time
-	StateTotalTime int64
-	LastQuestion   string
-	MyBotId        string
-	Bots           []BotView
-	Conversation   []ConversationElement
+	State            gameViewState
+	DisplayMessage   string
+	StateStartedAt   *time.Time
+	StateTotalTime   int64
+	LastQuestion     string
+	MyBotId          string
+	Bots             []BotView
+	DetailedMessages []DetailedMessage
 }
 
 func (g *Game) GameViewForPlayer(playerId string) *GameView {
@@ -34,14 +34,14 @@ func (g *Game) GameViewForPlayer(playerId string) *GameView {
 	state, displayMessage := convertGameStateToGameViewStateWithMessage(g, myBotId)
 
 	return &GameView{
-		State:          state,
-		DisplayMessage: displayMessage,
-		StateStartedAt: g.stateHandledAt,
-		StateTotalTime: g.stateTotalTime,
-		LastQuestion:   g.lastQuestion,
-		MyBotId:        myBotId,
-		Bots:           bots,
-		Conversation:   g.GetConversation(),
+		State:            state,
+		DisplayMessage:   displayMessage,
+		StateStartedAt:   g.stateHandledAt,
+		StateTotalTime:   g.stateTotalTime,
+		LastQuestion:     g.lastQuestion,
+		MyBotId:          myBotId,
+		Bots:             bots,
+		DetailedMessages: g.GetDetailedMessages(),
 	}
 }
 

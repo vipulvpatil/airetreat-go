@@ -39,6 +39,7 @@ message SendMessageRequest {
   string playerId = 2;
   string botId = 3;
   string text = 4;
+  string type = 5;
 }
 
 message SendMessageResponse {}

@@ -35,20 +35,6 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							Name:      fmt.Sprintf("bot%d", i+1),
 							TypeOfBot: "AI",
 						}
-						switch botOpts.Id {
-						case "bot_id1":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-							}
-						case "bot_id2":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							}
-						}
 						bot, _ := model.NewBot(botOpts)
 						bots = append(bots, bot)
 					}
@@ -63,6 +49,14 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							CreatedAt:        time.Now(),
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
+							Messages: []*model.Message{
+								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+								{Text: "A2: what gold!", CreatedAt: time.Now()},
+								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							},
 						},
 					)
 				},
@@ -96,20 +90,6 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							Name:      fmt.Sprintf("bot%d", i+1),
 							TypeOfBot: "AI",
 						}
-						switch botOpts.Id {
-						case "bot_id1":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-							}
-						case "bot_id2":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							}
-						}
 						bot, _ := model.NewBot(botOpts)
 						bots = append(bots, bot)
 					}
@@ -125,6 +105,14 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							CreatedAt:        time.Now(),
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
+							Messages: []*model.Message{
+								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+								{Text: "A2: what gold!", CreatedAt: time.Now()},
+								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							},
 						},
 					)
 				},
@@ -275,20 +263,6 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 							Name:      fmt.Sprintf("bot%d", i+1),
 							TypeOfBot: "AI",
 						}
-						switch botOpts.Id {
-						case "bot_id1":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-							}
-						case "bot_id2":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							}
-						}
 						bot, _ := model.NewBot(botOpts)
 						bots = append(bots, bot)
 					}
@@ -303,6 +277,14 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 							CreatedAt:        time.Now(),
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
+							Messages: []*model.Message{
+								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+								{Text: "A2: what gold!", CreatedAt: time.Now()},
+								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							},
 						},
 					)
 				},
@@ -673,20 +655,6 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 							Name:      fmt.Sprintf("bot%d", i+1),
 							TypeOfBot: "AI",
 						}
-						switch botOpts.Id {
-						case "bot_id1":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-							}
-						case "bot_id2":
-							botOpts.Messages = []model.Message{
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
-							}
-						}
 						bot, _ := model.NewBot(botOpts)
 						bots = append(bots, bot)
 					}
@@ -703,6 +671,14 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 							CreatedAt:               time.Now(),
 							UpdatedAt:               time.Now(),
 							Bots:                    bots,
+							Messages: []*model.Message{
+								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
+								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
+								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
+								{Text: "A2: what gold!", CreatedAt: time.Now()},
+								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
+								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+							},
 						},
 					)
 				},

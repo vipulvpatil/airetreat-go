@@ -111,7 +111,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), targetBot.Id(), question, tx)
+	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), targetBot.Id(), question, "question", tx)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), sourceBot.Id(), answer, tx)
+	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), sourceBot.Id(), answer, "answer", tx)
 	if err != nil {
 		return err
 	}
