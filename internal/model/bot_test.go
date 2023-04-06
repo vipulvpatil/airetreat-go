@@ -303,7 +303,7 @@ func Test_RandomBotNames(t *testing.T) {
 		{
 			name:           "random names are generated",
 			input:          10,
-			expectedOutput: []string{"The Hivey-five", "Gart", "RoboCupp", "T-3PO", "Avis"},
+			expectedOutput: []string{"R4-D4", "HAL 99", "Davide", "C-21PO", "EVE-a-L"},
 		},
 	}
 

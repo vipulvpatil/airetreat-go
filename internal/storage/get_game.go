@@ -35,7 +35,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	b.id, b.name, b.type, b.player_id, m.text, m.created_at
 	FROM public."games" AS g
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
-	LEFT JOIN public."messages" AS m ON m.bot_id = b.id
+	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
 	WHERE g.id = $1
 	ORDER BY b.created_at ASC, b.id, m.created_at, m.id`
 
@@ -47,7 +47,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	b.id, b.name, b.type, b.player_id, m.text, m.created_at
 	FROM public."games" AS g
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
-	LEFT JOIN public."messages" AS m ON m.bot_id = b.id
+	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
 	WHERE g.id = $1
 	ORDER BY b.created_at ASC, b.id, m.created_at, m.id
 	FOR UPDATE OF g`

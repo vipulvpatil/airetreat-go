@@ -8,8 +8,8 @@ import (
 )
 
 type MessageCreator interface {
-	CreateMessage(botId, text string) error
-	CreateMessageUsingTransaction(botId, text string, transaction DatabaseTransaction) error
+	CreateMessage(sourceBotId, targetBotId, text string) error
+	CreateMessageUsingTransaction(sourceBotId, targetBotId, text string, transaction DatabaseTransaction) error
 }
 
 func (s *Storage) CreateMessage(sourceBotId, targetBotId, text string) error {
@@ -36,7 +36,7 @@ func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId
 	}
 
 	result, err := customDb.Exec(
-		`INSERT INTO public."messages" ("id", "source_bot_id", "bot_id", "text") VALUES ($1, $2, $3)`, id, sourceBotId, targetBotId, text,
+		`INSERT INTO public."messages" ("id", "source_bot_id", "target_bot_id", "text") VALUES ($1, $2, $3, $4)`, id, sourceBotId, targetBotId, text,
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message: %s %s %s", sourceBotId, targetBotId, text))
@@ -44,7 +44,7 @@ func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message and changing db: %s %s", sourceBotId, text))
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message and changing db: %s %s %s", sourceBotId, targetBotId, text))
 	}
 
 	if rowsAffected != 1 {

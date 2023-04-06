@@ -14,8 +14,9 @@ func Test_CreateMessage(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
-			botId string
-			text  string
+			sourceBotId string
+			targetBotId string
+			text        string
 		}
 		setupSqlStmts   []TestSqlStmts
 		cleanupSqlStmts []TestSqlStmts
@@ -25,11 +26,44 @@ func Test_CreateMessage(t *testing.T) {
 		errorString     string
 	}{
 		{
-			name: "errors when botId is blank",
+			name: "errors when sourceBotId is blank",
 			input: struct {
-				botId string
-				text  string
+				sourceBotId string
+				targetBotId string
+				text        string
 			}{
+				"",
+				"",
+				"this is a message",
+			},
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			idGenerator:     &utilities.IdGeneratorMockConstant{Id: "message_id1"},
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					id        string
+					botId     string
+					text      string
+					createdAt time.Time
+				)
+				err := db.QueryRow(
+					`SELECT "id", "bot_id", "text", "created_at"
+						FROM public."messages" WHERE "id" = 'message_id1'`,
+				).Scan(&id, &botId, &text, &createdAt)
+				assert.EqualError(t, err, "sql: no rows in result set")
+				return true
+			},
+			errorExpected: true,
+			errorString:   "botId cannot be blank",
+		},
+		{
+			name: "errors when sourceBotId is blank",
+			input: struct {
+				sourceBotId string
+				targetBotId string
+				text        string
+			}{
+				"bot_id1",
 				"",
 				"this is a message",
 			},
@@ -56,10 +90,12 @@ func Test_CreateMessage(t *testing.T) {
 		{
 			name: "errors when text is blank",
 			input: struct {
-				botId string
-				text  string
+				sourceBotId string
+				targetBotId string
+				text        string
 			}{
 				"bot_id1",
+				"bot_id2",
 				"",
 			},
 			setupSqlStmts:   nil,
@@ -85,10 +121,12 @@ func Test_CreateMessage(t *testing.T) {
 		{
 			name: "creates message successfully",
 			input: struct {
-				botId string
-				text  string
+				sourceBotId string
+				targetBotId string
+				text        string
 			}{
 				"bot_id1",
+				"bot_id2",
 				"this is a message",
 			},
 			setupSqlStmts: []TestSqlStmts{
@@ -108,6 +146,14 @@ func Test_CreateMessage(t *testing.T) {
 						'bot_id1', 'bot1', 'AI', 'game_id1'
 					)`,
 				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'AI', 'game_id1'
+					)`,
+				},
 			},
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
@@ -115,18 +161,20 @@ func Test_CreateMessage(t *testing.T) {
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "message_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var (
-					id        string
-					botId     string
-					text      string
-					createdAt time.Time
+					id          string
+					sourceBotId string
+					targetBotId string
+					text        string
+					createdAt   time.Time
 				)
 				err := db.QueryRow(
-					`SELECT "id", "bot_id", "text", "created_at"
+					`SELECT "id", "source_bot_id", "target_bot_id", "text", "created_at"
 						FROM public."messages" WHERE "id" = 'message_id1'`,
-				).Scan(&id, &botId, &text, &createdAt)
+				).Scan(&id, &sourceBotId, &targetBotId, &text, &createdAt)
 				assert.NoError(t, err)
 				assert.Equal(t, "message_id1", id)
-				assert.Equal(t, "bot_id1", botId)
+				assert.Equal(t, "bot_id1", sourceBotId)
+				assert.Equal(t, "bot_id2", targetBotId)
 				assert.Equal(t, "this is a message", text)
 				model.AssertTimeAlmostEqual(t, createdAt, time.Now(), 5*time.Second, "createdAt is not within expected range")
 				return true
@@ -147,7 +195,7 @@ func Test_CreateMessage(t *testing.T) {
 
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
-			err := s.CreateMessage(tt.input.botId, tt.input.text)
+			err := s.CreateMessage(tt.input.sourceBotId, tt.input.targetBotId, tt.input.text)
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 			} else {
@@ -164,8 +212,9 @@ func Test_CreateMessageUsingTransaction(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
-			botId string
-			text  string
+			sourceBotId string
+			targetBotId string
+			text        string
 		}
 		setupSqlStmts   []TestSqlStmts
 		cleanupSqlStmts []TestSqlStmts
@@ -177,10 +226,12 @@ func Test_CreateMessageUsingTransaction(t *testing.T) {
 		{
 			name: "creates message successfully",
 			input: struct {
-				botId string
-				text  string
+				sourceBotId string
+				targetBotId string
+				text        string
 			}{
 				"bot_id1",
+				"bot_id2",
 				"this is a message",
 			},
 			setupSqlStmts: []TestSqlStmts{
@@ -200,6 +251,14 @@ func Test_CreateMessageUsingTransaction(t *testing.T) {
 						'bot_id1', 'bot1', 'AI', 'game_id1'
 					)`,
 				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id"
+					)
+					VALUES (
+						'bot_id2', 'bot2', 'AI', 'game_id1'
+					)`,
+				},
 			},
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
@@ -207,18 +266,20 @@ func Test_CreateMessageUsingTransaction(t *testing.T) {
 			idGenerator: &utilities.IdGeneratorMockConstant{Id: "message_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var (
-					id        string
-					botId     string
-					text      string
-					createdAt time.Time
+					id          string
+					sourceBotId string
+					targetBotId string
+					text        string
+					createdAt   time.Time
 				)
 				err := db.QueryRow(
-					`SELECT "id", "bot_id", "text", "created_at"
+					`SELECT "id", "source_bot_id", "target_bot_id", "text", "created_at"
 						FROM public."messages" WHERE "id" = 'message_id1'`,
-				).Scan(&id, &botId, &text, &createdAt)
+				).Scan(&id, &sourceBotId, &targetBotId, &text, &createdAt)
 				assert.NoError(t, err)
 				assert.Equal(t, "message_id1", id)
-				assert.Equal(t, "bot_id1", botId)
+				assert.Equal(t, "bot_id1", sourceBotId)
+				assert.Equal(t, "bot_id2", targetBotId)
 				assert.Equal(t, "this is a message", text)
 				model.AssertTimeAlmostEqual(t, createdAt, time.Now(), 5*time.Second, "createdAt is not within expected range")
 				return true
@@ -242,7 +303,7 @@ func Test_CreateMessageUsingTransaction(t *testing.T) {
 
 			tx, err := s.BeginTransaction()
 			assert.NoError(t, err)
-			err = s.CreateMessageUsingTransaction(tt.input.botId, tt.input.text, tx)
+			err = s.CreateMessageUsingTransaction(tt.input.sourceBotId, tt.input.targetBotId, tt.input.text, tx)
 			tx.Commit()
 			if !tt.errorExpected {
 				assert.NoError(t, err)

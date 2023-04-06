@@ -44,7 +44,7 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 		return nil, err
 	}
 
-	err = s.storage.CreateMessageUsingTransaction(req.GetBotId(), req.GetText(), tx)
+	err = s.storage.CreateMessageUsingTransaction(sourceBot.Id(), req.GetBotId(), req.GetText(), tx)
 	if err != nil {
 		return nil, err
 	}
