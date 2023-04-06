@@ -12,19 +12,23 @@ type MessageCreator interface {
 	CreateMessageUsingTransaction(botId, text string, transaction DatabaseTransaction) error
 }
 
-func (s *Storage) CreateMessage(botId, text string) error {
+func (s *Storage) CreateMessage(sourceBotId, targetBotId, text string) error {
 	id := s.IdGenerator.Generate()
-	return createMessageUsingCustomDbHandler(s.db, id, botId, text)
+	return createMessageUsingCustomDbHandler(s.db, id, sourceBotId, targetBotId, text)
 }
 
-func (s *Storage) CreateMessageUsingTransaction(botId, text string, transaction DatabaseTransaction) error {
+func (s *Storage) CreateMessageUsingTransaction(sourceBotId, targetBotId, text string, transaction DatabaseTransaction) error {
 	id := s.IdGenerator.Generate()
-	return createMessageUsingCustomDbHandler(transaction, id, botId, text)
+	return createMessageUsingCustomDbHandler(transaction, id, sourceBotId, targetBotId, text)
 }
 
-func createMessageUsingCustomDbHandler(customDb customDbHandler, id, botId, text string) error {
-	if utilities.IsBlank(botId) {
-		return errors.New("botId cannot be blank")
+func createMessageUsingCustomDbHandler(customDb customDbHandler, id, sourceBotId, targetBotId, text string) error {
+	if utilities.IsBlank(sourceBotId) {
+		return errors.New("sourceBotId cannot be blank")
+	}
+
+	if utilities.IsBlank(targetBotId) {
+		return errors.New("targetBotId cannot be blank")
 	}
 
 	if utilities.IsBlank(text) {
@@ -32,15 +36,15 @@ func createMessageUsingCustomDbHandler(customDb customDbHandler, id, botId, text
 	}
 
 	result, err := customDb.Exec(
-		`INSERT INTO public."messages" ("id", "bot_id", "text") VALUES ($1, $2, $3)`, id, botId, text,
+		`INSERT INTO public."messages" ("id", "source_bot_id", "bot_id", "text") VALUES ($1, $2, $3)`, id, sourceBotId, targetBotId, text,
 	)
 	if err != nil {
-		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message: %s %s", botId, text))
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message: %s %s %s", sourceBotId, targetBotId, text))
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message and changing db: %s %s", botId, text))
+		return utilities.WrapBadError(err, fmt.Sprintf("dbError while inserting message and changing db: %s %s", sourceBotId, text))
 	}
 
 	if rowsAffected != 1 {

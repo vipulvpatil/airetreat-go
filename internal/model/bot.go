@@ -95,7 +95,7 @@ func (b *Bot) ConnectPlayer(player *Player) error {
 
 func RandomBotNames() []string {
 	botNames := []string{
-		"C-21PO", "R4-D4", "Gart", "HAL 9999", "Avis", "ED-I", "T-5000", "Davide", "B.O.B.Z", "The Machy-ne", "GLaDOODLES", "JARV-EESE", "The Hivey-five", "T-3PO", "InfoData", "Sort", "Electronic Device-209", "T-800X", "RoboCupp", "EVE-a-L", "GLaDOSE",
+		"C-21PO", "R4-D4", "Gart", "HAL 99", "Avis", "ED-I", "Davide", "B.O.B.Z", "T-3PO", "Sort", "T-800X", "EVE-a-L", "GLaDOSE",
 	}
 	rand.Shuffle(len(botNames), func(i, j int) {
 		botNames[i], botNames[j] = botNames[j], botNames[i]

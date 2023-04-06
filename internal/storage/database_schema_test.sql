@@ -50,8 +50,10 @@ CREATE TABLE "games" (
 CREATE TABLE "messages" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "bot_id" TEXT NOT NULL,
     "text" TEXT NOT NULL,
+    "source_bot_id" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "target_bot_id" TEXT NOT NULL,
 
     CONSTRAINT "messages_pkey" PRIMARY KEY ("id")
 );
@@ -110,7 +112,10 @@ ALTER TABLE "bots" ADD CONSTRAINT "bots_player_id_fkey" FOREIGN KEY ("player_id"
 ALTER TABLE "games" ADD CONSTRAINT "games_last_question_target_bot_id_fkey" FOREIGN KEY ("last_question_target_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "messages" ADD CONSTRAINT "messages_bot_id_fkey" FOREIGN KEY ("bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "messages" ADD CONSTRAINT "messages_source_bot_id_fkey" FOREIGN KEY ("source_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "messages" ADD CONSTRAINT "messages_target_bot_id_fkey" FOREIGN KEY ("target_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
