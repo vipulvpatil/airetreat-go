@@ -3,6 +3,8 @@ package model
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_GameViewForPlayer(t *testing.T) {
@@ -1058,7 +1060,11 @@ func Test_GameViewForPlayer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gameView := tt.input.game.GameViewForPlayer(tt.input.playerId)
-			AssertEqualGameView(t, gameView, tt.output)
+			if tt.output == nil {
+				assert.Nil(t, gameView)
+			} else {
+				AssertEqualGameView(t, gameView, tt.output)
+			}
 		})
 	}
 }

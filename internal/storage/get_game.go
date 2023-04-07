@@ -38,7 +38,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
 	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
 	WHERE g.id = $1
-	ORDER BY b.created_at ASC, b.id, m.created_at, m.id`
+	ORDER BY b.created_at ASC, b.id ASC, m.created_at ASC, m.id ASC`
 
 	queryWithLock := `SELECT
 	g.id, g.state, g.current_turn_index, g.turn_order,
@@ -51,7 +51,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
 	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
 	WHERE g.id = $1
-	ORDER BY b.created_at ASC, b.id, m.created_at ASC, m.id
+	ORDER BY b.created_at ASC, b.id ASC, m.created_at ASC, m.id ASC
 	FOR UPDATE OF g`
 
 	var query string

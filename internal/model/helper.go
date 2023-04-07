@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -19,6 +20,22 @@ func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.stateTotalTime, actual.stateTotalTime, "game stateTotalTime is not equal")
 	assert.Equal(t, expected.lastQuestion, actual.lastQuestion, "game lastQuestion is not equal")
 	assert.Equal(t, expected.lastQuestionTargetBotId, actual.lastQuestionTargetBotId, "game lastQuestionTargetBotId is not equal")
+
+	fmt.Println("expected-----------------------")
+	for _, m := range expected.messages {
+		fmt.Println(m)
+	}
+	fmt.Println("actual-------------------------")
+	for _, m := range actual.messages {
+		fmt.Println(m)
+	}
+	fmt.Println("theend-------------------------")
+
+	for i, expectedMessage := range expected.messages {
+		actualMessage := actual.messages[i]
+
+		AssertEqualMessage(t, expectedMessage, actualMessage)
+	}
 
 	// Since we cannot mock postgres time operations. We just check that the updated times are near expected times.
 	AssertTimeAlmostEqual(t, actual.createdAt, expected.createdAt, DELTA, "game createdAt is not within range")
@@ -46,18 +63,15 @@ func AssertEqualBot(t *testing.T, expected, actual *Bot) {
 	// }
 }
 
-func AssertTimeAlmostEqual(t *testing.T, actual, expected time.Time, delta time.Duration, msgAndArgs ...interface{}) bool {
-	return assert.WithinRange(
-		t,
-		actual,
-		expected.Add(-1*delta),
-		expected.Add(delta),
-		msgAndArgs,
-	)
+func AssertEqualMessage(t *testing.T, expected, actual *Message) {
+	assert.Equal(t, expected.Text, actual.Text, "message Text is not equal")
+	assert.Equal(t, expected.SourceBotId, actual.SourceBotId, "message SourceBotId is not equal")
+	assert.Equal(t, expected.TargetBotId, actual.TargetBotId, "message TargetBotId is not equal")
+	assert.Equal(t, expected.MessageType, actual.MessageType, "message MessageType is not equal")
+	AssertTimeAlmostEqual(t, actual.CreatedAt, expected.CreatedAt, DELTA, "message CreatedAt is not within range")
 }
 
 func AssertEqualGameView(t *testing.T, expected, actual *GameView) {
-
 	assert.Equal(t, expected.State, actual.State, "gameView State is not equal")
 	assert.Equal(t, expected.DisplayMessage, actual.DisplayMessage, "gameView DisplayMessage is not equal")
 	assert.Equal(t, expected.StateTotalTime, actual.StateTotalTime, "gameView StateTotalTime is not equal")
@@ -84,4 +98,14 @@ func AssertEqualDetailedMessage(t *testing.T, expected, actual DetailedMessage) 
 	assert.Equal(t, expected.TargetBotName, actual.TargetBotName, "detailedMessage TargetBotName is not equal")
 	assert.Equal(t, expected.MessageType, actual.MessageType, "detailedMessage MessageType is not equal")
 	AssertTimeAlmostEqual(t, actual.CreatedAt, expected.CreatedAt, DELTA, "detailedMessage CreatedAt is not within range")
+}
+
+func AssertTimeAlmostEqual(t *testing.T, actual, expected time.Time, delta time.Duration, msgAndArgs ...interface{}) bool {
+	return assert.WithinRange(
+		t,
+		actual,
+		expected.Add(-1*delta),
+		expected.Add(delta),
+		msgAndArgs,
+	)
 }
