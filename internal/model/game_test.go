@@ -1527,7 +1527,7 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          *Game
-		expectedOutput *Bot
+		expectedOutput string
 		errorExpected  bool
 		errorString    string
 	}{
@@ -1538,9 +1538,9 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 				turnOrder:        []string{"bot_id1"},
 				currentTurnIndex: 0,
 			},
-			expectedOutput: nil,
+			expectedOutput: "",
 			errorExpected:  true,
-			errorString:    "cannot get random bot from an empty list",
+			errorString:    "cannot get target bot from an empty list",
 		},
 		{
 			name: "errors if only one bot",
@@ -1556,9 +1556,9 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: nil,
+			expectedOutput: "",
 			errorExpected:  true,
-			errorString:    "cannot get random bot from an empty list",
+			errorString:    "cannot get target bot from an empty list",
 		},
 		{
 			name: "returns random bot with least messages",
@@ -1571,80 +1571,62 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 						id:        "bot_id1",
 						name:      "bot1",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-							{Text: "question 3", CreatedAt: time.Now()},
-							{Text: "answer 3", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id2",
 						name:      "bot2",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id3",
 						name:      "bot3",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-							{Text: "question 3", CreatedAt: time.Now()},
-							{Text: "answer 3", CreatedAt: time.Now()},
-							{Text: "question 4", CreatedAt: time.Now()},
-							{Text: "answer 4", CreatedAt: time.Now()},
-							{Text: "question 5", CreatedAt: time.Now()},
-							{Text: "answer 5", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id4",
 						name:      "bot4",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id5",
 						name:      "bot5",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 				},
-			},
-			expectedOutput: &Bot{
-				id:        "bot_id4",
-				name:      "bot4",
-				typeOfBot: ai,
-				messages: []Message{
-					{Text: "question 1", CreatedAt: time.Now()},
-					{Text: "answer 1", CreatedAt: time.Now()},
-					{Text: "question 2", CreatedAt: time.Now()},
-					{Text: "answer 2", CreatedAt: time.Now()},
+				messages: []*Message{
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "question 3", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "answer 3", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id3", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id3", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id3", Text: "question 3", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 3", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id3", Text: "question 4", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 4", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id3", Text: "question 5", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 5", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id4", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id4", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id5", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id5", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
 				},
 			},
-			errorExpected: false,
-			errorString:   "",
+			expectedOutput: "bot_id4",
+			errorExpected:  false,
+			errorString:    "",
 		},
 		{
 			name: "returns random bot with least messages excluding current turn bot",
@@ -1657,86 +1639,68 @@ func Test_GetTargetBotForNextQuestion(t *testing.T) {
 						id:        "bot_id1",
 						name:      "bot1",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id2",
 						name:      "bot2",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id3",
 						name:      "bot3",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id4",
 						name:      "bot4",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-						},
 					},
 					{
 						id:        "bot_id5",
 						name:      "bot5",
 						typeOfBot: ai,
-						messages: []Message{
-							{Text: "question 1", CreatedAt: time.Now()},
-							{Text: "answer 1", CreatedAt: time.Now()},
-							{Text: "question 2", CreatedAt: time.Now()},
-							{Text: "answer 2", CreatedAt: time.Now()},
-							{Text: "question 3", CreatedAt: time.Now()},
-							{Text: "answer 3", CreatedAt: time.Now()},
-							{Text: "question 4", CreatedAt: time.Now()},
-							{Text: "answer 4", CreatedAt: time.Now()},
-							{Text: "question 5", CreatedAt: time.Now()},
-							{Text: "answer 5", CreatedAt: time.Now()},
-						},
 					},
 				},
-			},
-			expectedOutput: &Bot{
-				id:        "bot_id3",
-				name:      "bot3",
-				typeOfBot: ai,
-				messages: []Message{
-					{Text: "question 1", CreatedAt: time.Now()},
-					{Text: "answer 1", CreatedAt: time.Now()},
-					{Text: "question 2", CreatedAt: time.Now()},
-					{Text: "answer 2", CreatedAt: time.Now()},
+				messages: []*Message{
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id3", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id3", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id3", TargetBotId: "bot_id3", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "question 1", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 1", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "question 2", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 2", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "question 3", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 3", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "question 4", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 4", CreatedAt: time.Now(), MessageType: "answer"},
+					{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "question 5", CreatedAt: time.Now(), MessageType: "question"},
+					{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "answer 5", CreatedAt: time.Now(), MessageType: "answer"},
 				},
 			},
-			errorExpected: false,
-			errorString:   "",
+			expectedOutput: "bot_id3",
+			errorExpected:  false,
+			errorString:    "",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rand.Seed(0)
-			result, err := tt.input.GetTargetBotForNextQuestion()
+			result, err := tt.input.GetTargetBotIdForNextQuestion()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
-				AssertEqualBot(t, tt.expectedOutput, result)
+				assert.Equal(t, tt.expectedOutput, result)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)

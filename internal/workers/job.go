@@ -79,7 +79,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 	}
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()
-	targetBot, err := game.GetTargetBotForNextQuestion()
+	targetBotId, err := game.GetTargetBotIdForNextQuestion()
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		},
 	)
 	question := aiBot.GetNextQuestion()
-	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBot.Id(), question)
+	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBotId, question)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		return err
 	}
 
-	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), targetBot.Id(), question, "question", tx)
+	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), targetBotId, question, "question", tx)
 	if err != nil {
 		return err
 	}

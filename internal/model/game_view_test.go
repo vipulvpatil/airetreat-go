@@ -3,8 +3,6 @@ package model
 import (
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_GameViewForPlayer(t *testing.T) {
@@ -48,48 +46,62 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
+					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
 					},
 				},
 			},
 			output: &GameView{
 				State:          waitingForPlayersToJoin,
-				DisplayMessage: "Please wait as players join in",
+				DisplayMessage: "Waiting for players to join in",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -108,18 +120,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -156,51 +160,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingForPlayersToJoin,
-				DisplayMessage: "Please wait as players join in",
+				DisplayMessage: "Waiting for players to join in",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -219,18 +237,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -267,51 +277,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnBotToAskAQuestion,
-				DisplayMessage: "Please wait as someone is asking a question",
+				DisplayMessage: "Someone is asking a question",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -330,18 +354,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -379,51 +395,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnBotToAnswer,
-				DisplayMessage: "Please wait as bot2 is answering the question",
+				DisplayMessage: "bot2 is answering the question",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -442,18 +472,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -491,51 +513,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnYouToAskAQuestion,
-				DisplayMessage: "Please pick a bot and ask a question. OR Click suggest for help!",
+				DisplayMessage: "Ask a question. OR Click suggest for help!",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -554,18 +590,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -603,51 +631,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnYouToAnswer,
-				DisplayMessage: "Please answer the question. OR Click suggest for help!",
+				DisplayMessage: "Answer the question. OR Click suggest for help!",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -666,18 +708,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -715,51 +749,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnBotToAskAQuestion,
-				DisplayMessage: "Please wait as someone is asking a question",
+				DisplayMessage: "Someone is asking a question",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -778,18 +826,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -827,51 +867,65 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
 					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+					},
 				},
 			},
 			output: &GameView{
 				State:          waitingOnBotToAnswer,
-				DisplayMessage: "Please wait as bot1 is answering the question",
+				DisplayMessage: "bot1 is answering the question",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id5",
-				Conversation: []ConversationElement{
+				DetailedMessages: []DetailedMessage{
 					{
-						IsQuestion: true,
-						BotId:      "bot_id4",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id4",
-						Text:       "My answer",
+						SourceBotId:   "bot_id4",
+						SourceBotName: "bot4",
+						TargetBotId:   "bot_id4",
+						TargetBotName: "bot4",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 					{
-						IsQuestion: true,
-						BotId:      "bot_id5",
-						Text:       "A question",
+						SourceBotId:   "bot_id2",
+						SourceBotName: "bot2",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "A question",
+						CreatedAt:     time.Now(),
+						MessageType:   "question",
 					},
 					{
-						IsQuestion: false,
-						BotId:      "bot_id5",
-						Text:       "My answer",
+						SourceBotId:   "bot_id5",
+						SourceBotName: "bot5",
+						TargetBotId:   "bot_id5",
+						TargetBotName: "bot5",
+						Text:          "My answer",
+						CreatedAt:     time.Now(),
+						MessageType:   "answer",
 					},
 				},
 				Bots: []BotView{
@@ -890,18 +944,10 @@ func Test_GameViewForPlayer(t *testing.T) {
 					{
 						Id:   "bot_id4",
 						Name: "bot4",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 					{
 						Id:   "bot_id5",
 						Name: "bot5",
-						Messages: []string{
-							"A question",
-							"My answer",
-						},
 					},
 				},
 			},
@@ -938,22 +984,20 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
+					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
 					},
 				},
 			},
@@ -990,22 +1034,20 @@ func Test_GameViewForPlayer(t *testing.T) {
 						{
 							id:   "bot_id4",
 							name: "bot4",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 						},
 						{
 							id:   "bot_id5",
 							name: "bot5",
-							messages: []Message{
-								{Text: "A question", CreatedAt: time.Now()},
-								{Text: "My answer", CreatedAt: time.Now()},
-							},
 							player: &Player{
 								id: "player_id2",
 							},
 						},
+					},
+					messages: []*Message{
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id4", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id4", TargetBotId: "bot_id4", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
+						{SourceBotId: "bot_id2", TargetBotId: "bot_id5", Text: "A question", CreatedAt: time.Now(), MessageType: "question"},
+						{SourceBotId: "bot_id5", TargetBotId: "bot_id5", Text: "My answer", CreatedAt: time.Now(), MessageType: "answer"},
 					},
 				},
 			},
@@ -1016,7 +1058,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gameView := tt.input.game.GameViewForPlayer(tt.input.playerId)
-			assert.Equal(t, gameView, tt.output)
+			AssertEqualGameView(t, gameView, tt.output)
 		})
 	}
 }

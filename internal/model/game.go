@@ -291,45 +291,44 @@ func (game *Game) expectedSourceBotIdForWaitingMessage() (string, error) {
 	return "", utilities.NewBadError("game in an unexpected state")
 }
 
-func (game *Game) GetTargetBotForNextQuestion() (*Bot, error) {
-	possibleTargetBotsForNextQuestion := []*Bot{}
-	currentTurnBotId := game.getCurrentTurnBotId()
-	for _, bot := range game.bots {
-		if currentTurnBotId != bot.id {
-			possibleTargetBotsForNextQuestion = append(possibleTargetBotsForNextQuestion, bot)
+func (game *Game) GetTargetBotIdForNextQuestion() (string, error) {
+	botAnswerCountMap := make(map[string]int)
+	for _, message := range game.messages {
+		if message.IsAnswer() {
+			botAnswerCountMap[message.TargetBotId] = botAnswerCountMap[message.TargetBotId] + 1
 		}
 	}
 
-	botsWithLeastNumberOfMessages := getBotsWithLeastNumberOfMessages(possibleTargetBotsForNextQuestion)
-	randomBotWithLeastNumberOfMessages, err := getRandomBot(botsWithLeastNumberOfMessages)
-	if err != nil {
-		return nil, err
+	possibleTargetBotIds := []string{}
+	for _, bot := range game.bots {
+		if bot.id != game.getCurrentTurnBotId() {
+			possibleTargetBotIds = append(possibleTargetBotIds, bot.id)
+		}
 	}
 
-	return randomBotWithLeastNumberOfMessages, nil
-}
+	if len(possibleTargetBotIds) == 0 {
+		return "", errors.New("cannot get target bot from an empty list")
+	}
 
-func getBotsWithLeastNumberOfMessages(bots []*Bot) []*Bot {
-	// if len(bots) == 0 {
-	// 	return bots
-	// }
-	// leastNumberOfMessages := len(bots[0].messages)
-	// for _, bot := range bots {
-	// 	if len(bot.messages) < leastNumberOfMessages {
-	// 		leastNumberOfMessages = len(bot.messages)
-	// 	}
-	// }
+	leastNumberOfAnswers := botAnswerCountMap[possibleTargetBotIds[0]]
+	for _, botId := range possibleTargetBotIds {
+		if botAnswerCountMap[botId] < leastNumberOfAnswers {
+			leastNumberOfAnswers = botAnswerCountMap[botId]
+		}
+	}
 
-	// botsWithLeastNumberOfMessages := []*Bot{}
-	// for _, bot := range bots {
-	// 	if len(bot.messages) == leastNumberOfMessages {
-	// 		botsWithLeastNumberOfMessages = append(botsWithLeastNumberOfMessages, bot)
-	// 	}
-	// }
+	botIdsWithLeastNumberOfMessages := []string{}
+	for _, botId := range possibleTargetBotIds {
+		if botAnswerCountMap[botId] == leastNumberOfAnswers {
+			botIdsWithLeastNumberOfMessages = append(botIdsWithLeastNumberOfMessages, botId)
+		}
+	}
 
-	// return botsWithLeastNumberOfMessages
-	// TODO: this is temporary code. Fix after messages are coming through correctly
-	return bots
+	rand.Shuffle(len(botIdsWithLeastNumberOfMessages), func(i, j int) {
+		botIdsWithLeastNumberOfMessages[i], botIdsWithLeastNumberOfMessages[j] = botIdsWithLeastNumberOfMessages[j], botIdsWithLeastNumberOfMessages[i]
+	})
+
+	return botIdsWithLeastNumberOfMessages[0], nil
 }
 
 func (game *Game) getCurrentTurnBot() *Bot {

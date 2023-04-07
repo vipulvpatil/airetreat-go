@@ -13,6 +13,14 @@ type Message struct {
 	MessageType string
 }
 
+func (m *Message) IsQuestion() bool {
+	return m.MessageType == "question"
+}
+
+func (m *Message) IsAnswer() bool {
+	return m.MessageType == "answer"
+}
+
 type DetailedMessage struct {
 	Text          string
 	CreatedAt     time.Time

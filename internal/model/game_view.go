@@ -61,7 +61,7 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 	waitingOnBot := g.GetBotThatGameIsWaitingOn()
 	switch g.state {
 	case started, playersJoined:
-		return waitingForPlayersToJoin, "Waiting for players join in"
+		return waitingForPlayersToJoin, "Waiting for players to join in"
 	case waitingForAiQuestion:
 		return waitingOnBotToAskAQuestion, "Someone is asking a question"
 	case waitingForAiAnswer:

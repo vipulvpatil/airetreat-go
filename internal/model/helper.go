@@ -12,7 +12,7 @@ const DELTA = 5 * time.Second
 // These function helps in testing Game and Bot Objects
 func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.id, actual.id, "game id is not equal")
-	assert.Equal(t, expected.state, actual.state, "game state is not equal")
+	assert.Equal(t, expected.state, actual.state, "gam state is not equal")
 	assert.Equal(t, expected.currentTurnIndex, actual.currentTurnIndex, "game currentTurnIndex is not equal")
 	assert.Equal(t, expected.turnOrder, actual.turnOrder, "game turnOrder is not equal")
 	assert.Equal(t, expected.stateHandled, actual.stateHandled, "game stateHandled is not equal")
@@ -54,4 +54,34 @@ func AssertTimeAlmostEqual(t *testing.T, actual, expected time.Time, delta time.
 		expected.Add(delta),
 		msgAndArgs,
 	)
+}
+
+func AssertEqualGameView(t *testing.T, expected, actual *GameView) {
+
+	assert.Equal(t, expected.State, actual.State, "gameView State is not equal")
+	assert.Equal(t, expected.DisplayMessage, actual.DisplayMessage, "gameView DisplayMessage is not equal")
+	assert.Equal(t, expected.StateTotalTime, actual.StateTotalTime, "gameView StateTotalTime is not equal")
+	assert.Equal(t, expected.LastQuestion, actual.LastQuestion, "gameView LastQuestion is not equal")
+	assert.Equal(t, expected.MyBotId, actual.MyBotId, "gameView MyBotId is not equal")
+	assert.Equal(t, expected.Bots, actual.Bots, "gameView Bots is not equal")
+
+	// Since we cannot mock postgres time operations. We just check that the updated times are near expected times.
+	if expected.StateStartedAt != nil {
+		AssertTimeAlmostEqual(t, *actual.StateStartedAt, *expected.StateStartedAt, DELTA, "gameView StateStartedAt is not within range")
+	}
+
+	for i, expectedDetailMessage := range expected.DetailedMessages {
+		actualDetailedMessage := actual.DetailedMessages[i]
+		AssertEqualDetailedMessage(t, expectedDetailMessage, actualDetailedMessage)
+	}
+}
+
+func AssertEqualDetailedMessage(t *testing.T, expected, actual DetailedMessage) {
+	assert.Equal(t, expected.Text, actual.Text, "detailedMessage Text is not equal")
+	assert.Equal(t, expected.SourceBotId, actual.SourceBotId, "detailedMessage SourceBotId is not equal")
+	assert.Equal(t, expected.SourceBotName, actual.SourceBotName, "detailedMessage SourceBotName is not equal")
+	assert.Equal(t, expected.TargetBotId, actual.TargetBotId, "detailedMessage TargetBotId is not equal")
+	assert.Equal(t, expected.TargetBotName, actual.TargetBotName, "detailedMessage TargetBotName is not equal")
+	assert.Equal(t, expected.MessageType, actual.MessageType, "detailedMessage MessageType is not equal")
+	AssertTimeAlmostEqual(t, actual.CreatedAt, expected.CreatedAt, DELTA, "detailedMessage CreatedAt is not within range")
 }

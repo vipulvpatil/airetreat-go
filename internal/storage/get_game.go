@@ -33,7 +33,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.last_question, g.last_question_target_bot_id,
 	g.created_at, g.updated_at,
 	b.id, b.name, b.type, b.player_id,
-	m.source_bot_id, m.target_bot_id, m.text, m.created_at
+	m.source_bot_id, m.target_bot_id, m.text, m.created_at, m.type
 	FROM public."games" AS g
 	LEFT JOIN public."bots" AS b ON b.game_id = g.id
 	LEFT JOIN public."messages" AS m ON m.target_bot_id = b.id
