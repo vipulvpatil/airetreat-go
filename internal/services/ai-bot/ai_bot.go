@@ -76,8 +76,6 @@ func NewAiAnswerGenerator(opts AiBotOptions) AiAnswerGenerator {
 }
 
 func (ab *aiBot) GetNextQuestion() string {
-	fmt.Println("generating question")
-	fmt.Println(ab.name)
 	var openAiPrompt string
 	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
 	if utilities.IsBlank(ab.conversationSoFar) {
@@ -94,8 +92,6 @@ func (ab *aiBot) GetNextQuestion() string {
 }
 
 func (ab *aiBot) GetNextAnswer() string {
-	fmt.Println("generating answer")
-	fmt.Println(ab.name)
 	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
 	openAiPrompt := createAnswerPromptWithContext(promptContext, ab.conversationSoFar)
 	answer, err := ab.openAiClient.CallCompletionApi(openAiPrompt)

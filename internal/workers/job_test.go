@@ -9,6 +9,7 @@ import (
 	"github.com/gocraft/work"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 )
@@ -50,12 +51,13 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
 							Messages: []*model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q1: what is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q2: Where is the gold?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A2: what gold!", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q1: What is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q2: Second question?", CreatedAt: time.Now(), MessageType: "question"},
 							},
 						},
 					)
@@ -106,12 +108,13 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
 							Messages: []*model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q1: what is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q2: Where is the gold?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A2: what gold!", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q1: What is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q2: Second question?", CreatedAt: time.Now(), MessageType: "question"},
 							},
 						},
 					)
@@ -243,6 +246,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 		transactionMock    *storage.DatabaseTransactionMock
 		messageCreatorMock storage.MessageCreator
 		gameAccessorMock   storage.GameAccessor
+		openAiClientMock   openai.Client
 		txShouldCommit     bool
 		errorExpected      bool
 		errorString        string
@@ -278,12 +282,13 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
 							Messages: []*model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q1: what is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q2: Where is the gold?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A2: what gold!", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q1: What is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q2: Second question?", CreatedAt: time.Now(), MessageType: "question"},
 							},
 						},
 					)
@@ -303,9 +308,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return nil
 				},
 			},
-			txShouldCommit: true,
-			errorExpected:  false,
-			errorString:    "",
+			openAiClientMock: &openai.MockClientSuccess{Text: "Some question from AI"},
+			txShouldCommit:   true,
+			errorExpected:    false,
+			errorString:      "",
 		},
 		{
 			name: "errors if gameId not provided",
@@ -315,6 +321,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 			transactionMock:    nil,
 			messageCreatorMock: nil,
 			gameAccessorMock:   nil,
+			openAiClientMock:   nil,
 			txShouldCommit:     false,
 			errorExpected:      true,
 			errorString:        "gameId is required",
@@ -327,6 +334,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 			transactionMock:    nil,
 			messageCreatorMock: nil,
 			gameAccessorMock:   nil,
+			openAiClientMock:   nil,
 			txShouldCommit:     false,
 			errorExpected:      true,
 			errorString:        "unable to begin a db transaction",
@@ -343,9 +351,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return nil, errors.New("cannot get game")
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "cannot get game",
+			openAiClientMock: nil,
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "cannot get game",
 		},
 		{
 			name: "errors if game has already been handled",
@@ -390,9 +399,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return game, nil
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "game has already been handled: game_id1",
+			openAiClientMock: nil,
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "game has already been handled: game_id1",
 		},
 		{
 			name: "errors if game not in correct state",
@@ -437,9 +447,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return game, nil
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "game should be in WaitingForAiQuestion state: game_id1",
+			openAiClientMock: nil,
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "game should be in WaitingForAiQuestion state: game_id1",
 		},
 		{
 			name: "errors if cannot determine bot to ask a question",
@@ -478,9 +489,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return game, nil
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "cannot get random bot from an empty list",
+			openAiClientMock: nil,
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "cannot get target bot from an empty list",
 		},
 		{
 			name: "errors if unable to update game state",
@@ -528,9 +540,10 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return errors.New("could not update game")
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "could not update game",
+			openAiClientMock: &openai.MockClientSuccess{Text: "Some question from AI"},
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "could not update game",
 		},
 		{
 			name: "errors and rollsback if unable to create message",
@@ -589,13 +602,15 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 					return nil
 				},
 			},
-			txShouldCommit: false,
-			errorExpected:  true,
-			errorString:    "unable to create message",
+			openAiClientMock: &openai.MockClientSuccess{Text: "Some question from AI"},
+			txShouldCommit:   false,
+			errorExpected:    true,
+			errorString:      "unable to create message",
 		},
 	}
 
 	for _, tt := range tests {
+		openAiClient = tt.openAiClientMock
 		workerStorage = storage.NewStorageAccessorMock(
 			storage.WithDatabaseTransactionProviderMock(&storage.DatabaseTransactionProviderMock{
 				Transaction: tt.transactionMock,
@@ -672,12 +687,13 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 							UpdatedAt:               time.Now(),
 							Bots:                    bots,
 							Messages: []*model.Message{
-								{Text: "Q1: what is your name?", CreatedAt: time.Now()},
-								{Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now()},
-								{Text: "Q2: Where is the gold?", CreatedAt: time.Now()},
-								{Text: "A2: what gold!", CreatedAt: time.Now()},
-								{Text: "Q1: What is your name?", CreatedAt: time.Now()},
-								{Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now()},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q1: what is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A1: My name is Antony Gonsalvez", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id1", Text: "Q2: Where is the gold?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id1", Text: "A2: what gold!", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q1: What is your name?", CreatedAt: time.Now(), MessageType: "question"},
+								{SourceBotId: "bot_id2", TargetBotId: "bot_id2", Text: "A1: Bot 2 Dot 2", CreatedAt: time.Now(), MessageType: "answer"},
+								{SourceBotId: "bot_id1", TargetBotId: "bot_id2", Text: "Q2: Second question?", CreatedAt: time.Now(), MessageType: "question"},
 							},
 						},
 					)

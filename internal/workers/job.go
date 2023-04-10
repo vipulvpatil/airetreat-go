@@ -1,6 +1,8 @@
 package workers
 
 import (
+	"fmt"
+
 	"github.com/gocraft/work"
 	"github.com/pkg/errors"
 	aibot "github.com/vipulvpatil/airetreat-go/internal/services/ai-bot"
@@ -83,7 +85,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println(openAiClient)
 	aiBot := aibot.NewAiQuestionGenerator(
 		aibot.AiBotOptions{
 			BotId:        sourceBot.Id(),
