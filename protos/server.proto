@@ -44,6 +44,23 @@ message SendMessageRequest {
 
 message SendMessageResponse {}
 
+message TagRequest {
+  string gameId = 1;
+  string playerId = 2;
+  string botId = 3;
+}
+
+message TagResponse {}
+
+message HelpRequest {
+  string gameId = 1;
+  string playerId = 2;
+}
+
+message HelpResponse {
+  string text = 1;
+}
+
 message GetGameForPlayerRequest {
   string gameId = 1;
   string playerId = 2;
@@ -86,6 +103,8 @@ service AiRetreatGo {
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+  rpc Tag(TagRequest) returns (TagResponse) {}
+  rpc Help(HelpRequest) returns (HelpResponse) {}
   rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
   rpc GetGamesForPlayer(GetGamesForPlayerRequest) returns (GetGamesForPlayerResponse) {}
 }

@@ -27,6 +27,8 @@ type AiRetreatGoClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
+	Tag(ctx context.Context, in *TagRequest, opts ...grpc.CallOption) (*TagResponse, error)
+	Help(ctx context.Context, in *HelpRequest, opts ...grpc.CallOption) (*HelpResponse, error)
 	GetGameForPlayer(ctx context.Context, in *GetGameForPlayerRequest, opts ...grpc.CallOption) (*GetGameForPlayerResponse, error)
 	GetGamesForPlayer(ctx context.Context, in *GetGamesForPlayerRequest, opts ...grpc.CallOption) (*GetGamesForPlayerResponse, error)
 }
@@ -84,6 +86,24 @@ func (c *aiRetreatGoClient) SendMessage(ctx context.Context, in *SendMessageRequ
 	return out, nil
 }
 
+func (c *aiRetreatGoClient) Tag(ctx context.Context, in *TagRequest, opts ...grpc.CallOption) (*TagResponse, error) {
+	out := new(TagResponse)
+	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/Tag", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aiRetreatGoClient) Help(ctx context.Context, in *HelpRequest, opts ...grpc.CallOption) (*HelpResponse, error) {
+	out := new(HelpResponse)
+	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/Help", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *aiRetreatGoClient) GetGameForPlayer(ctx context.Context, in *GetGameForPlayerRequest, opts ...grpc.CallOption) (*GetGameForPlayerResponse, error) {
 	out := new(GetGameForPlayerResponse)
 	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/GetGameForPlayer", in, out, opts...)
@@ -111,6 +131,8 @@ type AiRetreatGoServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
+	Tag(context.Context, *TagRequest) (*TagResponse, error)
+	Help(context.Context, *HelpRequest) (*HelpResponse, error)
 	GetGameForPlayer(context.Context, *GetGameForPlayerRequest) (*GetGameForPlayerResponse, error)
 	GetGamesForPlayer(context.Context, *GetGamesForPlayerRequest) (*GetGamesForPlayerResponse, error)
 	mustEmbedUnimplementedAiRetreatGoServer()
@@ -134,6 +156,12 @@ func (UnimplementedAiRetreatGoServer) JoinGame(context.Context, *JoinGameRequest
 }
 func (UnimplementedAiRetreatGoServer) SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedAiRetreatGoServer) Tag(context.Context, *TagRequest) (*TagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Tag not implemented")
+}
+func (UnimplementedAiRetreatGoServer) Help(context.Context, *HelpRequest) (*HelpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Help not implemented")
 }
 func (UnimplementedAiRetreatGoServer) GetGameForPlayer(context.Context, *GetGameForPlayerRequest) (*GetGameForPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameForPlayer not implemented")
@@ -244,6 +272,42 @@ func _AiRetreatGo_SendMessage_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AiRetreatGo_Tag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiRetreatGoServer).Tag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.AiRetreatGo/Tag",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiRetreatGoServer).Tag(ctx, req.(*TagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AiRetreatGo_Help_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiRetreatGoServer).Help(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.AiRetreatGo/Help",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiRetreatGoServer).Help(ctx, req.(*HelpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AiRetreatGo_GetGameForPlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetGameForPlayerRequest)
 	if err := dec(in); err != nil {
@@ -306,6 +370,14 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendMessage",
 			Handler:    _AiRetreatGo_SendMessage_Handler,
+		},
+		{
+			MethodName: "Tag",
+			Handler:    _AiRetreatGo_Tag_Handler,
+		},
+		{
+			MethodName: "Help",
+			Handler:    _AiRetreatGo_Help_Handler,
 		},
 		{
 			MethodName: "GetGameForPlayer",

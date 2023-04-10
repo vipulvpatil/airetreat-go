@@ -24,6 +24,8 @@ type Game struct {
 	updatedAt               time.Time
 	bots                    []*Bot
 	messages                []*Message
+	result                  string
+	winningBotId            string
 }
 
 type GameOptions struct {
@@ -40,6 +42,8 @@ type GameOptions struct {
 	UpdatedAt               time.Time
 	Bots                    []*Bot
 	Messages                []*Message
+	Result                  string
+	WinningBotId            string
 }
 
 func NewGame(opts GameOptions) (*Game, error) {
@@ -86,6 +90,8 @@ func NewGame(opts GameOptions) (*Game, error) {
 		updatedAt:               opts.UpdatedAt,
 		bots:                    opts.Bots,
 		messages:                opts.Messages,
+		result:                  opts.Result,
+		winningBotId:            opts.WinningBotId,
 	}, nil
 }
 
@@ -273,6 +279,29 @@ func getNewStateForNextBot(currentState gameState, nextBot *Bot) gameState {
 		}
 	}
 	return undefinedGameState
+}
+
+func (game *Game) GetGameUpdateAfterTag(sourceBotId string, targetBotId string) (*GameUpdate, error) {
+	sourceBot := game.BotWithId(sourceBotId)
+	targetBot := game.BotWithId(targetBotId)
+
+	if sourceBot == nil {
+		return nil, errors.New("invalid sourceBotId")
+	}
+
+	if targetBot == nil {
+		return nil, errors.New("invalid targetBotId")
+	}
+
+	// Check if target bot is a human.
+	// If yes, set winning bot id to source bot id.
+	// Set result to "Source bot name tagged Target Bot name and won."
+	// Else set result to "Source bot name tagged Target Bot name and lost. Other player bot one."
+
+	update := GameUpdate{}
+	update.State = finished
+
+	return &update, nil
 }
 
 func (game *Game) expectedSourceBotIdForWaitingMessage() (string, error) {
