@@ -81,7 +81,12 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 				fmt.Sprintf("%s is answering the question", waitingOnBot.name)
 		}
 	case finished:
-		return timeUp, "Time ran out"
+		if g.winningBotId == myBotId {
+			return youWon, g.result
+		} else if !utilities.IsBlank(g.winningBotId) {
+			return youLost, g.result
+		}
+		return timeUp, g.result
 	default:
 		return undefinedGameViewState, "This is not supposed to happen. What did happen?"
 	}
