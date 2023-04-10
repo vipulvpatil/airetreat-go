@@ -330,6 +330,8 @@ func (game *Game) GetGameUpdateAfterTag(sourceBotId string, targetBotId string) 
 		update.State = finished
 		update.WinningBotId = &otherBot.id
 		update.Result = &result
+	} else {
+		return nil, utilities.NewBadError("target bot was neither human nor ai")
 	}
 	return &update, nil
 }

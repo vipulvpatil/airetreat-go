@@ -32,7 +32,9 @@ func (s *AiRetreatGoService) Tag(ctx context.Context, req *pb.TagRequest) (*pb.T
 
 	newGameState := gameUpdate.State.String()
 	updateOptions := storage.GameUpdateOptions{
-		State: &newGameState,
+		State:        &newGameState,
+		Result:       gameUpdate.Result,
+		WinningBotId: gameUpdate.WinningBotId,
 	}
 
 	err = s.storage.UpdateGameStateUsingTransaction(req.GetGameId(), updateOptions, tx)
