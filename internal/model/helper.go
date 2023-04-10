@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -20,16 +19,6 @@ func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.stateTotalTime, actual.stateTotalTime, "game stateTotalTime is not equal")
 	assert.Equal(t, expected.lastQuestion, actual.lastQuestion, "game lastQuestion is not equal")
 	assert.Equal(t, expected.lastQuestionTargetBotId, actual.lastQuestionTargetBotId, "game lastQuestionTargetBotId is not equal")
-
-	fmt.Println("expected-----------------------")
-	for _, m := range expected.messages {
-		fmt.Println(m)
-	}
-	fmt.Println("actual-------------------------")
-	for _, m := range actual.messages {
-		fmt.Println(m)
-	}
-	fmt.Println("theend-------------------------")
 
 	for i, expectedMessage := range expected.messages {
 		actualMessage := actual.messages[i]

@@ -20,6 +20,8 @@ func Test_Game_UpdateGameState(t *testing.T) {
 	lastQuestion := "what is the question?"
 	lastQuestionTargetBotId := "bot_id2"
 	stateTotalTime := int64(60)
+	result := "game has this result"
+	winningBotId := "bot_id2"
 	tests := []struct {
 		name  string
 		input struct {
@@ -48,6 +50,8 @@ func Test_Game_UpdateGameState(t *testing.T) {
 					LastQuestion:            &lastQuestion,
 					LastQuestionTargetBotId: &lastQuestionTargetBotId,
 					StateTotalTime:          &stateTotalTime,
+					Result:                  &result,
+					WinningBotId:            &winningBotId,
 				},
 			},
 			dbUpdateCheck: func(db *sql.DB) bool {
@@ -61,15 +65,18 @@ func Test_Game_UpdateGameState(t *testing.T) {
 					scanLastQuestionTargetBotId sql.NullString
 					scanStateTotalTime          int64
 					updatedAt                   time.Time
+					scanResult                  sql.NullString
+					scanWinningBotId            sql.NullString
 				)
 				row := db.QueryRow(
 					`SELECT g.state, g.current_turn_index, g.turn_order, g.state_handled, g.state_handled_at,
-					g.last_question, g.last_question_target_bot_id, g.state_total_time, g.updated_at
+					g.last_question, g.last_question_target_bot_id, g.state_total_time, g.updated_at,
+					g.result, g.winning_bot_id
 					FROM public."games" AS g
 					WHERE g.id = 'game_id1'`,
 				)
 				assert.NoError(t, row.Err())
-				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime, &updatedAt)
+				err := row.Scan(&scanState, &scanCurrentTurnIndex, pq.Array(&scanTurnOrder), &scanStateHandled, &scanStateHandledAt, &scanLastQuestion, &scanLastQuestionTargetBotId, &scanStateTotalTime, &updatedAt, &scanResult, &scanWinningBotId)
 				assert.NoError(t, err)
 				assert.Equal(t, state, scanState)
 				assert.Equal(t, currentTurnIndex, scanCurrentTurnIndex)
@@ -82,6 +89,10 @@ func Test_Game_UpdateGameState(t *testing.T) {
 				assert.True(t, scanLastQuestionTargetBotId.Valid)
 				assert.Equal(t, lastQuestionTargetBotId, scanLastQuestionTargetBotId.String)
 				assert.Equal(t, stateTotalTime, scanStateTotalTime)
+				assert.True(t, scanResult.Valid)
+				assert.Equal(t, scanResult.String, result)
+				assert.True(t, scanWinningBotId.Valid)
+				assert.Equal(t, scanWinningBotId.String, winningBotId)
 				model.AssertTimeAlmostEqual(t, time.Now(), updatedAt, 1*time.Second)
 				return true
 			},

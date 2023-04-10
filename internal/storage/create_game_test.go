@@ -63,7 +63,7 @@ func Test_CreateGame(t *testing.T) {
 
 				rows, err := db.Query(
 					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
+					"id", "name", "type", "player_id", "help_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'game_id1'`,
 				)
 				assert.NoError(t, err)
@@ -127,7 +127,7 @@ func Test_CreateGame(t *testing.T) {
 
 				rows, err := db.Query(
 					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
+					"id", "name", "type", "player_id", "help_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'id1'`,
 				)
 				assert.NoError(t, err)
@@ -153,7 +153,7 @@ func Test_CreateGame(t *testing.T) {
 
 				rows, err := db.Query(
 					`SELECT
-					"id", "name", "type", "player_id", "question_count", "created_at"
+					"id", "name", "type", "player_id", "help_count", "created_at"
 					FROM public."bots" WHERE "game_id" = 'id1'`,
 				)
 				assert.NoError(t, err)

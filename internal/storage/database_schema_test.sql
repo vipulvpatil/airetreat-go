@@ -23,8 +23,8 @@ CREATE TABLE "bots" (
     "type" TEXT NOT NULL,
     "player_id" TEXT,
     "game_id" TEXT NOT NULL,
-    "question_count" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "help_count" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "bots_pkey" PRIMARY KEY ("id")
 );
@@ -42,6 +42,8 @@ CREATE TABLE "games" (
     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "state_total_time" INTEGER NOT NULL DEFAULT 0,
+    "result" TEXT,
+    "winning_bot_id" TEXT,
 
     CONSTRAINT "games_pkey" PRIMARY KEY ("id")
 );
@@ -94,6 +96,9 @@ CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "accounts"("p
 CREATE UNIQUE INDEX "games_last_question_target_bot_id_key" ON "games"("last_question_target_bot_id" ASC);
 
 -- CreateIndex
+CREATE UNIQUE INDEX "games_winning_bot_id_key" ON "games"("winning_bot_id" ASC);
+
+-- CreateIndex
 CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token" ASC);
 
 -- CreateIndex
@@ -110,6 +115,9 @@ ALTER TABLE "bots" ADD CONSTRAINT "bots_player_id_fkey" FOREIGN KEY ("player_id"
 
 -- AddForeignKey
 ALTER TABLE "games" ADD CONSTRAINT "games_last_question_target_bot_id_fkey" FOREIGN KEY ("last_question_target_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "games" ADD CONSTRAINT "games_winning_bot_id_fkey" FOREIGN KEY ("winning_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_source_bot_id_fkey" FOREIGN KEY ("source_bot_id") REFERENCES "bots"("id") ON DELETE CASCADE ON UPDATE CASCADE;

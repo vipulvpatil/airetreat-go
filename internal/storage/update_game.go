@@ -19,6 +19,8 @@ type GameUpdateOptions struct {
 	LastQuestion            *string
 	LastQuestionTargetBotId *string
 	StateTotalTime          *int64
+	Result                  *string
+	WinningBotId            *string
 }
 
 func (s *Storage) UpdateGameState(gameId string, updateOpts GameUpdateOptions) error {
@@ -102,6 +104,16 @@ func sqlAndArgsForUpdate(updateOpts GameUpdateOptions) ([]string, []interface{})
 	if updateOpts.StateTotalTime != nil {
 		setSqls = append(setSqls, fmt.Sprintf("\"state_total_time\" = $%d", index))
 		args = append(args, *updateOpts.StateTotalTime)
+		index++
+	}
+	if updateOpts.Result != nil {
+		setSqls = append(setSqls, fmt.Sprintf("\"result\" = $%d", index))
+		args = append(args, *updateOpts.Result)
+		index++
+	}
+	if updateOpts.WinningBotId != nil {
+		setSqls = append(setSqls, fmt.Sprintf("\"winning_bot_id\" = $%d", index))
+		args = append(args, *updateOpts.WinningBotId)
 		index++
 	}
 
