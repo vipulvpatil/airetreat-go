@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -169,6 +170,10 @@ func (game *Game) IsInStatePlayersJoined() bool {
 	return game.state == playersJoined
 }
 
+func (game *Game) isFinished() bool {
+	return game.state == finished
+}
+
 func (game *Game) IsInStateWaitingForAiQuestion() bool {
 	return game.state.isWaitingForAQuestion() && game.state.isWaitingOnAi()
 }
@@ -200,6 +205,8 @@ type GameUpdate struct {
 	StateHandled            *bool
 	LastQuestion            *string
 	LastQuestionTargetBotId *string
+	Result                  *string
+	WinningBotId            *string
 }
 
 func (game *Game) GetGameUpdateAfterIncomingMessage(sourceBotId string, targetBotId string, text string) (*GameUpdate, error) {
@@ -282,6 +289,14 @@ func getNewStateForNextBot(currentState gameState, nextBot *Bot) gameState {
 }
 
 func (game *Game) GetGameUpdateAfterTag(sourceBotId string, targetBotId string) (*GameUpdate, error) {
+	if game.isFinished() {
+		return nil, errors.New("game has already finished")
+	}
+
+	if sourceBotId == targetBotId {
+		return nil, errors.New("cannot tag self")
+	}
+
 	sourceBot := game.BotWithId(sourceBotId)
 	targetBot := game.BotWithId(targetBotId)
 
@@ -293,14 +308,29 @@ func (game *Game) GetGameUpdateAfterTag(sourceBotId string, targetBotId string) 
 		return nil, errors.New("invalid targetBotId")
 	}
 
-	// Check if target bot is a human.
-	// If yes, set winning bot id to source bot id.
-	// Set result to "Source bot name tagged Target Bot name and won."
-	// Else set result to "Source bot name tagged Target Bot name and lost. Other player bot one."
+	if sourceBot.IsAi() {
+		return nil, errors.New("ai cannot perform tagging")
+	}
 
 	update := GameUpdate{}
-	update.State = finished
 
+	if targetBot.IsHuman() {
+		result := fmt.Sprintf("%s tagged %s and won.", sourceBot.name, targetBot.name)
+		update.State = finished
+		update.WinningBotId = &sourceBotId
+		update.Result = &result
+	} else if targetBot.IsAi() {
+		var otherBot *Bot
+		for _, bot := range game.bots {
+			if bot.IsHuman() && bot.id != sourceBotId {
+				otherBot = bot
+			}
+		}
+		result := fmt.Sprintf("%s tagged %s and lost. %s won.", sourceBot.name, targetBot.name, otherBot.name)
+		update.State = finished
+		update.WinningBotId = &otherBot.id
+		update.Result = &result
+	}
 	return &update, nil
 }
 
