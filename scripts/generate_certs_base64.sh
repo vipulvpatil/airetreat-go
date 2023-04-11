@@ -38,9 +38,6 @@ serverName=api.airetreat.io
 # serverName=airetreat
 clientName=airetreat
 
-echo "using Server IP"
-echo $serverIp
-
 # Create the CA
 certstrap init --passphrase "" --common-name $caName
 
