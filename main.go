@@ -121,10 +121,6 @@ func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Ser
 
 func setupGrpcHealthServer(hs *health.AiRetreatGoHealthService, cfg *config.Config) *grpc.Server {
 	serverOpts := make([]grpc.ServerOption, 0)
-	tlsServerOpts := tlsGrpcServerOptions(cfg)
-	if tlsServerOpts != nil {
-		serverOpts = append(serverOpts, tlsServerOpts)
-	}
 	grpcServer := grpc.NewServer(serverOpts...)
 	pb.RegisterAiRetreatGoHealthServer(grpcServer, hs)
 	return grpcServer

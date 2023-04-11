@@ -9,10 +9,12 @@ echo $target
 
 sum=0
 while [[ sum -lt $target ]];
-do 
-grpcurl -import-path protos -proto server.proto  -cert certs/remote/client.crt -key certs/remote/client.key -cacert certs/remote/AiRetreatCA.crt api.airetreat.io:9090 protos.AiRetreatGoHealth/Check;
+do
 
-# grpcurl -import-path protos -proto server.proto  -cert certs/local/client.crt -key certs/local/client.key -cacert certs/local/AiRetreatCA.crt localhost:9090 protos.AiRetreatGoHealth/Check;
+# TODO: Remove next line. This next commented line should never work as the port is never exposed beyond the Load balancer
+# grpcurl -- plaintext -import-path protos -proto server.proto api.airetreat.io:9090 protos.AiRetreatGoHealth/Check;
+
+grpcurl --plaintext -import-path protos -proto server.proto localhost:9090 protos.AiRetreatGoHealth/Check;
 
 sum=$(($sum+1));
 echo $sum
