@@ -31,6 +31,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.id, g.state, g.current_turn_index, g.turn_order,
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
+	g.result, g.winning_bot_id,
 	g.created_at, g.updated_at,
 	b.id, b.name, b.type, b.player_id,
 	m.source_bot_id, m.target_bot_id, m.text, m.created_at, m.type
@@ -44,6 +45,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.id, g.state, g.current_turn_index, g.turn_order,
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
+	g.result, g.winning_bot_id,
 	g.created_at, g.updated_at,
 	b.id, b.name, b.type, b.player_id,
 	m.source_bot_id, m.target_bot_id, m.text, m.created_at, m.type
@@ -80,6 +82,8 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 		var messageType sql.NullString
 		var lastQuestion sql.NullString
 		var lastQuestionTargetBotId sql.NullString
+		var result sql.NullString
+		var winningBotId sql.NullString
 		var messageCreatedAt sql.NullTime
 		err := rows.Scan(
 			&opts.Id,
@@ -91,6 +95,8 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 			&opts.StateTotalTime,
 			&lastQuestion,
 			&lastQuestionTargetBotId,
+			&result,
+			&winningBotId,
 			&opts.CreatedAt,
 			&opts.UpdatedAt,
 			&botOpts.Id,
@@ -109,6 +115,12 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 		}
 		if lastQuestionTargetBotId.Valid {
 			opts.LastQuestionTargetBotId = lastQuestionTargetBotId.String
+		}
+		if result.Valid {
+			opts.Result = result.String
+		}
+		if winningBotId.Valid {
+			opts.WinningBotId = winningBotId.String
 		}
 
 		if err != nil {
