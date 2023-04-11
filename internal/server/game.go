@@ -100,6 +100,7 @@ func (s *AiRetreatGoService) GetGameForPlayer(ctx context.Context, req *pb.GetGa
 		MyBotId:        gameView.MyBotId,
 		Bots:           bots,
 		Messages:       gameMessages,
+		WinningBotId:   gameView.WinningBotId,
 	}, nil
 }
 
