@@ -122,7 +122,7 @@ func constructConversationText(detailedMessages []model.DetailedMessage) string 
 
 func createFirstQuestionPromptWithContext(promptContext string) string {
 	randomTopic := TOPICS[rand.Intn(len(TOPICS))]
-	task := fmt.Sprintf("Begin the conversation by asking a question inspired by the topic of %s.\nQuestion:", randomTopic)
+	task := fmt.Sprintf("Ask a question inspired by the topic of %s.\nQuestion:", randomTopic)
 	return fmt.Sprintf("%s %s", promptContext, task)
 }
 
