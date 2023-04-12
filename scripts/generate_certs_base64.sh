@@ -33,7 +33,7 @@ printBase64 () {
 rm -rf ./out
 
 caName=AiRetreatCA
-serverName=api.airetreat.io
+serverName=api.airetreat.co
 # for local use the below line
 # serverName=airetreat
 clientName=airetreat

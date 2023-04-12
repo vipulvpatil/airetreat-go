@@ -12,7 +12,7 @@ while [[ sum -lt $target ]];
 do
 
 # TODO: Remove next line. This next commented line should never work as the port is never exposed beyond the Load balancer
-# grpcurl -- plaintext -import-path protos -proto server.proto api.airetreat.io:9090 protos.AiRetreatGoHealth/Check;
+# grpcurl -- plaintext -import-path protos -proto server.proto api.airetreat.co:9090 protos.AiRetreatGoHealth/Check;
 
 grpcurl --plaintext -import-path protos -proto server.proto localhost:9090 protos.AiRetreatGoHealth/Check;
 
