@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -87,6 +88,7 @@ func main() {
 	var wg sync.WaitGroup
 	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000")
 	startGrpcServerAsync("health", &wg, grpcHealthServer, "9090")
+	httpHealthServer := startHTTPHealthServer(&wg)
 
 	gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
 	loopTickerDuration := 1 * time.Second
@@ -100,6 +102,12 @@ func main() {
 	<-osTermSig
 
 	cancelGameHandlerLoop()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := httpHealthServer.Shutdown(ctx); err != nil {
+		panic(err)
+	}
 	grpcHealthServer.GracefulStop()
 	grpcServer.GracefulStop()
 	workerPool.Stop()
@@ -124,6 +132,23 @@ func setupGrpcHealthServer(hs *health.AiRetreatGoHealthService, cfg *config.Conf
 	grpcServer := grpc.NewServer(serverOpts...)
 	pb.RegisterAiRetreatGoHealthServer(grpcServer, hs)
 	return grpcServer
+}
+
+func startHTTPHealthServer(wg *sync.WaitGroup) *http.Server {
+	srv := &http.Server{Addr: ":8080"}
+	http.HandleFunc("/", health.HealthCheckHandler)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println("Starting HTTP Health Check")
+		err := srv.ListenAndServe()
+		if err != http.ErrServerClosed {
+			log.Fatalf("HTTP Health Check failed with: %v", err)
+		}
+		fmt.Println("Stopping HTTP Health Check")
+	}()
+	return srv
 }
 
 func startGrpcServerAsync(name string, wg *sync.WaitGroup, grpcServer *grpc.Server, port string) {
