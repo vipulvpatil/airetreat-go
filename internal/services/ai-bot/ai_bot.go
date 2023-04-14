@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
@@ -84,6 +85,10 @@ func (ab *aiBot) GetNextQuestion() string {
 		openAiPrompt = createQuestionPromptWithContext(promptContext, ab.conversationSoFar)
 	}
 	question, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
+
+	// Wait a random amount of time. min:8 max:15
+	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
+
 	if err != nil {
 		return randomFallbackQuestion()
 	} else {
@@ -95,6 +100,8 @@ func (ab *aiBot) GetNextAnswer() string {
 	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
 	openAiPrompt := createAnswerPromptWithContext(promptContext, ab.conversationSoFar)
 	answer, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
+	// Wait a random amount of time. min:8 max:15
+	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
 	if err != nil {
 		return randomFallbackAnswer()
 	} else {
@@ -122,7 +129,7 @@ func constructConversationText(detailedMessages []model.DetailedMessage) string 
 
 func createFirstQuestionPromptWithContext(promptContext string) string {
 	randomTopic := TOPICS[rand.Intn(len(TOPICS))]
-	task := fmt.Sprintf("Ask a question inspired by the topic of %s.\nQuestion:", randomTopic)
+	task := fmt.Sprintf("Provide a question o the topic of %s.\nQuestion:", randomTopic)
 	return fmt.Sprintf("%s %s", promptContext, task)
 }
 
