@@ -44,12 +44,7 @@ func AssertEqualBot(t *testing.T, expected, actual *Bot) {
 	assert.Equal(t, expected.name, actual.name, "bot name is not equal")
 	assert.Equal(t, expected.typeOfBot, actual.typeOfBot, "bot type is not equal")
 	assert.Equal(t, expected.player, actual.player, "bot player is not equal")
-	// TODO: correctly verify messages
-	// for j, expectedMessage := range expected.messages {
-	// 	actualMessage := actual.messages[j]
-	// 	assert.Equal(t, expectedMessage.Text, actualMessage.Text, "bot message is not equal")
-	// 	AssertTimeAlmostEqual(t, actualMessage.CreatedAt, expectedMessage.CreatedAt, DELTA, "message createdAt is not within range")
-	// }
+	assert.Equal(t, expected.helpCount, actual.helpCount, "bot help count is not equal")
 }
 
 func AssertEqualMessage(t *testing.T, expected, actual *Message) {
@@ -67,6 +62,7 @@ func AssertEqualGameView(t *testing.T, expected, actual *GameView) {
 	assert.Equal(t, expected.LastQuestion, actual.LastQuestion, "gameView LastQuestion is not equal")
 	assert.Equal(t, expected.MyBotId, actual.MyBotId, "gameView MyBotId is not equal")
 	assert.Equal(t, expected.Bots, actual.Bots, "gameView Bots is not equal")
+	assert.Equal(t, expected.MyHelpCount, actual.MyHelpCount, "gameView MyHelpCount is not equal")
 
 	// Since we cannot mock postgres time operations. We just check that the updated times are near expected times.
 	if expected.StateStartedAt != nil {

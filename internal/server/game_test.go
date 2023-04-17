@@ -446,6 +446,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 			Id:        fmt.Sprintf("bot_id%d", i+1),
 			Name:      fmt.Sprintf("bot%d", i+1),
 			TypeOfBot: "AI",
+			HelpCount: 3,
 		}
 		bot, _ := model.NewBot(botOpts)
 		bots = append(bots, bot)
@@ -578,6 +579,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Text:        "Bot 2 Dot 2",
 					},
 				},
+				MyHelpCount: 3,
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
 			errorExpected:  false,
@@ -656,6 +658,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 						Text:        "Bot 2 Dot 2",
 					},
 				},
+				MyHelpCount: 3,
 			},
 			gameGetterMock: &storage.GameGetterMockSuccess{Game: game},
 			errorExpected:  false,

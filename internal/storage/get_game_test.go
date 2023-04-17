@@ -66,7 +66,7 @@ func Test_GetGame(t *testing.T) {
 				},
 			},
 			errorExpected: true,
-			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 11, name \"id\": converting NULL to string is unsupported",
+			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 13, name \"id\": converting NULL to string is unsupported",
 		},
 		{
 			name:  "error when found bot with bad data",
@@ -155,6 +155,7 @@ func Test_GetGame(t *testing.T) {
 						Id:        fmt.Sprintf("bot_id%d", i+1),
 						Name:      fmt.Sprintf("bot%d", i+1),
 						TypeOfBot: "AI",
+						HelpCount: 3,
 					}
 					bot, _ := model.NewBot(botOpts)
 					bots = append(bots, bot)
@@ -197,42 +198,42 @@ func Test_GetGame(t *testing.T) {
 				},
 				{
 					Query: `INSERT INTO public."bots" (
-						"id", "name", "type", "game_id"
+						"id", "name", "type", "game_id", "help_count"
 					)
 					VALUES (
-						'bot_id1', 'bot1', 'AI', 'game_id1'
+						'bot_id1', 'bot1', 'AI', 'game_id1', 3
 					)`,
 				},
 				{
 					Query: `INSERT INTO public."bots" (
-						"id", "name", "type", "game_id"
+						"id", "name", "type", "game_id", "help_count"
 					)
 					VALUES (
-						'bot_id2', 'bot2', 'AI', 'game_id1'
+						'bot_id2', 'bot2', 'AI', 'game_id1', 3
 					)`,
 				},
 				{
 					Query: `INSERT INTO public."bots" (
-						"id", "name", "type", "game_id"
+						"id", "name", "type", "game_id", "help_count"
 					)
 					VALUES (
-						'bot_id3', 'bot3', 'AI', 'game_id1'
+						'bot_id3', 'bot3', 'AI', 'game_id1', 3
 					)`,
 				},
 				{
 					Query: `INSERT INTO public."bots" (
-						"id", "name", "type", "game_id"
+						"id", "name", "type", "game_id", "help_count"
 					)
 					VALUES (
-						'bot_id4', 'bot4', 'AI', 'game_id1'
+						'bot_id4', 'bot4', 'AI', 'game_id1', 3
 					)`,
 				},
 				{
 					Query: `INSERT INTO public."bots" (
-						"id", "name", "type", "game_id"
+						"id", "name", "type", "game_id", "help_count"
 					)
 					VALUES (
-						'bot_id5', 'bot5', 'AI', 'game_id1'
+						'bot_id5', 'bot5', 'AI', 'game_id1', 3
 					)`,
 				},
 				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id1')`},

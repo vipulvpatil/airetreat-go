@@ -76,6 +76,8 @@ message GetGameForPlayerResponse {
 	repeated Bot bots = 8;
   repeated GameMessage messages = 9;
   string winningBotId = 10;
+  int64 myHelpCount = 11;
+  string turnBotName = 12;
 }
 
 message Bot {

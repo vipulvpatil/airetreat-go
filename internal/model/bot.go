@@ -14,6 +14,7 @@ type Bot struct {
 	name      string
 	typeOfBot botType
 	player    *Player
+	helpCount int64
 }
 
 type BotOptions struct {
@@ -21,6 +22,7 @@ type BotOptions struct {
 	Name            string
 	TypeOfBot       string
 	ConnectedPlayer *Player
+	HelpCount       int64
 }
 
 func NewBot(opts BotOptions) (*Bot, error) {
@@ -53,6 +55,7 @@ func NewBot(opts BotOptions) (*Bot, error) {
 		name:      opts.Name,
 		typeOfBot: typeOfBot,
 		player:    opts.ConnectedPlayer,
+		helpCount: opts.HelpCount,
 	}, nil
 }
 

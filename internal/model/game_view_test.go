@@ -857,6 +857,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 							player: &Player{
 								id: "player_id1",
 							},
+							helpCount: 1,
 						},
 						{
 							id:   "bot_id2",
@@ -876,6 +877,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 							player: &Player{
 								id: "player_id2",
 							},
+							helpCount: 2,
 						},
 					},
 					messages: []*Message{
@@ -952,6 +954,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 						Name: "bot5",
 					},
 				},
+				MyHelpCount: 2,
 			},
 		},
 		{
@@ -975,6 +978,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 							player: &Player{
 								id: "player_id1",
 							},
+							helpCount: 1,
 						},
 						{
 							id:   "bot_id2",
@@ -994,6 +998,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 							player: &Player{
 								id: "player_id2",
 							},
+							helpCount: 2,
 						},
 					},
 					messages: []*Message{
@@ -1072,6 +1077,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 						Name: "bot5",
 					},
 				},
+				MyHelpCount: 2,
 			},
 		},
 		{
