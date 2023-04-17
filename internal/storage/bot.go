@@ -25,7 +25,7 @@ func connectPlayerToBot(customDb customDbHandler, playerId, botId string) error 
 	}
 
 	result, err := customDb.Exec(
-		`UPDATE public."bots" SET "player_id" = $1, "type" = 'HUMAN' WHERE id = $2`, playerId, botId,
+		`UPDATE public."bots" SET "player_id" = $1, "type" = 'HUMAN', "help_count" = 3 WHERE id = $2`, playerId, botId,
 	)
 	if err != nil {
 		return utilities.WrapBadError(err, fmt.Sprintf("dbError while connecting player to bot: %s %s", playerId, botId))

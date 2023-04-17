@@ -102,7 +102,7 @@ func Test_UpdateBotWithPlayerIdUsingTransaction(t *testing.T) {
 			errorString:   "THIS IS BAD: dbError while connecting player to bot: player_id1 bot_id1: pq: insert or update on table \"bots\" violates foreign key constraint \"bots_player_id_fkey\"",
 		},
 		{
-			name: "bot updates successfully with the playerId",
+			name: "bot updates successfully with the playerId and helpCount",
 			input: struct {
 				botId    string
 				playerId string
@@ -114,17 +114,19 @@ func Test_UpdateBotWithPlayerIdUsingTransaction(t *testing.T) {
 				var (
 					playerId  string
 					typeOfBot string
+					helpCount int
 				)
 				row := db.QueryRow(
-					`SELECT player_id, type
-				FROM public."bots"
-				WHERE id = 'bot_id1'`,
+					`SELECT player_id, type, help_count
+					FROM public."bots"
+					WHERE id = 'bot_id1'`,
 				)
 				assert.NoError(t, row.Err())
-				err := row.Scan(&playerId, &typeOfBot)
+				err := row.Scan(&playerId, &typeOfBot, &helpCount)
 				assert.NoError(t, err)
 				assert.Equal(t, "player_id1", playerId)
 				assert.Equal(t, "HUMAN", typeOfBot)
+				assert.Equal(t, 3, helpCount)
 
 				return true
 			},
