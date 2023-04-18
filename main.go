@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/health"
 	"github.com/vipulvpatil/airetreat-go/internal/server"
@@ -63,8 +64,9 @@ func main() {
 	jobStarter := workers.NewJobStarter(WORKER_NAMESPACE, redisPool)
 
 	serverDeps := server.ServerDependencies{
-		Storage: dbStorage,
-		Config:  cfg,
+		Storage:      dbStorage,
+		OpenAiClient: openai.NewClient(openai.OpenAiClientOptions{ApiKey: cfg.OpenAiApiKey}),
+		Config:       cfg,
 	}
 
 	s, err := server.NewServer(serverDeps)

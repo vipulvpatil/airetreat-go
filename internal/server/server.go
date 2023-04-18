@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
@@ -11,19 +12,22 @@ import (
 
 type AiRetreatGoService struct {
 	pb.UnsafeAiRetreatGoServer
-	storage storage.StorageAccessor
-	config  *config.Config
+	storage      storage.StorageAccessor
+	openAiClient openai.Client
+	config       *config.Config
 }
 
 type ServerDependencies struct {
-	Storage storage.StorageAccessor
-	Config  *config.Config
+	Storage      storage.StorageAccessor
+	OpenAiClient openai.Client
+	Config       *config.Config
 }
 
 func NewServer(deps ServerDependencies) (*AiRetreatGoService, error) {
 	return &AiRetreatGoService{
-		storage: deps.Storage,
-		config:  deps.Config,
+		storage:      deps.Storage,
+		openAiClient: deps.OpenAiClient,
+		config:       deps.Config,
 	}, nil
 }
 
