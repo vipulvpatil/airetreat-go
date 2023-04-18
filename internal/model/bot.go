@@ -75,6 +75,10 @@ func (b *Bot) IsHuman() bool {
 	return b.typeOfBot == human
 }
 
+func (b *Bot) CanGetHelp() bool {
+	return b.helpCount > 0
+}
+
 func (b *Bot) ConnectPlayer(player *Player) error {
 	if player == nil {
 		return errors.New("Cannot connect an empty player")

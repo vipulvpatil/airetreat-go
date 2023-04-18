@@ -172,6 +172,7 @@ func Test_Bot_IsAi(t *testing.T) {
 		})
 	}
 }
+
 func Test_Bot_IsHuman(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -193,6 +194,32 @@ func Test_Bot_IsHuman(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.IsHuman()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_Bot_CanGetHelp(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Bot
+		expectedOutput bool
+	}{
+		{
+			name:           "returns true",
+			input:          &Bot{id: "id1", typeOfBot: human, helpCount: 2},
+			expectedOutput: true,
+		},
+		{
+			name:           "returns false",
+			input:          &Bot{id: "id1", typeOfBot: human, helpCount: 0},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.CanGetHelp()
 			assert.Equal(t, tt.expectedOutput, result)
 		})
 	}
