@@ -9,9 +9,17 @@ func (p *BotAccessorMockSuccess) UpdateBotWithPlayerIdUsingTransaction(botId, pl
 	return nil
 }
 
+func (p *BotAccessorMockSuccess) UpdateBotDecrementHelpCountUsingTransaction(botId string, transaction DatabaseTransaction) error {
+	return nil
+}
+
 type BotAccessorMockFailure struct {
 }
 
 func (p *BotAccessorMockFailure) UpdateBotWithPlayerIdUsingTransaction(botId, playerId string, transaction DatabaseTransaction) error {
+	return errors.New("unable to update bot")
+}
+
+func (p *BotAccessorMockFailure) UpdateBotDecrementHelpCountUsingTransaction(botId string, transaction DatabaseTransaction) error {
 	return errors.New("unable to update bot")
 }

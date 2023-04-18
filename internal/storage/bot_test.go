@@ -184,3 +184,145 @@ func Test_UpdateBotWithPlayerIdUsingTransaction(t *testing.T) {
 		})
 	}
 }
+func Test_UpdateBotDecrementHelpCountUsingTransaction(t *testing.T) {
+	tests := []struct {
+		name            string
+		input           string
+		dbUpdateCheck   func(*sql.DB) bool
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if botId is blank",
+			input:           "",
+			dbUpdateCheck:   nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "botId cannot be blank",
+		},
+		{
+			name:            "errors if bot id is not in db",
+			input:           "bot_id1",
+			dbUpdateCheck:   nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "getting help_count for bot_id1: no such bot",
+		},
+		{
+			name:  "errors if helpCount is already 0",
+			input: "bot_id1",
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					helpCount int
+				)
+				row := db.QueryRow(
+					`SELECT help_count
+					FROM public."bots"
+					WHERE id = 'bot_id1'`,
+				)
+				assert.NoError(t, row.Err())
+				err := row.Scan(&helpCount)
+				assert.NoError(t, err)
+				assert.Equal(t, 0, helpCount)
+
+				return true
+			},
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id", "help_count"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'AI', 'game_id1', 0
+					)`,
+				},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
+			},
+			errorExpected: true,
+			errorString:   "help_count should not be updated below 0 for bot_id1",
+		},
+		{
+			name:  "bot updates successfully with the helpCount",
+			input: "bot_id1",
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					helpCount int
+				)
+				row := db.QueryRow(
+					`SELECT help_count
+					FROM public."bots"
+					WHERE id = 'bot_id1'`,
+				)
+				assert.NoError(t, row.Err())
+				err := row.Scan(&helpCount)
+				assert.NoError(t, err)
+				assert.Equal(t, 2, helpCount)
+
+				return true
+			},
+			setupSqlStmts: []TestSqlStmts{
+				{
+					Query: `INSERT INTO public."games" (
+						"id", "state", "current_turn_index", "turn_order", "state_handled"
+					)
+					VALUES (
+						'game_id1', 'STARTED', 0, Array['b','p1','b','p2'], false
+					)`,
+				},
+				{
+					Query: `INSERT INTO public."bots" (
+						"id", "name", "type", "game_id", "help_count"
+					)
+					VALUES (
+						'bot_id1', 'bot1', 'AI', 'game_id1', 3
+					)`,
+				},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."games" WHERE id = 'game_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			tx, err := s.BeginTransaction()
+			assert.NoError(t, err)
+			err = s.UpdateBotDecrementHelpCountUsingTransaction(tt.input, tx)
+			tx.Commit()
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+			if tt.dbUpdateCheck != nil {
+				assert.True(t, tt.dbUpdateCheck(s.db))
+			}
+		})
+	}
+}
