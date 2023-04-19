@@ -42,7 +42,7 @@ func (s *AiRetreatGoService) Help(ctx context.Context, req *pb.HelpRequest) (*pb
 		return nil, err
 	}
 
-	if game.IsInStateWaitingForAiQuestion() {
+	if game.IsInStateWaitingForHumanQuestion() {
 		aiBot := aibot.NewAiQuestionGenerator(
 			aibot.AiBotOptions{
 				BotId:        sourceBot.Id(),
@@ -51,7 +51,7 @@ func (s *AiRetreatGoService) Help(ctx context.Context, req *pb.HelpRequest) (*pb
 			},
 		)
 		responseText = aiBot.GetNextQuestion()
-	} else if game.IsInStateWaitingForAiAnswer() {
+	} else if game.IsInStateWaitingForHumanAnswer() {
 		aiBot := aibot.NewAiAnswerGenerator(
 			aibot.AiBotOptions{
 				BotId:        sourceBot.Id(),

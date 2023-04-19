@@ -1854,6 +1854,70 @@ func Test_IsInStateWaitingForAiAnswer(t *testing.T) {
 	}
 }
 
+func Test_IsInStateWaitingForHumanQuestion(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        waitingForHumanQuestion,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsInStateWaitingForHumanQuestion()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
+func Test_IsInStateWaitingForHumanAnswer(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          *Game
+		expectedOutput bool
+	}{
+		{
+			name: "returns true",
+			input: &Game{
+				state:        waitingForHumanAnswer,
+				stateHandled: true,
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "returns false",
+			input: &Game{
+				state:        started,
+				stateHandled: false,
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.IsInStateWaitingForHumanAnswer()
+			assert.Equal(t, tt.expectedOutput, result)
+		})
+	}
+}
+
 func Test_RandomizedTurnOrder(t *testing.T) {
 	tests := []struct {
 		name           string

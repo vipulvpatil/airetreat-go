@@ -287,7 +287,7 @@ func Test_Help(t *testing.T) {
 			errorString:     "unable to update bot",
 		},
 		{
-			name: "success",
+			name: "success when waiting for human question",
 			input: &pb.HelpRequest{
 				GameId:   "game_id1",
 				PlayerId: "player_id1",
@@ -318,7 +318,7 @@ func Test_Help(t *testing.T) {
 					game, _ := model.NewGame(
 						model.GameOptions{
 							Id:               "game_id1",
-							State:            "WAITING_FOR_AI_QUESTION",
+							State:            "WAITING_FOR_HUMAN_QUESTION",
 							CurrentTurnIndex: 1,
 							TurnOrder:        []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
 							StateHandled:     false,
@@ -326,6 +326,56 @@ func Test_Help(t *testing.T) {
 							CreatedAt:        time.Now(),
 							UpdatedAt:        time.Now(),
 							Bots:             bots,
+						},
+					)
+					return game, nil
+				},
+			},
+			botAccessorMock: &storage.BotAccessorMockSuccess{},
+			errorExpected:   false,
+			errorString:     "",
+		},
+		{
+			name: "success when waiting for human answer",
+			input: &pb.HelpRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id1",
+			},
+			output:          &pb.HelpResponse{Text: "sample response"},
+			transactionMock: &storage.DatabaseTransactionMock{},
+			openAiResponse:  "sample response",
+			txShouldCommit:  true,
+			gameAccessorMock: &storage.GameAccessorConfigurableMock{
+				GetGameInternal: func(gameId string) (*model.Game, error) {
+					player1, _ := model.NewPlayer(
+						model.PlayerOptions{
+							Id: "player_id1",
+						},
+					)
+					bots := []*model.Bot{}
+					for i := 0; i < 5; i++ {
+						botOpts := model.BotOptions{
+							Id:        fmt.Sprintf("bot_id%d", i+1),
+							Name:      fmt.Sprintf("bot%d", i+1),
+							TypeOfBot: "AI",
+							HelpCount: 3,
+						}
+						bot, _ := model.NewBot(botOpts)
+						bots = append(bots, bot)
+					}
+					bots[1].ConnectPlayer(player1)
+					game, _ := model.NewGame(
+						model.GameOptions{
+							Id:                      "game_id1",
+							State:                   "WAITING_FOR_HUMAN_ANSWER",
+							CurrentTurnIndex:        1,
+							TurnOrder:               []string{"bot_id1", "bot_id2", "bot_id3", "bot_id4", "bot_id5"},
+							StateHandled:            false,
+							StateTotalTime:          0,
+							LastQuestionTargetBotId: "bot_id2",
+							CreatedAt:               time.Now(),
+							UpdatedAt:               time.Now(),
+							Bots:                    bots,
 						},
 					)
 					return game, nil

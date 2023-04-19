@@ -182,6 +182,14 @@ func (game *Game) IsInStateWaitingForAiAnswer() bool {
 	return game.state.isWaitingForAnAnswer() && game.state.isWaitingOnAi()
 }
 
+func (game *Game) IsInStateWaitingForHumanQuestion() bool {
+	return game.state.isWaitingForAQuestion() && game.state.isWaitingOnHuman()
+}
+
+func (game *Game) IsInStateWaitingForHumanAnswer() bool {
+	return game.state.isWaitingForAnAnswer() && game.state.isWaitingOnHuman()
+}
+
 func (game *Game) RandomizedTurnOrder() []string {
 	botIds := []string{}
 	for _, bot := range game.bots {
