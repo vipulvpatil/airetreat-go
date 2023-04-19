@@ -2,6 +2,8 @@ package workers
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	"github.com/gocraft/work"
 	"github.com/pkg/errors"
@@ -94,6 +96,10 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 		},
 	)
 	question := aiBot.GetNextQuestion()
+
+	// Wait a random amount of time. min:8 max:15
+	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
+
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBotId, question)
 	if err != nil {
 		return err
@@ -158,6 +164,10 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 		},
 	)
 	answer := aiBot.GetNextAnswer()
+
+	// Wait a random amount of time. min:8 max:15
+	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
+
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), sourceBot.Id(), answer)
 	if err != nil {
 		return err

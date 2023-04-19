@@ -85,9 +85,6 @@ func (ab *aiBot) GetNextQuestion() string {
 	}
 	question, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
 
-	// Wait a random amount of time. min:8 max:15
-	// time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
-
 	if err != nil {
 		return randomFallbackQuestion()
 	} else {
@@ -99,9 +96,6 @@ func (ab *aiBot) GetNextAnswer() string {
 	promptContext := createContextUsingBots(ab.allBotNames, ab.name)
 	openAiPrompt := createAnswerPromptWithContext(promptContext, ab.conversationSoFar)
 	answer, err := ab.openAiClient.CallCompletionApi(openAiPrompt)
-
-	// Wait a random amount of time. min:8 max:15
-	// time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
 
 	if err != nil {
 		return randomFallbackAnswer()
