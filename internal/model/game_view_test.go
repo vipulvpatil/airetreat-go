@@ -534,7 +534,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			},
 			output: &GameView{
 				State:          waitingOnYouToAskAQuestion,
-				DisplayMessage: "Ask a question. OR Click suggest for help!",
+				DisplayMessage: "Ask a question. OR Click help!",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",
@@ -652,7 +652,7 @@ func Test_GameViewForPlayer(t *testing.T) {
 			},
 			output: &GameView{
 				State:          waitingOnYouToAnswer,
-				DisplayMessage: "Answer the question. OR Click suggest for help!",
+				DisplayMessage: "Answer the question. OR Click help!",
 				StateTotalTime: 60,
 				LastQuestion:   "last question",
 				MyBotId:        "bot_id1",

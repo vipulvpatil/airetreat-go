@@ -514,7 +514,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 			},
 			output: &pb.GetGameForPlayerResponse{
 				State:          "WAITING_ON_YOU_TO_ASK_A_QUESTION",
-				DisplayMessage: "Ask a question. OR Click suggest for help!",
+				DisplayMessage: "Ask a question. OR Click help!",
 				StateStartedAt: timestamppb.New(stateHandledTime),
 				StateTotalTime: 30,
 				LastQuestion:   "last question",

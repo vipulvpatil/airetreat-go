@@ -73,13 +73,13 @@ func convertGameStateToGameViewStateWithMessage(g *Game, myBotId string) (gameVi
 			fmt.Sprintf("%s is answering the question", waitingOnBot.name)
 	case waitingForHumanQuestion:
 		if g.getCurrentTurnBotId() == myBotId {
-			return waitingOnYouToAskAQuestion, "Ask a question. OR Click suggest for help!"
+			return waitingOnYouToAskAQuestion, "Ask a question. OR Click help!"
 		} else {
 			return waitingOnBotToAskAQuestion, "Someone is asking a question"
 		}
 	case waitingForHumanAnswer:
 		if g.lastQuestionTargetBotId == myBotId {
-			return waitingOnYouToAnswer, "Answer the question. OR Click suggest for help!"
+			return waitingOnYouToAnswer, "Answer the question. OR Click help!"
 		} else {
 			return waitingOnBotToAnswer,
 				fmt.Sprintf("%s is answering the question", waitingOnBot.name)
