@@ -14,6 +14,8 @@ const DELETE_EXPIRED_GAMES = "delete_expired_games"
 
 var workerStorage storage.StorageAccessor
 var openAiClient openai.Client
+var minDelayAfterAIResponse int
+var maxDelayAfterAIResponse int
 
 type PoolDependencies struct {
 	Namespace    string
@@ -33,5 +35,7 @@ func NewPool(deps PoolDependencies) *work.WorkerPool {
 	// TODO: Not sure if this is the best way to do this. But using Package variables for all dependencies required inside any of the jobs.
 	workerStorage = deps.Storage
 	openAiClient = openai.NewClient(openai.OpenAiClientOptions{ApiKey: deps.OpenAiApiKey})
+	minDelayAfterAIResponse = 8
+	maxDelayAfterAIResponse = 15
 	return pool
 }

@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
 
@@ -14,6 +16,13 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 		return nil, err
 	}
 	defer tx.Rollback()
+
+	messageText := req.GetText()
+
+	err = validateMessageText(messageText)
+	if err != nil {
+		return nil, err
+	}
 
 	game, err := s.storage.GetGameUsingTransaction(req.GetGameId(), tx)
 	if err != nil {
@@ -25,7 +34,7 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 		return nil, errors.New("incorrect game")
 	}
 
-	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), req.GetBotId(), req.GetText())
+	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), req.GetBotId(), messageText)
 	if err != nil {
 		return nil, err
 	}
@@ -51,4 +60,17 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 
 	err = tx.Commit()
 	return &pb.SendMessageResponse{}, err
+}
+
+// TODO: Find a more appropriate place for this function
+func validateMessageText(text string) error {
+	if utilities.IsBlank(text) {
+		return errors.New("message cannot be blank")
+	}
+
+	if len(strings.Trim(text, " ")) > 120 {
+		return errors.New("message cannot be this long")
+	}
+
+	return nil
 }

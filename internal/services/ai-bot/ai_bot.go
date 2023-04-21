@@ -129,7 +129,7 @@ func createFirstQuestionPromptWithContext(promptContext string) string {
 }
 
 func createQuestionPromptWithContext(promptContext, conversationSoFar string) string {
-	task := fmt.Sprintf("Conversation so far is \n%s\n. Ask a question.\nQuestion:", conversationSoFar)
+	task := fmt.Sprintf("Conversation so far is \n%s\n. Ask the next question but do not answer it.\nQuestion:", conversationSoFar)
 	return fmt.Sprintf("%s %s", promptContext, task)
 }
 

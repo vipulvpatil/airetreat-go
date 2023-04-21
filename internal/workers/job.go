@@ -1,7 +1,6 @@
 package workers
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -87,7 +86,6 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(openAiClient)
 	aiBot := aibot.NewAiQuestionGenerator(
 		aibot.AiBotOptions{
 			BotId:        sourceBot.Id(),
@@ -97,8 +95,8 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 	)
 	question := aiBot.GetNextQuestion()
 
-	// Wait a random amount of time. min:8 max:15
-	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
+	// Wait a random amount of time.
+	time.Sleep(time.Duration(minDelayAfterAIResponse+rand.Intn(maxDelayAfterAIResponse-minDelayAfterAIResponse)) * time.Second)
 
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBotId, question)
 	if err != nil {
@@ -165,8 +163,8 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 	)
 	answer := aiBot.GetNextAnswer()
 
-	// Wait a random amount of time. min:8 max:15
-	time.Sleep(time.Duration(rand.Intn(7)+8) * time.Second)
+	// Wait a random amount of time.
+	time.Sleep(time.Duration(minDelayAfterAIResponse+rand.Intn(maxDelayAfterAIResponse-minDelayAfterAIResponse)) * time.Second)
 
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), sourceBot.Id(), answer)
 	if err != nil {

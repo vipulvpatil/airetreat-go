@@ -163,6 +163,22 @@ func Test_SendMessage(t *testing.T) {
 			errorString:        "unable to begin a db transaction",
 		},
 		{
+			name: "errors if message is invalid",
+			input: &pb.SendMessageRequest{
+				GameId:   "game_id1",
+				PlayerId: "player_id1",
+				BotId:    "bot_id1",
+				Text:     "answer message is so long that it is considered too long for our usage purposes and is completely ignored and returns an error",
+			},
+			output:             &pb.SendMessageResponse{},
+			transactionMock:    &storage.DatabaseTransactionMock{},
+			messageCreatorMock: nil,
+			gameAccessorMock:   nil,
+			txShouldCommit:     false,
+			errorExpected:      true,
+			errorString:        "message cannot be this long",
+		},
+		{
 			name: "errors if cannot get game",
 			input: &pb.SendMessageRequest{
 				GameId:   "game_id1",
