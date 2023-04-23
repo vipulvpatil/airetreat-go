@@ -38,3 +38,21 @@ func (p *PlayerAccessorMockFailure) CreatePlayer(userId *string) (string, error)
 func (p *PlayerAccessorMockFailure) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
 	return errors.New("unable to update player")
 }
+
+type PlayerAccessorMockConfigurable struct {
+	GetPlayerUsingTransactionInternal              func(playerId string, transaction DatabaseTransaction) (*model.Player, error)
+	CreatePlayerTransaction                        func(userId *string) (string, error)
+	UpdatePlayerWithUserIdUsingTransactionInternal func(playerId, userId string, transaction DatabaseTransaction) error
+}
+
+func (p *PlayerAccessorMockConfigurable) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
+	return p.GetPlayerUsingTransactionInternal(playerId, transaction)
+}
+
+func (p *PlayerAccessorMockConfigurable) CreatePlayer(userId *string) (string, error) {
+	return p.CreatePlayerTransaction(userId)
+}
+
+func (p *PlayerAccessorMockConfigurable) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
+	return p.UpdatePlayerWithUserIdUsingTransactionInternal(playerId, userId, transaction)
+}
