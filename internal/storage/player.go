@@ -9,7 +9,7 @@ import (
 
 type PlayerAccessor interface {
 	CreatePlayer(userId *string) (string, error)
-	UpdatePlayer(playerId string, userId string) error
+	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error
 }
 
 func (s *Storage) CreatePlayer(userId *string) (string, error) {
@@ -46,7 +46,7 @@ func (s *Storage) CreatePlayer(userId *string) (string, error) {
 	return playerOpts.Id, nil
 }
 
-func (s *Storage) UpdatePlayer(playerId string, userId string) error {
+func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
 	if utilities.IsBlank(playerId) {
 		return utilities.NewBadError("playerId cannot be blank")
 	}
@@ -55,7 +55,7 @@ func (s *Storage) UpdatePlayer(playerId string, userId string) error {
 		return utilities.NewBadError("userId cannot be blank")
 	}
 
-	result, err := s.db.Exec(
+	result, err := transaction.Exec(
 		`UPDATE public."players" SET "user_id" = $1 WHERE id = $2`,
 		userId,
 		playerId,

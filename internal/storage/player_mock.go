@@ -10,7 +10,7 @@ func (p *PlayerAccessorMockSuccess) CreatePlayer(userId *string) (string, error)
 	return p.PlayerId, nil
 }
 
-func (p *PlayerAccessorMockSuccess) UpdatePlayer(playerId string, userId string) error {
+func (p *PlayerAccessorMockSuccess) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
 	return nil
 }
 
@@ -21,6 +21,6 @@ func (p *PlayerAccessorMockFailure) CreatePlayer(userId *string) (string, error)
 	return "", errors.New("unable to create player")
 }
 
-func (p *PlayerAccessorMockFailure) UpdatePlayer(playerId string, userId string) error {
+func (p *PlayerAccessorMockFailure) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
 	return errors.New("unable to update player")
 }

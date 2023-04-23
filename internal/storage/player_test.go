@@ -219,53 +219,6 @@ func Test_UpdatePlayer(t *testing.T) {
 			errorExpected: false,
 			errorString:   "",
 		},
-		// {
-		// 	name:   "creates player successfully with user id",
-		// 	input:  &userId,
-		// 	setupSqlStmts: []TestSqlStmts{
-		// 		{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
-		// 	},
-		// 	cleanupSqlStmts: []TestSqlStmts{
-		// 		{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
-		// 	},
-		// 	idGenerator: &utilities.IdGeneratorMockConstant{Id: "player_id1"},
-		// 	dbUpdateCheck: func(db *sql.DB) bool {
-		// 		var (
-		// 			id     string
-		// 			userId string
-		// 		)
-		// 		err := db.QueryRow(
-		// 			`SELECT "id", "user_id" FROM public."players" WHERE "id" = 'player_id1'`,
-		// 		).Scan(&id, &userId)
-		// 		assert.NoError(t, err)
-		// 		assert.Equal(t, "player_id1", id)
-		// 		assert.Equal(t, "user_id1", userId)
-		// 		return true
-		// 	},
-		// 	errorExpected: false,
-		// 	errorString:   "",
-		// },
-		// {
-		// 	name:   "errors and does not update anything, if Player ID already exists in DB",
-		// 	setupSqlStmts: []TestSqlStmts{
-		// 		{Query: `INSERT INTO public."players" ("id") VALUES ('id1')`},
-		// 	},
-		// 	cleanupSqlStmts: []TestSqlStmts{
-		// 		{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
-		// 	},
-		// 	idGenerator: &utilities.IdGeneratorMockConstant{Id: "id1"},
-		// 	dbUpdateCheck: func(db *sql.DB) bool {
-		// 		var id string
-		// 		err := db.QueryRow(
-		// 			`SELECT id FROM public."players" WHERE "id" = 'id1'`,
-		// 		).Scan(&id)
-		// 		assert.NoError(t, err)
-		// 		assert.Equal(t, "id1", id)
-		// 		return true
-		// 	},
-		// 	errorExpected: true,
-		// 	errorString:   "pq: duplicate key value violates unique constraint \"players_pkey\"",
-		// },
 	}
 
 	for _, tt := range tests {
@@ -280,7 +233,10 @@ func Test_UpdatePlayer(t *testing.T) {
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			err := s.UpdatePlayer(tt.input.playerId, tt.input.userId)
+			tx, err := s.BeginTransaction()
+			assert.NoError(t, err)
+			err = s.UpdatePlayerWithUserIdUsingTransaction(tt.input.playerId, tt.input.userId, tx)
+			tx.Commit()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 			} else {
