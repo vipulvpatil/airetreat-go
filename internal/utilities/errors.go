@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // This error is used to denote something risky and unexpected happening in the system.
@@ -28,4 +30,11 @@ func WrapBadError(err error, message string) error {
 
 func (b *BadError) Error() string {
 	return fmt.Sprintf("THIS IS BAD: %s", b.message)
+}
+
+func ErrorIsUnauthenticated(err error) bool {
+	if e, ok := status.FromError(err); ok {
+		return e.Code() == codes.Unauthenticated
+	}
+	return false
 }

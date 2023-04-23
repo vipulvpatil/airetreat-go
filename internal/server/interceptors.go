@@ -3,9 +3,8 @@ package server
 import (
 	"context"
 
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // The calls to this service are authenticated using mutual TLS.
@@ -17,7 +16,7 @@ func (s *AiRetreatGoService) RequestingUserInterceptor(ctx context.Context,
 	handler grpc.UnaryHandler) (interface{}, error) {
 	updatedCtx, err := contextWithUserData(ctx, s.storage)
 	if err != nil {
-		if ErrorIsUnauthenticated(err) && s.config.AllowUnauthed {
+		if utilities.ErrorIsUnauthenticated(err) && s.config.AllowUnauthed {
 			return handler(ctx, req)
 		} else {
 			return nil, err
@@ -25,11 +24,4 @@ func (s *AiRetreatGoService) RequestingUserInterceptor(ctx context.Context,
 	} else {
 		return handler(updatedCtx, req)
 	}
-}
-
-func ErrorIsUnauthenticated(err error) bool {
-	if e, ok := status.FromError(err); ok {
-		return e.Code() == codes.Unauthenticated
-	}
-	return false
 }
