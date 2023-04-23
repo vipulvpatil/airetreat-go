@@ -1,15 +1,45 @@
 package storage
 
 import (
+	"database/sql"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 type PlayerAccessor interface {
+	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	CreatePlayer(userId *string) (string, error)
 	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error
+}
+
+func (s *Storage) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
+	if utilities.IsBlank(playerId) {
+		return nil, errors.New("playerId cannot be blank")
+	}
+
+	var nullableUserId sql.NullString
+
+	row := transaction.QueryRow(`SELECT user_id FROM public."players" WHERE id = $1 FOR UPDATE`, playerId)
+	err := row.Scan(&nullableUserId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.Errorf("getting player for %s: no such player", playerId)
+		}
+		return nil, errors.Errorf("getting player for %s: %v", playerId, err)
+	}
+
+	var userId *string
+	if nullableUserId.Valid {
+		userId = &nullableUserId.String
+	}
+
+	return model.NewPlayer(model.PlayerOptions{
+		Id:     playerId,
+		UserId: userId,
+	})
 }
 
 func (s *Storage) CreatePlayer(userId *string) (string, error) {
@@ -48,11 +78,11 @@ func (s *Storage) CreatePlayer(userId *string) (string, error) {
 
 func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
 	if utilities.IsBlank(playerId) {
-		return utilities.NewBadError("playerId cannot be blank")
+		return errors.New("playerId cannot be blank")
 	}
 
 	if utilities.IsBlank(userId) {
-		return utilities.NewBadError("userId cannot be blank")
+		return errors.New("userId cannot be blank")
 	}
 
 	result, err := transaction.Exec(

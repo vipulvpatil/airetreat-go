@@ -5,8 +5,96 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
+
+func Test_GetPlayerUsingTransaction(t *testing.T) {
+	userId := "user_id1"
+	playerWithoutUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1"})
+	playerWithUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
+	tests := []struct {
+		name            string
+		input           string
+		output          *model.Player
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if player id is nil",
+			input:           "",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "playerId cannot be blank",
+		},
+		{
+			name:            "errors if player not in db",
+			input:           "player_id1",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "getting player for player_id1: no such player",
+		},
+		{
+			name:   "gets player successfully without user id",
+			input:  "player_id1",
+			output: playerWithoutUser,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."players" ("id", "user_id") VALUES ('player_id1', NULL)`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name:   "gets player with user id successfully",
+			input:  "player_id1",
+			output: playerWithUser,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
+				{Query: `INSERT INTO public."players" ("id", "user_id") VALUES ('player_id1', 'user_id1')`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			tx, err := s.BeginTransaction()
+			assert.NoError(t, err)
+			playerId, err := s.GetPlayerUsingTransaction(tt.input, tx)
+			tx.Commit()
+
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.output, playerId)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}
 
 func Test_CreatePlayer(t *testing.T) {
 	userId := "user_id1"
@@ -122,7 +210,7 @@ func Test_CreatePlayer(t *testing.T) {
 	}
 }
 
-func Test_UpdatePlayer(t *testing.T) {
+func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 	tests := []struct {
 		name  string
 		input struct {
@@ -131,7 +219,6 @@ func Test_UpdatePlayer(t *testing.T) {
 		}
 		setupSqlStmts   []TestSqlStmts
 		cleanupSqlStmts []TestSqlStmts
-		idGenerator     utilities.CuidGenerator
 		dbUpdateCheck   func(*sql.DB) bool
 		errorExpected   bool
 		errorString     string
@@ -147,10 +234,9 @@ func Test_UpdatePlayer(t *testing.T) {
 			},
 			setupSqlStmts:   nil,
 			cleanupSqlStmts: nil,
-			idGenerator:     nil,
 			dbUpdateCheck:   nil,
 			errorExpected:   true,
-			errorString:     "THIS IS BAD: userId cannot be blank",
+			errorString:     "userId cannot be blank",
 		},
 		{
 			name: "errors if playerId is blank",
@@ -163,10 +249,9 @@ func Test_UpdatePlayer(t *testing.T) {
 			},
 			setupSqlStmts:   nil,
 			cleanupSqlStmts: nil,
-			idGenerator:     nil,
 			dbUpdateCheck:   nil,
 			errorExpected:   true,
-			errorString:     "THIS IS BAD: playerId cannot be blank",
+			errorString:     "playerId cannot be blank",
 		},
 		{
 			name: "errors if db update errors",
@@ -183,7 +268,6 @@ func Test_UpdatePlayer(t *testing.T) {
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
 			},
-			idGenerator:   &utilities.IdGeneratorMockConstant{Id: "player_id1"},
 			dbUpdateCheck: nil,
 			errorExpected: true,
 			errorString:   "THIS IS BAD: dbError while attempting player update: pq: insert or update on table \"players\" violates foreign key constraint \"players_user_id_fkey\"",
@@ -204,7 +288,6 @@ func Test_UpdatePlayer(t *testing.T) {
 			cleanupSqlStmts: []TestSqlStmts{
 				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
 			},
-			idGenerator: &utilities.IdGeneratorMockConstant{Id: "player_id1"},
 			dbUpdateCheck: func(db *sql.DB) bool {
 				var (
 					userId string
@@ -225,8 +308,7 @@ func Test_UpdatePlayer(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s, _ := NewDbStorage(
 				StorageOptions{
-					Db:          testDb,
-					IdGenerator: tt.idGenerator,
+					Db: testDb,
 				},
 			)
 

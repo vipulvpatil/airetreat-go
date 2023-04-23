@@ -1,9 +1,19 @@
 package storage
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/vipulvpatil/airetreat-go/internal/model"
+)
 
 type PlayerAccessorMockSuccess struct {
 	PlayerId string
+}
+
+func (p *PlayerAccessorMockSuccess) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
+	return model.NewPlayer(model.PlayerOptions{
+		Id: p.PlayerId,
+	})
 }
 
 func (p *PlayerAccessorMockSuccess) CreatePlayer(userId *string) (string, error) {
@@ -15,6 +25,10 @@ func (p *PlayerAccessorMockSuccess) UpdatePlayerWithUserIdUsingTransaction(playe
 }
 
 type PlayerAccessorMockFailure struct {
+}
+
+func (p *PlayerAccessorMockFailure) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
+	return nil, errors.New("unable to get player")
 }
 
 func (p *PlayerAccessorMockFailure) CreatePlayer(userId *string) (string, error) {
