@@ -7,6 +7,7 @@ import (
 )
 
 func Test_NewPlayer(t *testing.T) {
+	userId := "user_id1"
 	tests := []struct {
 		name           string
 		input          PlayerOptions
@@ -22,12 +23,26 @@ func Test_NewPlayer(t *testing.T) {
 			errorString:    "cannot create player with an empty id",
 		},
 		{
-			name: "Player gets created successfully",
+			name: "Player gets created successfully without userId",
 			input: PlayerOptions{
-				Id: "123",
+				Id:     "123",
+				UserId: nil,
 			},
 			expectedOutput: &Player{
 				id: "123",
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name: "Player gets created successfully with userId",
+			input: PlayerOptions{
+				Id:     "123",
+				UserId: &userId,
+			},
+			expectedOutput: &Player{
+				id:     "123",
+				userId: &userId,
 			},
 			errorExpected: false,
 			errorString:   "",

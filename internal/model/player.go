@@ -6,11 +6,13 @@ import (
 )
 
 type Player struct {
-	id string
+	id     string
+	userId *string
 }
 
 type PlayerOptions struct {
-	Id string
+	Id     string
+	UserId *string
 }
 
 func NewPlayer(opts PlayerOptions) (*Player, error) {
@@ -18,7 +20,8 @@ func NewPlayer(opts PlayerOptions) (*Player, error) {
 		return nil, errors.Errorf("cannot create player with an empty id")
 	}
 	return &Player{
-		id: opts.Id,
+		id:     opts.Id,
+		userId: opts.UserId,
 	}, nil
 }
 
