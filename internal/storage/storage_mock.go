@@ -3,7 +3,7 @@ package storage
 type StorageAccessorMock struct {
 	UserRetriever
 	GameAccessor
-	PlayerCreator
+	PlayerAccessor
 	MessageCreator
 	BotAccessor
 	DatabaseTransactionProvider
@@ -20,9 +20,9 @@ func NewStorageAccessorMock(opts ...StorageAccessorMockOption) *StorageAccessorM
 	return mock
 }
 
-func WithPlayerCreatorMock(mock PlayerCreator) StorageAccessorMockOption {
+func WithPlayerAccessorMock(mock PlayerAccessor) StorageAccessorMockOption {
 	return func(s *StorageAccessorMock) {
-		s.PlayerCreator = mock
+		s.PlayerAccessor = mock
 	}
 }
 

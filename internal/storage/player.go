@@ -7,15 +7,17 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
-type PlayerCreator interface {
-	CreatePlayer() (string, error)
+type PlayerAccessor interface {
+	CreatePlayer(userId *string) (string, error)
+	UpdatePlayer(playerId string, userId string) error
 }
 
-func (s *Storage) CreatePlayer() (string, error) {
+func (s *Storage) CreatePlayer(userId *string) (string, error) {
 	id := s.IdGenerator.Generate()
 
 	playerOpts := model.PlayerOptions{
-		Id: id,
+		Id:     id,
+		UserId: userId,
 	}
 
 	_, err := model.NewPlayer(playerOpts)
@@ -24,8 +26,9 @@ func (s *Storage) CreatePlayer() (string, error) {
 	}
 
 	result, err := s.db.Exec(
-		`INSERT INTO public."players" ("id") VALUES ($1)`,
+		`INSERT INTO public."players" ("id", "user_id") VALUES ($1, $2)`,
 		playerOpts.Id,
+		playerOpts.UserId,
 	)
 	if err != nil {
 		return "", err
@@ -41,4 +44,34 @@ func (s *Storage) CreatePlayer() (string, error) {
 	}
 
 	return playerOpts.Id, nil
+}
+
+func (s *Storage) UpdatePlayer(playerId string, userId string) error {
+	if utilities.IsBlank(playerId) {
+		return utilities.NewBadError("playerId cannot be blank")
+	}
+
+	if utilities.IsBlank(userId) {
+		return utilities.NewBadError("userId cannot be blank")
+	}
+
+	result, err := s.db.Exec(
+		`UPDATE public."players" SET "user_id" = $1 WHERE id = $2`,
+		userId,
+		playerId,
+	)
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while attempting player update")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while updating player and changing db")
+	}
+
+	if rowsAffected != 1 {
+		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when updating player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+	}
+
+	return nil
 }

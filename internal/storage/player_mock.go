@@ -2,17 +2,25 @@ package storage
 
 import "errors"
 
-type PlayerCreatorMockSuccess struct {
+type PlayerAccessorMockSuccess struct {
 	PlayerId string
 }
 
-func (p *PlayerCreatorMockSuccess) CreatePlayer() (string, error) {
+func (p *PlayerAccessorMockSuccess) CreatePlayer(userId *string) (string, error) {
 	return p.PlayerId, nil
 }
 
-type PlayerCreatorMockFailure struct {
+func (p *PlayerAccessorMockSuccess) UpdatePlayer(playerId string, userId string) error {
+	return nil
 }
 
-func (p *PlayerCreatorMockFailure) CreatePlayer() (string, error) {
+type PlayerAccessorMockFailure struct {
+}
+
+func (p *PlayerAccessorMockFailure) CreatePlayer(userId *string) (string, error) {
 	return "", errors.New("unable to create player")
+}
+
+func (p *PlayerAccessorMockFailure) UpdatePlayer(playerId string, userId string) error {
+	return errors.New("unable to update player")
 }

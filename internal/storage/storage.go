@@ -10,7 +10,7 @@ import (
 type StorageAccessor interface {
 	UserRetriever
 	GameAccessor
-	PlayerCreator
+	PlayerAccessor
 	MessageCreator
 	BotAccessor
 	DatabaseTransactionProvider
