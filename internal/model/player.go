@@ -28,3 +28,7 @@ func NewPlayer(opts PlayerOptions) (*Player, error) {
 func (p *Player) Id() string {
 	return p.id
 }
+
+func (p *Player) UserId() *string {
+	return p.userId
+}
