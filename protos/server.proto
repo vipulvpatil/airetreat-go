@@ -100,6 +100,14 @@ message GetGamesForPlayerResponse {
   repeated string gameIds = 1;
 }
 
+message RegisterPlayerIdRequest {
+  string playerId = 1;
+}
+
+message RegisterPlayerIdResponse {
+  string confirmedPlayerId = 1;
+}
+
 service AiRetreatGo {
   rpc Test(TestRequest) returns (TestResponse) {}
   rpc GetPlayerId(GetPlayerIdRequest) returns (GetPlayerIdResponse) {}
@@ -110,6 +118,7 @@ service AiRetreatGo {
   rpc Help(HelpRequest) returns (HelpResponse) {}
   rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
   rpc GetGamesForPlayer(GetGamesForPlayerRequest) returns (GetGamesForPlayerResponse) {}
+  rpc RegisterPlayerId(RegisterPlayerIdRequest) returns (RegisterPlayerIdResponse) {}
 }
 
 message CheckRequest {}
