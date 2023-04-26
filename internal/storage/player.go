@@ -11,7 +11,7 @@ import (
 
 type PlayerAccessor interface {
 	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
-	CreatePlayer(userId *string) (string, error)
+	CreatePlayer() (*model.Player, error)
 	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
 }
 
@@ -42,38 +42,36 @@ func (s *Storage) GetPlayerUsingTransaction(playerId string, transaction Databas
 	})
 }
 
-func (s *Storage) CreatePlayer(userId *string) (string, error) {
+func (s *Storage) CreatePlayer() (*model.Player, error) {
 	id := s.IdGenerator.Generate()
 
 	playerOpts := model.PlayerOptions{
-		Id:     id,
-		UserId: userId,
+		Id: id,
 	}
 
-	_, err := model.NewPlayer(playerOpts)
+	player, err := model.NewPlayer(playerOpts)
 	if err != nil {
-		return "", utilities.WrapBadError(err, "failed to create player")
+		return nil, utilities.WrapBadError(err, "failed to create player")
 	}
 
 	result, err := s.db.Exec(
-		`INSERT INTO public."players" ("id", "user_id") VALUES ($1, $2)`,
+		`INSERT INTO public."players" ("id") VALUES ($1)`,
 		playerOpts.Id,
-		playerOpts.UserId,
 	)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return "", utilities.WrapBadError(err, "dbError while inserting player and changing db")
+		return nil, utilities.WrapBadError(err, "dbError while inserting player and changing db")
 	}
 
 	if rowsAffected != 1 {
-		return "", utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+		return nil, utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when inserting player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
 	}
 
-	return playerOpts.Id, nil
+	return player, nil
 }
 
 func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error) {
