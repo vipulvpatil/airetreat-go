@@ -10,9 +10,11 @@ import (
 )
 
 type PlayerAccessor interface {
-	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	CreatePlayer() (*model.Player, error)
+	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
+	GetPlayerForUser(userId string) (*model.Player, error)
+	CreatePlayerForUser(userId string) (*model.Player, error)
 }
 
 func (s *Storage) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
@@ -102,4 +104,12 @@ func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string
 	}
 
 	return model.NewPlayer(model.PlayerOptions{Id: playerId, UserId: &userId})
+}
+
+func (s *Storage) GetPlayerForUser(userId string) (*model.Player, error) {
+	return nil, nil
+}
+
+func (s *Storage) CreatePlayerForUser(userId string) (*model.Player, error) {
+	return nil, nil
 }
