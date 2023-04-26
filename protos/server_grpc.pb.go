@@ -23,7 +23,6 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AiRetreatGoClient interface {
 	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
-	GetPlayerId(ctx context.Context, in *GetPlayerIdRequest, opts ...grpc.CallOption) (*GetPlayerIdResponse, error)
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
@@ -31,7 +30,7 @@ type AiRetreatGoClient interface {
 	Help(ctx context.Context, in *HelpRequest, opts ...grpc.CallOption) (*HelpResponse, error)
 	GetGameForPlayer(ctx context.Context, in *GetGameForPlayerRequest, opts ...grpc.CallOption) (*GetGameForPlayerResponse, error)
 	GetGamesForPlayer(ctx context.Context, in *GetGamesForPlayerRequest, opts ...grpc.CallOption) (*GetGamesForPlayerResponse, error)
-	RegisterPlayerId(ctx context.Context, in *RegisterPlayerIdRequest, opts ...grpc.CallOption) (*RegisterPlayerIdResponse, error)
+	SyncPlayerData(ctx context.Context, in *SyncPlayerDataRequest, opts ...grpc.CallOption) (*SyncPlayerDataResponse, error)
 }
 
 type aiRetreatGoClient struct {
@@ -45,15 +44,6 @@ func NewAiRetreatGoClient(cc grpc.ClientConnInterface) AiRetreatGoClient {
 func (c *aiRetreatGoClient) Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error) {
 	out := new(TestResponse)
 	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/Test", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *aiRetreatGoClient) GetPlayerId(ctx context.Context, in *GetPlayerIdRequest, opts ...grpc.CallOption) (*GetPlayerIdResponse, error) {
-	out := new(GetPlayerIdResponse)
-	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/GetPlayerId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,9 +113,9 @@ func (c *aiRetreatGoClient) GetGamesForPlayer(ctx context.Context, in *GetGamesF
 	return out, nil
 }
 
-func (c *aiRetreatGoClient) RegisterPlayerId(ctx context.Context, in *RegisterPlayerIdRequest, opts ...grpc.CallOption) (*RegisterPlayerIdResponse, error) {
-	out := new(RegisterPlayerIdResponse)
-	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/RegisterPlayerId", in, out, opts...)
+func (c *aiRetreatGoClient) SyncPlayerData(ctx context.Context, in *SyncPlayerDataRequest, opts ...grpc.CallOption) (*SyncPlayerDataResponse, error) {
+	out := new(SyncPlayerDataResponse)
+	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/SyncPlayerData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +127,6 @@ func (c *aiRetreatGoClient) RegisterPlayerId(ctx context.Context, in *RegisterPl
 // for forward compatibility
 type AiRetreatGoServer interface {
 	Test(context.Context, *TestRequest) (*TestResponse, error)
-	GetPlayerId(context.Context, *GetPlayerIdRequest) (*GetPlayerIdResponse, error)
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
@@ -145,7 +134,7 @@ type AiRetreatGoServer interface {
 	Help(context.Context, *HelpRequest) (*HelpResponse, error)
 	GetGameForPlayer(context.Context, *GetGameForPlayerRequest) (*GetGameForPlayerResponse, error)
 	GetGamesForPlayer(context.Context, *GetGamesForPlayerRequest) (*GetGamesForPlayerResponse, error)
-	RegisterPlayerId(context.Context, *RegisterPlayerIdRequest) (*RegisterPlayerIdResponse, error)
+	SyncPlayerData(context.Context, *SyncPlayerDataRequest) (*SyncPlayerDataResponse, error)
 	mustEmbedUnimplementedAiRetreatGoServer()
 }
 
@@ -155,9 +144,6 @@ type UnimplementedAiRetreatGoServer struct {
 
 func (UnimplementedAiRetreatGoServer) Test(context.Context, *TestRequest) (*TestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
-}
-func (UnimplementedAiRetreatGoServer) GetPlayerId(context.Context, *GetPlayerIdRequest) (*GetPlayerIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPlayerId not implemented")
 }
 func (UnimplementedAiRetreatGoServer) CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGame not implemented")
@@ -180,8 +166,8 @@ func (UnimplementedAiRetreatGoServer) GetGameForPlayer(context.Context, *GetGame
 func (UnimplementedAiRetreatGoServer) GetGamesForPlayer(context.Context, *GetGamesForPlayerRequest) (*GetGamesForPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGamesForPlayer not implemented")
 }
-func (UnimplementedAiRetreatGoServer) RegisterPlayerId(context.Context, *RegisterPlayerIdRequest) (*RegisterPlayerIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterPlayerId not implemented")
+func (UnimplementedAiRetreatGoServer) SyncPlayerData(context.Context, *SyncPlayerDataRequest) (*SyncPlayerDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncPlayerData not implemented")
 }
 func (UnimplementedAiRetreatGoServer) mustEmbedUnimplementedAiRetreatGoServer() {}
 
@@ -210,24 +196,6 @@ func _AiRetreatGo_Test_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AiRetreatGoServer).Test(ctx, req.(*TestRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AiRetreatGo_GetPlayerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPlayerIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AiRetreatGoServer).GetPlayerId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protos.AiRetreatGo/GetPlayerId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AiRetreatGoServer).GetPlayerId(ctx, req.(*GetPlayerIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -358,20 +326,20 @@ func _AiRetreatGo_GetGamesForPlayer_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AiRetreatGo_RegisterPlayerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterPlayerIdRequest)
+func _AiRetreatGo_SyncPlayerData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SyncPlayerDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AiRetreatGoServer).RegisterPlayerId(ctx, in)
+		return srv.(AiRetreatGoServer).SyncPlayerData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protos.AiRetreatGo/RegisterPlayerId",
+		FullMethod: "/protos.AiRetreatGo/SyncPlayerData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AiRetreatGoServer).RegisterPlayerId(ctx, req.(*RegisterPlayerIdRequest))
+		return srv.(AiRetreatGoServer).SyncPlayerData(ctx, req.(*SyncPlayerDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -386,10 +354,6 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Test",
 			Handler:    _AiRetreatGo_Test_Handler,
-		},
-		{
-			MethodName: "GetPlayerId",
-			Handler:    _AiRetreatGo_GetPlayerId_Handler,
 		},
 		{
 			MethodName: "CreateGame",
@@ -420,8 +384,8 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AiRetreatGo_GetGamesForPlayer_Handler,
 		},
 		{
-			MethodName: "RegisterPlayerId",
-			Handler:    _AiRetreatGo_RegisterPlayerId_Handler,
+			MethodName: "SyncPlayerData",
+			Handler:    _AiRetreatGo_SyncPlayerData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

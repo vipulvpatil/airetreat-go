@@ -13,12 +13,6 @@ message TestResponse {
   string test = 1;
 }
 
-message GetPlayerIdRequest {}
-
-message GetPlayerIdResponse {
-  string playerId = 1;
-}
-
 message CreateGameRequest {
   string playerId = 1;
 }
@@ -100,17 +94,17 @@ message GetGamesForPlayerResponse {
   repeated string gameIds = 1;
 }
 
-message RegisterPlayerIdRequest {
+message SyncPlayerDataRequest {
   string playerId = 1;
 }
 
-message RegisterPlayerIdResponse {
-  string confirmedPlayerId = 1;
+message SyncPlayerDataResponse {
+  string playerId = 1;
+  bool connected = 2;
 }
 
 service AiRetreatGo {
   rpc Test(TestRequest) returns (TestResponse) {}
-  rpc GetPlayerId(GetPlayerIdRequest) returns (GetPlayerIdResponse) {}
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
@@ -118,7 +112,7 @@ service AiRetreatGo {
   rpc Help(HelpRequest) returns (HelpResponse) {}
   rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
   rpc GetGamesForPlayer(GetGamesForPlayerRequest) returns (GetGamesForPlayerResponse) {}
-  rpc RegisterPlayerId(RegisterPlayerIdRequest) returns (RegisterPlayerIdResponse) {}
+  rpc SyncPlayerData(SyncPlayerDataRequest) returns (SyncPlayerDataResponse) {}
 }
 
 message CheckRequest {}

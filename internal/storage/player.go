@@ -12,7 +12,7 @@ import (
 type PlayerAccessor interface {
 	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	CreatePlayer(userId *string) (string, error)
-	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error
+	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
 }
 
 func (s *Storage) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
@@ -76,13 +76,13 @@ func (s *Storage) CreatePlayer(userId *string) (string, error) {
 	return playerOpts.Id, nil
 }
 
-func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) error {
+func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error) {
 	if utilities.IsBlank(playerId) {
-		return errors.New("playerId cannot be blank")
+		return nil, errors.New("playerId cannot be blank")
 	}
 
 	if utilities.IsBlank(userId) {
-		return errors.New("userId cannot be blank")
+		return nil, errors.New("userId cannot be blank")
 	}
 
 	result, err := transaction.Exec(
@@ -91,17 +91,17 @@ func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string
 		playerId,
 	)
 	if err != nil {
-		return utilities.WrapBadError(err, "dbError while attempting player update")
+		return nil, utilities.WrapBadError(err, "dbError while attempting player update")
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return utilities.WrapBadError(err, "dbError while updating player and changing db")
+		return nil, utilities.WrapBadError(err, "dbError while updating player and changing db")
 	}
 
 	if rowsAffected != 1 {
-		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when updating player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+		return nil, utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when updating player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
 	}
 
-	return nil
+	return model.NewPlayer(model.PlayerOptions{Id: playerId, UserId: &userId})
 }

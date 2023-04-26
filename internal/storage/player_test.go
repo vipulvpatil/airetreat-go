@@ -211,12 +211,18 @@ func Test_CreatePlayer(t *testing.T) {
 }
 
 func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
+	userId := "user_id1"
+	updatedPlayer, _ := model.NewPlayer(model.PlayerOptions{
+		Id:     "player_id1",
+		UserId: &userId,
+	})
 	tests := []struct {
 		name  string
 		input struct {
 			playerId string
 			userId   string
 		}
+		output          *model.Player
 		setupSqlStmts   []TestSqlStmts
 		cleanupSqlStmts []TestSqlStmts
 		dbUpdateCheck   func(*sql.DB) bool
@@ -232,6 +238,7 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 				playerId: "player_id1",
 				userId:   "",
 			},
+			output:          nil,
 			setupSqlStmts:   nil,
 			cleanupSqlStmts: nil,
 			dbUpdateCheck:   nil,
@@ -247,6 +254,7 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 				playerId: "",
 				userId:   "",
 			},
+			output:          nil,
 			setupSqlStmts:   nil,
 			cleanupSqlStmts: nil,
 			dbUpdateCheck:   nil,
@@ -262,6 +270,7 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 				playerId: "player_id1",
 				userId:   "user_id1",
 			},
+			output: nil,
 			setupSqlStmts: []TestSqlStmts{
 				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id1')`},
 			},
@@ -281,6 +290,7 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 				playerId: "player_id1",
 				userId:   "user_id1",
 			},
+			output: updatedPlayer,
 			setupSqlStmts: []TestSqlStmts{
 				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
 				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id1')`},
@@ -317,10 +327,11 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 
 			tx, err := s.BeginTransaction()
 			assert.NoError(t, err)
-			err = s.UpdatePlayerWithUserIdUsingTransaction(tt.input.playerId, tt.input.userId, tx)
+			player, err := s.UpdatePlayerWithUserIdUsingTransaction(tt.input.playerId, tt.input.userId, tx)
 			tx.Commit()
 			if !tt.errorExpected {
 				assert.NoError(t, err)
+				assert.Equal(t, updatedPlayer, player)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
