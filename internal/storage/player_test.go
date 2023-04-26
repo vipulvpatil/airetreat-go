@@ -96,6 +96,90 @@ func Test_GetPlayerUsingTransaction(t *testing.T) {
 	}
 }
 
+func Test_GetPlayer(t *testing.T) {
+	userId := "user_id1"
+	playerWithoutUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1"})
+	playerWithUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
+	tests := []struct {
+		name            string
+		input           string
+		output          *model.Player
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if player id is nil",
+			input:           "",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "playerId cannot be blank",
+		},
+		{
+			name:            "errors if player not in db",
+			input:           "player_id1",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "getting player for player_id1: no such player",
+		},
+		{
+			name:   "gets player successfully without user id",
+			input:  "player_id1",
+			output: playerWithoutUser,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."players" ("id", "user_id") VALUES ('player_id1', NULL)`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."players" WHERE id = 'player_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+		{
+			name:   "gets player with user id successfully",
+			input:  "player_id1",
+			output: playerWithUser,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
+				{Query: `INSERT INTO public."players" ("id", "user_id") VALUES ('player_id1', 'user_id1')`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			playerId, err := s.GetPlayer(tt.input)
+
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.output, playerId)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}
+
 func Test_CreatePlayer(t *testing.T) {
 	player, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1"})
 	tests := []struct {
@@ -281,6 +365,156 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 			if !tt.errorExpected {
 				assert.NoError(t, err)
 				assert.Equal(t, updatedPlayer, player)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+			if tt.dbUpdateCheck != nil {
+				assert.True(t, tt.dbUpdateCheck(s.db))
+			}
+		})
+	}
+}
+
+func Test_GetPlayerForUserIfExists(t *testing.T) {
+	userId := "user_id1"
+	player, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
+	tests := []struct {
+		name            string
+		input           string
+		output          *model.Player
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if user id is nil",
+			input:           "",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   true,
+			errorString:     "userId cannot be blank",
+		},
+		{
+			name:            "returns nil if no player in db for the user",
+			input:           "user_id2",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			errorExpected:   false,
+			errorString:     "",
+		},
+		{
+			name:   "gets player with user id successfully",
+			input:  "user_id1",
+			output: player,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
+				{Query: `INSERT INTO public."players" ("id", "user_id") VALUES ('player_id1', 'user_id1')`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			playerId, err := s.GetPlayerForUserIfExists(tt.input)
+
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.output, playerId)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+		})
+	}
+}
+
+func Test_CreatePlayerForUser(t *testing.T) {
+	connectedUserId := "user_id1"
+	player, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &connectedUserId})
+	tests := []struct {
+		name            string
+		input           string
+		output          *model.Player
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		idGenerator     utilities.CuidGenerator
+		dbUpdateCheck   func(*sql.DB) bool
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if userId is blank",
+			input:           "",
+			output:          nil,
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			idGenerator:     nil,
+			dbUpdateCheck:   nil,
+			errorExpected:   true,
+			errorString:     "userId cannot be blank",
+		},
+		{
+			name:   "creates player successfully",
+			input:  "user_id1",
+			output: player,
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
+			},
+			idGenerator: &utilities.IdGeneratorMockConstant{Id: "player_id1"},
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					id, userId string
+				)
+				err := db.QueryRow(
+					`SELECT "id", "user_id" FROM public."players" WHERE "id" = 'player_id1'`,
+				).Scan(&id, &userId)
+				assert.NoError(t, err)
+				assert.Equal(t, "player_id1", id)
+				assert.Equal(t, "user_id1", userId)
+				return true
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db:          testDb,
+					IdGenerator: tt.idGenerator,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			player, err := s.CreatePlayerForUser(tt.input)
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.output, player)
 			} else {
 				assert.NotEmpty(t, tt.errorString)
 				assert.EqualError(t, err, tt.errorString)
