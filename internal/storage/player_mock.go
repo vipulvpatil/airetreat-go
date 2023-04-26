@@ -8,39 +8,56 @@ import (
 
 type PlayerAccessorMockSuccess struct {
 	PlayerId string
+	UserId   *string
+}
+
+func (p *PlayerAccessorMockSuccess) GetPlayer(playerId string) (*model.Player, error) {
+	return model.NewPlayer(model.PlayerOptions{
+		Id:     p.PlayerId,
+		UserId: p.UserId,
+	})
 }
 
 func (p *PlayerAccessorMockSuccess) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
-		Id: p.PlayerId,
+		Id:     p.PlayerId,
+		UserId: p.UserId,
 	})
 }
 
 func (p *PlayerAccessorMockSuccess) CreatePlayer() (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
-		Id: p.PlayerId,
+		Id:     p.PlayerId,
+		UserId: p.UserId,
 	})
 }
 
 func (p *PlayerAccessorMockSuccess) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
-		Id: p.PlayerId,
+		Id:     p.PlayerId,
+		UserId: p.UserId,
 	})
 }
 
 func (p *PlayerAccessorMockSuccess) GetPlayerForUserIfExists(userId string) (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
-		Id: p.PlayerId,
+		Id:     p.PlayerId,
+		UserId: p.UserId,
 	})
 }
 
 func (p *PlayerAccessorMockSuccess) CreatePlayerForUser(userId string) (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
-		Id: p.PlayerId,
+		Id:     p.PlayerId,
+		UserId: p.UserId,
 	})
 }
 
 type PlayerAccessorMockFailure struct {
+}
+
+func (p *PlayerAccessorMockFailure) GetPlayer(playerId string) (*model.Player, error) {
+	return nil, errors.New("unable to get player")
 }
 
 func (p *PlayerAccessorMockFailure) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
@@ -64,11 +81,16 @@ func (p *PlayerAccessorMockFailure) CreatePlayerForUser(userId string) (*model.P
 }
 
 type PlayerAccessorMockConfigurable struct {
+	GetPlayerInternal                              func(playerId string) (*model.Player, error)
 	GetPlayerUsingTransactionInternal              func(playerId string, transaction DatabaseTransaction) (*model.Player, error)
-	CreatePlayerTransaction                        func() (*model.Player, error)
+	CreatePlayerInternal                           func() (*model.Player, error)
 	UpdatePlayerWithUserIdUsingTransactionInternal func(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
 	GetPlayerForUserIfExistsInternal               func(userId string) (*model.Player, error)
 	CreatePlayerForUserInternal                    func(userId string) (*model.Player, error)
+}
+
+func (p *PlayerAccessorMockConfigurable) GetPlayer(playerId string) (*model.Player, error) {
+	return p.GetPlayerInternal(playerId)
 }
 
 func (p *PlayerAccessorMockConfigurable) GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error) {
@@ -76,7 +98,7 @@ func (p *PlayerAccessorMockConfigurable) GetPlayerUsingTransaction(playerId stri
 }
 
 func (p *PlayerAccessorMockConfigurable) CreatePlayer() (*model.Player, error) {
-	return p.CreatePlayerTransaction()
+	return p.CreatePlayerInternal()
 }
 
 func (p *PlayerAccessorMockConfigurable) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error) {
