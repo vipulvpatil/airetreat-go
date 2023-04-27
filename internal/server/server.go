@@ -1,9 +1,6 @@
 package server
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
@@ -28,13 +25,5 @@ func NewServer(deps ServerDependencies) (*AiRetreatGoService, error) {
 		storage:      deps.Storage,
 		openAiClient: deps.OpenAiClient,
 		config:       deps.Config,
-	}, nil
-}
-
-func (s *AiRetreatGoService) Test(ctx context.Context, req *pb.TestRequest) (*pb.TestResponse, error) {
-	test := req.Test
-	response := fmt.Sprintf("success: %s", test)
-	return &pb.TestResponse{
-		Test: response,
 	}, nil
 }

@@ -5,14 +5,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/vipulvpatil/airetreat-go/protos";
 
-message TestRequest {
-  string test = 1;
-}
-
-message TestResponse {
-  string test = 1;
-}
-
 message CreateGameRequest {
   string playerId = 1;
 }
@@ -104,7 +96,6 @@ message SyncPlayerDataResponse {
 }
 
 service AiRetreatGo {
-  rpc Test(TestRequest) returns (TestResponse) {}
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
@@ -113,11 +104,4 @@ service AiRetreatGo {
   rpc GetGameForPlayer(GetGameForPlayerRequest) returns (GetGameForPlayerResponse) {}
   rpc GetGamesForPlayer(GetGamesForPlayerRequest) returns (GetGamesForPlayerResponse) {}
   rpc SyncPlayerData(SyncPlayerDataRequest) returns (SyncPlayerDataResponse) {}
-}
-
-message CheckRequest {}
-message CheckResponse {}
-
-service AiRetreatGoHealth {
-  rpc Check(CheckRequest) returns (CheckResponse) {}
 }

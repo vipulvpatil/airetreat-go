@@ -21,185 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type TestRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Test string `protobuf:"bytes,1,opt,name=test,proto3" json:"test,omitempty"`
-}
-
-func (x *TestRequest) Reset() {
-	*x = TestRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *TestRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TestRequest) ProtoMessage() {}
-
-func (x *TestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TestRequest.ProtoReflect.Descriptor instead.
-func (*TestRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *TestRequest) GetTest() string {
-	if x != nil {
-		return x.Test
-	}
-	return ""
-}
-
-type TestResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Test string `protobuf:"bytes,1,opt,name=test,proto3" json:"test,omitempty"`
-}
-
-func (x *TestResponse) Reset() {
-	*x = TestResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *TestResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TestResponse) ProtoMessage() {}
-
-func (x *TestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TestResponse.ProtoReflect.Descriptor instead.
-func (*TestResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *TestResponse) GetTest() string {
-	if x != nil {
-		return x.Test
-	}
-	return ""
-}
-
-type GetPlayerIdRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetPlayerIdRequest) Reset() {
-	*x = GetPlayerIdRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetPlayerIdRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetPlayerIdRequest) ProtoMessage() {}
-
-func (x *GetPlayerIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetPlayerIdRequest.ProtoReflect.Descriptor instead.
-func (*GetPlayerIdRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{2}
-}
-
-type GetPlayerIdResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	PlayerId string `protobuf:"bytes,1,opt,name=playerId,proto3" json:"playerId,omitempty"`
-}
-
-func (x *GetPlayerIdResponse) Reset() {
-	*x = GetPlayerIdResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetPlayerIdResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetPlayerIdResponse) ProtoMessage() {}
-
-func (x *GetPlayerIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetPlayerIdResponse.ProtoReflect.Descriptor instead.
-func (*GetPlayerIdResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *GetPlayerIdResponse) GetPlayerId() string {
-	if x != nil {
-		return x.PlayerId
-	}
-	return ""
-}
-
 type CreateGameRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -211,7 +32,7 @@ type CreateGameRequest struct {
 func (x *CreateGameRequest) Reset() {
 	*x = CreateGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[4]
+		mi := &file_protos_server_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -224,7 +45,7 @@ func (x *CreateGameRequest) String() string {
 func (*CreateGameRequest) ProtoMessage() {}
 
 func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[4]
+	mi := &file_protos_server_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +58,7 @@ func (x *CreateGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameRequest.ProtoReflect.Descriptor instead.
 func (*CreateGameRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{4}
+	return file_protos_server_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *CreateGameRequest) GetPlayerId() string {
@@ -258,7 +79,7 @@ type CreateGameResponse struct {
 func (x *CreateGameResponse) Reset() {
 	*x = CreateGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[5]
+		mi := &file_protos_server_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -271,7 +92,7 @@ func (x *CreateGameResponse) String() string {
 func (*CreateGameResponse) ProtoMessage() {}
 
 func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[5]
+	mi := &file_protos_server_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -284,7 +105,7 @@ func (x *CreateGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGameResponse.ProtoReflect.Descriptor instead.
 func (*CreateGameResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{5}
+	return file_protos_server_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *CreateGameResponse) GetGameId() string {
@@ -306,7 +127,7 @@ type JoinGameRequest struct {
 func (x *JoinGameRequest) Reset() {
 	*x = JoinGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[6]
+		mi := &file_protos_server_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -319,7 +140,7 @@ func (x *JoinGameRequest) String() string {
 func (*JoinGameRequest) ProtoMessage() {}
 
 func (x *JoinGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[6]
+	mi := &file_protos_server_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,7 +153,7 @@ func (x *JoinGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGameRequest.ProtoReflect.Descriptor instead.
 func (*JoinGameRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{6}
+	return file_protos_server_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *JoinGameRequest) GetPlayerId() string {
@@ -358,7 +179,7 @@ type JoinGameResponse struct {
 func (x *JoinGameResponse) Reset() {
 	*x = JoinGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[7]
+		mi := &file_protos_server_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -371,7 +192,7 @@ func (x *JoinGameResponse) String() string {
 func (*JoinGameResponse) ProtoMessage() {}
 
 func (x *JoinGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[7]
+	mi := &file_protos_server_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -384,7 +205,7 @@ func (x *JoinGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGameResponse.ProtoReflect.Descriptor instead.
 func (*JoinGameResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{7}
+	return file_protos_server_proto_rawDescGZIP(), []int{3}
 }
 
 type SendMessageRequest struct {
@@ -402,7 +223,7 @@ type SendMessageRequest struct {
 func (x *SendMessageRequest) Reset() {
 	*x = SendMessageRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[8]
+		mi := &file_protos_server_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -415,7 +236,7 @@ func (x *SendMessageRequest) String() string {
 func (*SendMessageRequest) ProtoMessage() {}
 
 func (x *SendMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[8]
+	mi := &file_protos_server_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +249,7 @@ func (x *SendMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendMessageRequest.ProtoReflect.Descriptor instead.
 func (*SendMessageRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{8}
+	return file_protos_server_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SendMessageRequest) GetGameId() string {
@@ -475,7 +296,7 @@ type SendMessageResponse struct {
 func (x *SendMessageResponse) Reset() {
 	*x = SendMessageResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[9]
+		mi := &file_protos_server_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -488,7 +309,7 @@ func (x *SendMessageResponse) String() string {
 func (*SendMessageResponse) ProtoMessage() {}
 
 func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[9]
+	mi := &file_protos_server_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -501,7 +322,7 @@ func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendMessageResponse.ProtoReflect.Descriptor instead.
 func (*SendMessageResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{9}
+	return file_protos_server_proto_rawDescGZIP(), []int{5}
 }
 
 type TagRequest struct {
@@ -517,7 +338,7 @@ type TagRequest struct {
 func (x *TagRequest) Reset() {
 	*x = TagRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[10]
+		mi := &file_protos_server_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -530,7 +351,7 @@ func (x *TagRequest) String() string {
 func (*TagRequest) ProtoMessage() {}
 
 func (x *TagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[10]
+	mi := &file_protos_server_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +364,7 @@ func (x *TagRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagRequest.ProtoReflect.Descriptor instead.
 func (*TagRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{10}
+	return file_protos_server_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *TagRequest) GetGameId() string {
@@ -576,7 +397,7 @@ type TagResponse struct {
 func (x *TagResponse) Reset() {
 	*x = TagResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[11]
+		mi := &file_protos_server_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -589,7 +410,7 @@ func (x *TagResponse) String() string {
 func (*TagResponse) ProtoMessage() {}
 
 func (x *TagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[11]
+	mi := &file_protos_server_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -602,7 +423,7 @@ func (x *TagResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagResponse.ProtoReflect.Descriptor instead.
 func (*TagResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{11}
+	return file_protos_server_proto_rawDescGZIP(), []int{7}
 }
 
 type HelpRequest struct {
@@ -617,7 +438,7 @@ type HelpRequest struct {
 func (x *HelpRequest) Reset() {
 	*x = HelpRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[12]
+		mi := &file_protos_server_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -630,7 +451,7 @@ func (x *HelpRequest) String() string {
 func (*HelpRequest) ProtoMessage() {}
 
 func (x *HelpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[12]
+	mi := &file_protos_server_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +464,7 @@ func (x *HelpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelpRequest.ProtoReflect.Descriptor instead.
 func (*HelpRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{12}
+	return file_protos_server_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *HelpRequest) GetGameId() string {
@@ -671,7 +492,7 @@ type HelpResponse struct {
 func (x *HelpResponse) Reset() {
 	*x = HelpResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[13]
+		mi := &file_protos_server_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -684,7 +505,7 @@ func (x *HelpResponse) String() string {
 func (*HelpResponse) ProtoMessage() {}
 
 func (x *HelpResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[13]
+	mi := &file_protos_server_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -697,7 +518,7 @@ func (x *HelpResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelpResponse.ProtoReflect.Descriptor instead.
 func (*HelpResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{13}
+	return file_protos_server_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *HelpResponse) GetText() string {
@@ -719,7 +540,7 @@ type GetGameForPlayerRequest struct {
 func (x *GetGameForPlayerRequest) Reset() {
 	*x = GetGameForPlayerRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[14]
+		mi := &file_protos_server_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -732,7 +553,7 @@ func (x *GetGameForPlayerRequest) String() string {
 func (*GetGameForPlayerRequest) ProtoMessage() {}
 
 func (x *GetGameForPlayerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[14]
+	mi := &file_protos_server_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +566,7 @@ func (x *GetGameForPlayerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGameForPlayerRequest.ProtoReflect.Descriptor instead.
 func (*GetGameForPlayerRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{14}
+	return file_protos_server_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetGameForPlayerRequest) GetGameId() string {
@@ -783,7 +604,7 @@ type GetGameForPlayerResponse struct {
 func (x *GetGameForPlayerResponse) Reset() {
 	*x = GetGameForPlayerResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[15]
+		mi := &file_protos_server_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -796,7 +617,7 @@ func (x *GetGameForPlayerResponse) String() string {
 func (*GetGameForPlayerResponse) ProtoMessage() {}
 
 func (x *GetGameForPlayerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[15]
+	mi := &file_protos_server_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -809,7 +630,7 @@ func (x *GetGameForPlayerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGameForPlayerResponse.ProtoReflect.Descriptor instead.
 func (*GetGameForPlayerResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{15}
+	return file_protos_server_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetGameForPlayerResponse) GetState() string {
@@ -901,7 +722,7 @@ type Bot struct {
 func (x *Bot) Reset() {
 	*x = Bot{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[16]
+		mi := &file_protos_server_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -914,7 +735,7 @@ func (x *Bot) String() string {
 func (*Bot) ProtoMessage() {}
 
 func (x *Bot) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[16]
+	mi := &file_protos_server_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -927,7 +748,7 @@ func (x *Bot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Bot.ProtoReflect.Descriptor instead.
 func (*Bot) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{16}
+	return file_protos_server_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Bot) GetId() string {
@@ -958,7 +779,7 @@ type GameMessage struct {
 func (x *GameMessage) Reset() {
 	*x = GameMessage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[17]
+		mi := &file_protos_server_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -971,7 +792,7 @@ func (x *GameMessage) String() string {
 func (*GameMessage) ProtoMessage() {}
 
 func (x *GameMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[17]
+	mi := &file_protos_server_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -984,7 +805,7 @@ func (x *GameMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GameMessage.ProtoReflect.Descriptor instead.
 func (*GameMessage) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{17}
+	return file_protos_server_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GameMessage) GetSourceBotId() string {
@@ -1026,7 +847,7 @@ type GetGamesForPlayerRequest struct {
 func (x *GetGamesForPlayerRequest) Reset() {
 	*x = GetGamesForPlayerRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[18]
+		mi := &file_protos_server_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1039,7 +860,7 @@ func (x *GetGamesForPlayerRequest) String() string {
 func (*GetGamesForPlayerRequest) ProtoMessage() {}
 
 func (x *GetGamesForPlayerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[18]
+	mi := &file_protos_server_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1052,7 +873,7 @@ func (x *GetGamesForPlayerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGamesForPlayerRequest.ProtoReflect.Descriptor instead.
 func (*GetGamesForPlayerRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{18}
+	return file_protos_server_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetGamesForPlayerRequest) GetPlayerId() string {
@@ -1073,7 +894,7 @@ type GetGamesForPlayerResponse struct {
 func (x *GetGamesForPlayerResponse) Reset() {
 	*x = GetGamesForPlayerResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[19]
+		mi := &file_protos_server_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1086,7 +907,7 @@ func (x *GetGamesForPlayerResponse) String() string {
 func (*GetGamesForPlayerResponse) ProtoMessage() {}
 
 func (x *GetGamesForPlayerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[19]
+	mi := &file_protos_server_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1099,7 +920,7 @@ func (x *GetGamesForPlayerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGamesForPlayerResponse.ProtoReflect.Descriptor instead.
 func (*GetGamesForPlayerResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{19}
+	return file_protos_server_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetGamesForPlayerResponse) GetGameIds() []string {
@@ -1107,100 +928,6 @@ func (x *GetGamesForPlayerResponse) GetGameIds() []string {
 		return x.GameIds
 	}
 	return nil
-}
-
-type RegisterPlayerIdRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	PlayerId string `protobuf:"bytes,1,opt,name=playerId,proto3" json:"playerId,omitempty"`
-}
-
-func (x *RegisterPlayerIdRequest) Reset() {
-	*x = RegisterPlayerIdRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[20]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RegisterPlayerIdRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterPlayerIdRequest) ProtoMessage() {}
-
-func (x *RegisterPlayerIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[20]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterPlayerIdRequest.ProtoReflect.Descriptor instead.
-func (*RegisterPlayerIdRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{20}
-}
-
-func (x *RegisterPlayerIdRequest) GetPlayerId() string {
-	if x != nil {
-		return x.PlayerId
-	}
-	return ""
-}
-
-type RegisterPlayerIdResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RegisteredPlayerId string `protobuf:"bytes,1,opt,name=registeredPlayerId,proto3" json:"registeredPlayerId,omitempty"`
-}
-
-func (x *RegisterPlayerIdResponse) Reset() {
-	*x = RegisterPlayerIdResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[21]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RegisterPlayerIdResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterPlayerIdResponse) ProtoMessage() {}
-
-func (x *RegisterPlayerIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[21]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterPlayerIdResponse.ProtoReflect.Descriptor instead.
-func (*RegisterPlayerIdResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *RegisterPlayerIdResponse) GetRegisteredPlayerId() string {
-	if x != nil {
-		return x.RegisteredPlayerId
-	}
-	return ""
 }
 
 type SyncPlayerDataRequest struct {
@@ -1214,7 +941,7 @@ type SyncPlayerDataRequest struct {
 func (x *SyncPlayerDataRequest) Reset() {
 	*x = SyncPlayerDataRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[22]
+		mi := &file_protos_server_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1227,7 +954,7 @@ func (x *SyncPlayerDataRequest) String() string {
 func (*SyncPlayerDataRequest) ProtoMessage() {}
 
 func (x *SyncPlayerDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[22]
+	mi := &file_protos_server_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +967,7 @@ func (x *SyncPlayerDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncPlayerDataRequest.ProtoReflect.Descriptor instead.
 func (*SyncPlayerDataRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{22}
+	return file_protos_server_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *SyncPlayerDataRequest) GetPlayerId() string {
@@ -1262,7 +989,7 @@ type SyncPlayerDataResponse struct {
 func (x *SyncPlayerDataResponse) Reset() {
 	*x = SyncPlayerDataResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[23]
+		mi := &file_protos_server_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1275,7 +1002,7 @@ func (x *SyncPlayerDataResponse) String() string {
 func (*SyncPlayerDataResponse) ProtoMessage() {}
 
 func (x *SyncPlayerDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[23]
+	mi := &file_protos_server_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1288,7 +1015,7 @@ func (x *SyncPlayerDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncPlayerDataResponse.ProtoReflect.Descriptor instead.
 func (*SyncPlayerDataResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{23}
+	return file_protos_server_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SyncPlayerDataResponse) GetPlayerId() string {
@@ -1305,98 +1032,13 @@ func (x *SyncPlayerDataResponse) GetConnected() bool {
 	return false
 }
 
-type CheckRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *CheckRequest) Reset() {
-	*x = CheckRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[24]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CheckRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CheckRequest) ProtoMessage() {}
-
-func (x *CheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[24]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CheckRequest.ProtoReflect.Descriptor instead.
-func (*CheckRequest) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{24}
-}
-
-type CheckResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *CheckResponse) Reset() {
-	*x = CheckResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_server_proto_msgTypes[25]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CheckResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CheckResponse) ProtoMessage() {}
-
-func (x *CheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_server_proto_msgTypes[25]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CheckResponse.ProtoReflect.Descriptor instead.
-func (*CheckResponse) Descriptor() ([]byte, []int) {
-	return file_protos_server_proto_rawDescGZIP(), []int{25}
-}
-
 var File_protos_server_proto protoreflect.FileDescriptor
 
 var file_protos_server_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x1a, 0x1f, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x21,
-	0x0a, 0x0b, 0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a,
-	0x04, 0x74, 0x65, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x73,
-	0x74, 0x22, 0x22, 0x0a, 0x0c, 0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x04, 0x74, 0x65, 0x73, 0x74, 0x22, 0x14, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x31, 0x0a, 0x13, 0x47,
-	0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x2f,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2f,
 	0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22,
@@ -1481,74 +1123,56 @@ var file_protos_server_proto_rawDesc = []byte{
 	0x49, 0x64, 0x22, 0x35, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f,
 	0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x18, 0x0a, 0x07, 0x67, 0x61, 0x6d, 0x65, 0x49, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09,
-	0x52, 0x07, 0x67, 0x61, 0x6d, 0x65, 0x49, 0x64, 0x73, 0x22, 0x35, 0x0a, 0x17, 0x52, 0x65, 0x67,
-	0x69, 0x73, 0x74, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x22, 0x4a, 0x0a, 0x18, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x12,
-	0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x65, 0x64, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x65, 0x72, 0x65, 0x64, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x33, 0x0a, 0x15,
-	0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x22, 0x52, 0x0a, 0x16, 0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44,
-	0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
-	0x63, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x6e,
-	0x65, 0x63, 0x74, 0x65, 0x64, 0x22, 0x0e, 0x0a, 0x0c, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0f, 0x0a, 0x0d, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x83, 0x05, 0x0a, 0x0b, 0x41, 0x69, 0x52, 0x65, 0x74,
-	0x72, 0x65, 0x61, 0x74, 0x47, 0x6f, 0x12, 0x33, 0x0a, 0x04, 0x54, 0x65, 0x73, 0x74, 0x12, 0x13,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x54, 0x65, 0x73,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x45, 0x0a, 0x0a, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x12, 0x19, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x3f, 0x0a, 0x08, 0x4a, 0x6f, 0x69, 0x6e, 0x47, 0x61, 0x6d, 0x65, 0x12, 0x17,
+	0x52, 0x07, 0x67, 0x61, 0x6d, 0x65, 0x49, 0x64, 0x73, 0x22, 0x33, 0x0a, 0x15, 0x53, 0x79, 0x6e,
+	0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x52,
+	0x0a, 0x16, 0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x65,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x65, 0x64, 0x32, 0xce, 0x04, 0x0a, 0x0b, 0x41, 0x69, 0x52, 0x65, 0x74, 0x72, 0x65, 0x61, 0x74,
+	0x47, 0x6f, 0x12, 0x45, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65,
+	0x12, 0x19, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3f, 0x0a, 0x08, 0x4a, 0x6f, 0x69,
+	0x6e, 0x47, 0x61, 0x6d, 0x65, 0x12, 0x17, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4a,
+	0x6f, 0x69, 0x6e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x4a, 0x6f, 0x69, 0x6e, 0x47, 0x61, 0x6d, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
-	0x2e, 0x4a, 0x6f, 0x69, 0x6e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x48, 0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x12, 0x1a, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53, 0x65, 0x6e, 0x64,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x30, 0x0a,
-	0x03, 0x54, 0x61, 0x67, 0x12, 0x12, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x54, 0x61,
-	0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x73, 0x2e, 0x54, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
-	0x33, 0x0a, 0x04, 0x48, 0x65, 0x6c, 0x70, 0x12, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
-	0x2e, 0x48, 0x65, 0x6c, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x48, 0x65, 0x6c, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x46,
-	0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a,
-	0x11, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47,
-	0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x47, 0x65,
-	0x74, 0x47, 0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x51, 0x0a, 0x0e, 0x53, 0x79, 0x6e,
-	0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x12, 0x1d, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44,
-	0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x73, 0x2e, 0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61,
-	0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x32, 0x4b, 0x0a, 0x11,
-	0x41, 0x69, 0x52, 0x65, 0x74, 0x72, 0x65, 0x61, 0x74, 0x47, 0x6f, 0x48, 0x65, 0x61, 0x6c, 0x74,
-	0x68, 0x12, 0x36, 0x0a, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x14, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x73, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x15, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x69, 0x70, 0x75, 0x6c, 0x76, 0x70, 0x61,
-	0x74, 0x69, 0x6c, 0x2f, 0x61, 0x69, 0x72, 0x65, 0x74, 0x72, 0x65, 0x61, 0x74, 0x2d, 0x67, 0x6f,
-	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x48, 0x0a, 0x0b, 0x53, 0x65,
+	0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x1a, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x73, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53,
+	0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x30, 0x0a, 0x03, 0x54, 0x61, 0x67, 0x12, 0x12, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x54, 0x61, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x54, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x33, 0x0a, 0x04, 0x48, 0x65, 0x6c, 0x70, 0x12, 0x13,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x48, 0x65, 0x6c, 0x70, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x48, 0x65, 0x6c,
+	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x47,
+	0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12,
+	0x1f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65,
+	0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d,
+	0x65, 0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x73,
+	0x46, 0x6f, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f, 0x72, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x73, 0x46, 0x6f, 0x72,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x12, 0x51, 0x0a, 0x0e, 0x53, 0x79, 0x6e, 0x63, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61,
+	0x74, 0x61, 0x12, 0x1d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53, 0x79, 0x6e, 0x63,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2e, 0x53, 0x79, 0x6e, 0x63, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x2c, 0x5a, 0x2a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x76, 0x69, 0x70, 0x75, 0x6c, 0x76, 0x70, 0x61, 0x74, 0x69, 0x6c, 0x2f, 0x61, 0x69,
+	0x72, 0x65, 0x74, 0x72, 0x65, 0x61, 0x74, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1563,62 +1187,50 @@ func file_protos_server_proto_rawDescGZIP() []byte {
 	return file_protos_server_proto_rawDescData
 }
 
-var file_protos_server_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_protos_server_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_protos_server_proto_goTypes = []interface{}{
-	(*TestRequest)(nil),               // 0: protos.TestRequest
-	(*TestResponse)(nil),              // 1: protos.TestResponse
-	(*GetPlayerIdRequest)(nil),        // 2: protos.GetPlayerIdRequest
-	(*GetPlayerIdResponse)(nil),       // 3: protos.GetPlayerIdResponse
-	(*CreateGameRequest)(nil),         // 4: protos.CreateGameRequest
-	(*CreateGameResponse)(nil),        // 5: protos.CreateGameResponse
-	(*JoinGameRequest)(nil),           // 6: protos.JoinGameRequest
-	(*JoinGameResponse)(nil),          // 7: protos.JoinGameResponse
-	(*SendMessageRequest)(nil),        // 8: protos.SendMessageRequest
-	(*SendMessageResponse)(nil),       // 9: protos.SendMessageResponse
-	(*TagRequest)(nil),                // 10: protos.TagRequest
-	(*TagResponse)(nil),               // 11: protos.TagResponse
-	(*HelpRequest)(nil),               // 12: protos.HelpRequest
-	(*HelpResponse)(nil),              // 13: protos.HelpResponse
-	(*GetGameForPlayerRequest)(nil),   // 14: protos.GetGameForPlayerRequest
-	(*GetGameForPlayerResponse)(nil),  // 15: protos.GetGameForPlayerResponse
-	(*Bot)(nil),                       // 16: protos.Bot
-	(*GameMessage)(nil),               // 17: protos.GameMessage
-	(*GetGamesForPlayerRequest)(nil),  // 18: protos.GetGamesForPlayerRequest
-	(*GetGamesForPlayerResponse)(nil), // 19: protos.GetGamesForPlayerResponse
-	(*RegisterPlayerIdRequest)(nil),   // 20: protos.RegisterPlayerIdRequest
-	(*RegisterPlayerIdResponse)(nil),  // 21: protos.RegisterPlayerIdResponse
-	(*SyncPlayerDataRequest)(nil),     // 22: protos.SyncPlayerDataRequest
-	(*SyncPlayerDataResponse)(nil),    // 23: protos.SyncPlayerDataResponse
-	(*CheckRequest)(nil),              // 24: protos.CheckRequest
-	(*CheckResponse)(nil),             // 25: protos.CheckResponse
-	(*timestamppb.Timestamp)(nil),     // 26: google.protobuf.Timestamp
+	(*CreateGameRequest)(nil),         // 0: protos.CreateGameRequest
+	(*CreateGameResponse)(nil),        // 1: protos.CreateGameResponse
+	(*JoinGameRequest)(nil),           // 2: protos.JoinGameRequest
+	(*JoinGameResponse)(nil),          // 3: protos.JoinGameResponse
+	(*SendMessageRequest)(nil),        // 4: protos.SendMessageRequest
+	(*SendMessageResponse)(nil),       // 5: protos.SendMessageResponse
+	(*TagRequest)(nil),                // 6: protos.TagRequest
+	(*TagResponse)(nil),               // 7: protos.TagResponse
+	(*HelpRequest)(nil),               // 8: protos.HelpRequest
+	(*HelpResponse)(nil),              // 9: protos.HelpResponse
+	(*GetGameForPlayerRequest)(nil),   // 10: protos.GetGameForPlayerRequest
+	(*GetGameForPlayerResponse)(nil),  // 11: protos.GetGameForPlayerResponse
+	(*Bot)(nil),                       // 12: protos.Bot
+	(*GameMessage)(nil),               // 13: protos.GameMessage
+	(*GetGamesForPlayerRequest)(nil),  // 14: protos.GetGamesForPlayerRequest
+	(*GetGamesForPlayerResponse)(nil), // 15: protos.GetGamesForPlayerResponse
+	(*SyncPlayerDataRequest)(nil),     // 16: protos.SyncPlayerDataRequest
+	(*SyncPlayerDataResponse)(nil),    // 17: protos.SyncPlayerDataResponse
+	(*timestamppb.Timestamp)(nil),     // 18: google.protobuf.Timestamp
 }
 var file_protos_server_proto_depIdxs = []int32{
-	26, // 0: protos.GetGameForPlayerResponse.stateStartedAt:type_name -> google.protobuf.Timestamp
-	16, // 1: protos.GetGameForPlayerResponse.bots:type_name -> protos.Bot
-	17, // 2: protos.GetGameForPlayerResponse.messages:type_name -> protos.GameMessage
-	0,  // 3: protos.AiRetreatGo.Test:input_type -> protos.TestRequest
-	4,  // 4: protos.AiRetreatGo.CreateGame:input_type -> protos.CreateGameRequest
-	6,  // 5: protos.AiRetreatGo.JoinGame:input_type -> protos.JoinGameRequest
-	8,  // 6: protos.AiRetreatGo.SendMessage:input_type -> protos.SendMessageRequest
-	10, // 7: protos.AiRetreatGo.Tag:input_type -> protos.TagRequest
-	12, // 8: protos.AiRetreatGo.Help:input_type -> protos.HelpRequest
-	14, // 9: protos.AiRetreatGo.GetGameForPlayer:input_type -> protos.GetGameForPlayerRequest
-	18, // 10: protos.AiRetreatGo.GetGamesForPlayer:input_type -> protos.GetGamesForPlayerRequest
-	22, // 11: protos.AiRetreatGo.SyncPlayerData:input_type -> protos.SyncPlayerDataRequest
-	24, // 12: protos.AiRetreatGoHealth.Check:input_type -> protos.CheckRequest
-	1,  // 13: protos.AiRetreatGo.Test:output_type -> protos.TestResponse
-	5,  // 14: protos.AiRetreatGo.CreateGame:output_type -> protos.CreateGameResponse
-	7,  // 15: protos.AiRetreatGo.JoinGame:output_type -> protos.JoinGameResponse
-	9,  // 16: protos.AiRetreatGo.SendMessage:output_type -> protos.SendMessageResponse
-	11, // 17: protos.AiRetreatGo.Tag:output_type -> protos.TagResponse
-	13, // 18: protos.AiRetreatGo.Help:output_type -> protos.HelpResponse
-	15, // 19: protos.AiRetreatGo.GetGameForPlayer:output_type -> protos.GetGameForPlayerResponse
-	19, // 20: protos.AiRetreatGo.GetGamesForPlayer:output_type -> protos.GetGamesForPlayerResponse
-	23, // 21: protos.AiRetreatGo.SyncPlayerData:output_type -> protos.SyncPlayerDataResponse
-	25, // 22: protos.AiRetreatGoHealth.Check:output_type -> protos.CheckResponse
-	13, // [13:23] is the sub-list for method output_type
-	3,  // [3:13] is the sub-list for method input_type
+	18, // 0: protos.GetGameForPlayerResponse.stateStartedAt:type_name -> google.protobuf.Timestamp
+	12, // 1: protos.GetGameForPlayerResponse.bots:type_name -> protos.Bot
+	13, // 2: protos.GetGameForPlayerResponse.messages:type_name -> protos.GameMessage
+	0,  // 3: protos.AiRetreatGo.CreateGame:input_type -> protos.CreateGameRequest
+	2,  // 4: protos.AiRetreatGo.JoinGame:input_type -> protos.JoinGameRequest
+	4,  // 5: protos.AiRetreatGo.SendMessage:input_type -> protos.SendMessageRequest
+	6,  // 6: protos.AiRetreatGo.Tag:input_type -> protos.TagRequest
+	8,  // 7: protos.AiRetreatGo.Help:input_type -> protos.HelpRequest
+	10, // 8: protos.AiRetreatGo.GetGameForPlayer:input_type -> protos.GetGameForPlayerRequest
+	14, // 9: protos.AiRetreatGo.GetGamesForPlayer:input_type -> protos.GetGamesForPlayerRequest
+	16, // 10: protos.AiRetreatGo.SyncPlayerData:input_type -> protos.SyncPlayerDataRequest
+	1,  // 11: protos.AiRetreatGo.CreateGame:output_type -> protos.CreateGameResponse
+	3,  // 12: protos.AiRetreatGo.JoinGame:output_type -> protos.JoinGameResponse
+	5,  // 13: protos.AiRetreatGo.SendMessage:output_type -> protos.SendMessageResponse
+	7,  // 14: protos.AiRetreatGo.Tag:output_type -> protos.TagResponse
+	9,  // 15: protos.AiRetreatGo.Help:output_type -> protos.HelpResponse
+	11, // 16: protos.AiRetreatGo.GetGameForPlayer:output_type -> protos.GetGameForPlayerResponse
+	15, // 17: protos.AiRetreatGo.GetGamesForPlayer:output_type -> protos.GetGamesForPlayerResponse
+	17, // 18: protos.AiRetreatGo.SyncPlayerData:output_type -> protos.SyncPlayerDataResponse
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -1631,54 +1243,6 @@ func file_protos_server_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_protos_server_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TestRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TestResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPlayerIdRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPlayerIdResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CreateGameRequest); i {
 			case 0:
 				return &v.state
@@ -1690,7 +1254,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CreateGameResponse); i {
 			case 0:
 				return &v.state
@@ -1702,7 +1266,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*JoinGameRequest); i {
 			case 0:
 				return &v.state
@@ -1714,7 +1278,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*JoinGameResponse); i {
 			case 0:
 				return &v.state
@@ -1726,7 +1290,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SendMessageRequest); i {
 			case 0:
 				return &v.state
@@ -1738,7 +1302,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SendMessageResponse); i {
 			case 0:
 				return &v.state
@@ -1750,7 +1314,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TagRequest); i {
 			case 0:
 				return &v.state
@@ -1762,7 +1326,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TagResponse); i {
 			case 0:
 				return &v.state
@@ -1774,7 +1338,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*HelpRequest); i {
 			case 0:
 				return &v.state
@@ -1786,7 +1350,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*HelpResponse); i {
 			case 0:
 				return &v.state
@@ -1798,7 +1362,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetGameForPlayerRequest); i {
 			case 0:
 				return &v.state
@@ -1810,7 +1374,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetGameForPlayerResponse); i {
 			case 0:
 				return &v.state
@@ -1822,7 +1386,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Bot); i {
 			case 0:
 				return &v.state
@@ -1834,7 +1398,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GameMessage); i {
 			case 0:
 				return &v.state
@@ -1846,7 +1410,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetGamesForPlayerRequest); i {
 			case 0:
 				return &v.state
@@ -1858,7 +1422,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetGamesForPlayerResponse); i {
 			case 0:
 				return &v.state
@@ -1870,31 +1434,7 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RegisterPlayerIdRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RegisterPlayerIdResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SyncPlayerDataRequest); i {
 			case 0:
 				return &v.state
@@ -1906,32 +1446,8 @@ func file_protos_server_proto_init() {
 				return nil
 			}
 		}
-		file_protos_server_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+		file_protos_server_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SyncPlayerDataResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CheckRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_protos_server_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CheckResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1949,9 +1465,9 @@ func file_protos_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protos_server_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   18,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
 		GoTypes:           file_protos_server_proto_goTypes,
 		DependencyIndexes: file_protos_server_proto_depIdxs,

@@ -22,7 +22,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AiRetreatGoClient interface {
-	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
@@ -39,15 +38,6 @@ type aiRetreatGoClient struct {
 
 func NewAiRetreatGoClient(cc grpc.ClientConnInterface) AiRetreatGoClient {
 	return &aiRetreatGoClient{cc}
-}
-
-func (c *aiRetreatGoClient) Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error) {
-	out := new(TestResponse)
-	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/Test", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *aiRetreatGoClient) CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error) {
@@ -126,7 +116,6 @@ func (c *aiRetreatGoClient) SyncPlayerData(ctx context.Context, in *SyncPlayerDa
 // All implementations must embed UnimplementedAiRetreatGoServer
 // for forward compatibility
 type AiRetreatGoServer interface {
-	Test(context.Context, *TestRequest) (*TestResponse, error)
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
@@ -142,9 +131,6 @@ type AiRetreatGoServer interface {
 type UnimplementedAiRetreatGoServer struct {
 }
 
-func (UnimplementedAiRetreatGoServer) Test(context.Context, *TestRequest) (*TestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
-}
 func (UnimplementedAiRetreatGoServer) CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGame not implemented")
 }
@@ -180,24 +166,6 @@ type UnsafeAiRetreatGoServer interface {
 
 func RegisterAiRetreatGoServer(s grpc.ServiceRegistrar, srv AiRetreatGoServer) {
 	s.RegisterService(&AiRetreatGo_ServiceDesc, srv)
-}
-
-func _AiRetreatGo_Test_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TestRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AiRetreatGoServer).Test(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protos.AiRetreatGo/Test",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AiRetreatGoServer).Test(ctx, req.(*TestRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _AiRetreatGo_CreateGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -352,10 +320,6 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AiRetreatGoServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Test",
-			Handler:    _AiRetreatGo_Test_Handler,
-		},
-		{
 			MethodName: "CreateGame",
 			Handler:    _AiRetreatGo_CreateGame_Handler,
 		},
@@ -386,92 +350,6 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SyncPlayerData",
 			Handler:    _AiRetreatGo_SyncPlayerData_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "protos/server.proto",
-}
-
-// AiRetreatGoHealthClient is the client API for AiRetreatGoHealth service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AiRetreatGoHealthClient interface {
-	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
-}
-
-type aiRetreatGoHealthClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAiRetreatGoHealthClient(cc grpc.ClientConnInterface) AiRetreatGoHealthClient {
-	return &aiRetreatGoHealthClient{cc}
-}
-
-func (c *aiRetreatGoHealthClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
-	out := new(CheckResponse)
-	err := c.cc.Invoke(ctx, "/protos.AiRetreatGoHealth/Check", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AiRetreatGoHealthServer is the server API for AiRetreatGoHealth service.
-// All implementations must embed UnimplementedAiRetreatGoHealthServer
-// for forward compatibility
-type AiRetreatGoHealthServer interface {
-	Check(context.Context, *CheckRequest) (*CheckResponse, error)
-	mustEmbedUnimplementedAiRetreatGoHealthServer()
-}
-
-// UnimplementedAiRetreatGoHealthServer must be embedded to have forward compatible implementations.
-type UnimplementedAiRetreatGoHealthServer struct {
-}
-
-func (UnimplementedAiRetreatGoHealthServer) Check(context.Context, *CheckRequest) (*CheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
-}
-func (UnimplementedAiRetreatGoHealthServer) mustEmbedUnimplementedAiRetreatGoHealthServer() {}
-
-// UnsafeAiRetreatGoHealthServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AiRetreatGoHealthServer will
-// result in compilation errors.
-type UnsafeAiRetreatGoHealthServer interface {
-	mustEmbedUnimplementedAiRetreatGoHealthServer()
-}
-
-func RegisterAiRetreatGoHealthServer(s grpc.ServiceRegistrar, srv AiRetreatGoHealthServer) {
-	s.RegisterService(&AiRetreatGoHealth_ServiceDesc, srv)
-}
-
-func _AiRetreatGoHealth_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AiRetreatGoHealthServer).Check(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protos.AiRetreatGoHealth/Check",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AiRetreatGoHealthServer).Check(ctx, req.(*CheckRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// AiRetreatGoHealth_ServiceDesc is the grpc.ServiceDesc for AiRetreatGoHealth service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var AiRetreatGoHealth_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protos.AiRetreatGoHealth",
-	HandlerType: (*AiRetreatGoHealthServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Check",
-			Handler:    _AiRetreatGoHealth_Check_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

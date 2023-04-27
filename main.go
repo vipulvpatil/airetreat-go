@@ -75,9 +75,6 @@ func main() {
 	}
 	grpcServer := setupGrpcServer(s, cfg)
 
-	hs := &health.AiRetreatGoHealthService{}
-	grpcHealthServer := setupGrpcHealthServer(hs, cfg)
-
 	workerPooldeps := workers.PoolDependencies{
 		RedisPool:    redisPool,
 		Namespace:    WORKER_NAMESPACE,
@@ -89,7 +86,6 @@ func main() {
 
 	var wg sync.WaitGroup
 	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000")
-	startGrpcServerAsync("health", &wg, grpcHealthServer, "9090")
 	httpHealthServer := startHTTPHealthServer(&wg)
 
 	gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
@@ -110,7 +106,6 @@ func main() {
 	if err := httpHealthServer.Shutdown(ctx); err != nil {
 		panic(err)
 	}
-	grpcHealthServer.GracefulStop()
 	grpcServer.GracefulStop()
 	workerPool.Stop()
 	wg.Wait()
@@ -126,13 +121,6 @@ func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Ser
 	serverOpts = append(serverOpts, grpc.UnaryInterceptor(s.RequestingUserInterceptor))
 	grpcServer := grpc.NewServer(serverOpts...)
 	pb.RegisterAiRetreatGoServer(grpcServer, s)
-	return grpcServer
-}
-
-func setupGrpcHealthServer(hs *health.AiRetreatGoHealthService, cfg *config.Config) *grpc.Server {
-	serverOpts := make([]grpc.ServerOption, 0)
-	grpcServer := grpc.NewServer(serverOpts...)
-	pb.RegisterAiRetreatGoHealthServer(grpcServer, hs)
 	return grpcServer
 }
 
