@@ -18,6 +18,7 @@ func Test_SyncPlayerData(t *testing.T) {
 	requestingUserEmail := "user_email1"
 	playerWithUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &requestingUserId})
 	playerWithoutUser, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: nil})
+	anotherUserId := "user_id2"
 	tests := []struct {
 		name  string
 		input struct {
@@ -159,7 +160,6 @@ func Test_SyncPlayerData(t *testing.T) {
 					return nil, nil
 				},
 				GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-					anotherUserId := "user_id2"
 					return model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &anotherUserId})
 				},
 			},
@@ -270,6 +270,25 @@ func Test_SyncPlayerData(t *testing.T) {
 			errorString:         "unable to get player",
 		},
 		{
+			name: "when no user in context and request playerId is non blank, errors if player returned from storage has a User associated",
+			input: struct {
+				playerId            string
+				requestingUserId    *string
+				requestingUserEmail *string
+			}{
+				playerId:            "player_id1",
+				requestingUserId:    nil,
+				requestingUserEmail: nil,
+			},
+			output:              nil,
+			allowUnauthedConfig: true,
+			txShouldCommit:      false,
+			transactionMock:     nil,
+			playerAccessorMock:  &storage.PlayerAccessorMockSuccess{PlayerId: "player_id1", UserId: &anotherUserId},
+			errorExpected:       true,
+			errorString:         "reset player id",
+		},
+		{
 			name: "when no user in context and request playerId is non blank, returns the player from storage",
 			input: struct {
 				playerId            string
@@ -326,171 +345,6 @@ func Test_SyncPlayerData(t *testing.T) {
 			errorExpected:       false,
 			errorString:         "",
 		},
-		// {
-		// 	name: "errors if unable to get player from storage",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:  false,
-		// 	transactionMock: &storage.DatabaseTransactionMock{},
-		// 	playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-		// 		GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			return nil, errors.New("unable to get player")
-		// 		},
-		// 	},
-		// 	errorExpected: true,
-		// 	errorString:   "unable to get player",
-		// },
-		// {
-		// 	name: "errors if player is already registered with a user",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:  false,
-		// 	transactionMock: &storage.DatabaseTransactionMock{},
-		// 	playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-		// 		GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			userId2 := "user_id2"
-		// 			return model.NewPlayer(model.PlayerOptions{
-		// 				Id:     "player_id1",
-		// 				UserId: &userId2,
-		// 			})
-		// 		},
-		// 	},
-		// 	errorExpected: true,
-		// 	errorString:   "player is already registered",
-		// },
-		// {
-		// 	name: "error if unable to get a transaction",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:     false,
-		// 	transactionMock:    nil,
-		// 	playerAccessorMock: nil,
-		// 	errorExpected:      true,
-		// 	errorString:        "unable to begin a db transaction",
-		// },
-		// {
-		// 	name: "errors if unable to update player",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:  false,
-		// 	transactionMock: &storage.DatabaseTransactionMock{},
-		// 	playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-		// 		GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			return model.NewPlayer(model.PlayerOptions{
-		// 				Id: "player_id1",
-		// 			})
-		// 		},
-		// 		UpdatePlayerWithUserIdUsingTransactionInternal: func(playerId, userId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			assert.Equal(t, "player_id1", playerId)
-		// 			assert.Equal(t, "user_id1", userId)
-		// 			return nil, errors.New("unable to update player")
-		// 		},
-		// 	},
-		// 	errorExpected: true,
-		// 	errorString:   "unable to update player",
-		// },
-		// {
-		// 	name: "successfully connects the user to the player and returns the playerId",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:  true,
-		// 	transactionMock: &storage.DatabaseTransactionMock{},
-		// 	playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-		// 		GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			return model.NewPlayer(model.PlayerOptions{
-		// 				Id: "player_id1",
-		// 			})
-		// 		},
-		// 		UpdatePlayerWithUserIdUsingTransactionInternal: func(playerId, userId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			assert.Equal(t, "player_id1", playerId)
-		// 			assert.Equal(t, "user_id1", userId)
-		// 			return model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
-		// 		},
-		// 	},
-		// 	errorExpected: false,
-		// 	errorString:   "",
-		// },
-		// {
-		// 	name: "successfully connects the user to the player and returns the playerId",
-		// 	input: struct {
-		// 		playerId            string
-		// 		requestingUserId    *string
-		// 		requestingUserEmail *string
-		// 	}{
-		// 		playerId:            "player_id1",
-		// 		requestingUserId:    &requestingUserId,
-		// 		requestingUserEmail: &requestingUserEmail,
-		// 	},
-		// 	output: &pb.SyncPlayerDataResponse{
-		// 		PlayerId: "player_id1",
-		// 	},
-		// 	txShouldCommit:  true,
-		// 	transactionMock: &storage.DatabaseTransactionMock{},
-		// 	playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-		// 		GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			return model.NewPlayer(model.PlayerOptions{
-		// 				Id: "player_id1",
-		// 			})
-		// 		},
-		// 		UpdatePlayerWithUserIdUsingTransactionInternal: func(playerId, userId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
-		// 			assert.Equal(t, "player_id1", playerId)
-		// 			assert.Equal(t, "user_id1", userId)
-		// 			return model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
-		// 		},
-		// 	},
-		// 	errorExpected: false,
-		// 	errorString:   "",
-		// },
 	}
 
 	for _, tt := range tests {
