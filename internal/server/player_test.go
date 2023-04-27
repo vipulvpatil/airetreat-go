@@ -107,7 +107,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      false,
 			transactionMock:     nil,
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 			},
@@ -130,7 +130,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      false,
 			transactionMock:     &storage.DatabaseTransactionMock{},
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 				GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
@@ -156,7 +156,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      false,
 			transactionMock:     &storage.DatabaseTransactionMock{},
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 				GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
@@ -182,7 +182,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      false,
 			transactionMock:     &storage.DatabaseTransactionMock{},
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 				GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
@@ -211,7 +211,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      true,
 			transactionMock:     &storage.DatabaseTransactionMock{},
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 				GetPlayerUsingTransactionInternal: func(playerId string, transaction storage.DatabaseTransaction) (*model.Player, error) {
@@ -240,7 +240,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			txShouldCommit:      false,
 			transactionMock:     nil,
 			playerAccessorMock: &storage.PlayerAccessorMockConfigurable{
-				GetPlayerForUserIfExistsInternal: func(userId string) (*model.Player, error) {
+				GetPlayerForUserOrNilInternal: func(userId string) (*model.Player, error) {
 					return nil, nil
 				},
 				CreatePlayerForUserInternal: func(userId string) (*model.Player, error) {

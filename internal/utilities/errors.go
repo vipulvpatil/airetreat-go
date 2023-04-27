@@ -42,5 +42,5 @@ func ErrorIsUnauthenticated(err error) bool {
 type ResetPlayerError struct{}
 
 func (e *ResetPlayerError) Error() string {
-	return fmt.Sprintln("reset player data")
+	return "reset player data"
 }

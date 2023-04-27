@@ -19,7 +19,7 @@ func (s *Storage) UserByEmail(email string) (*model.User, error) {
 	}
 
 	userOptions := model.UserOptions{}
-	row := s.db.QueryRow(`SELECT id, email FROM public."User" WHERE email = $1`, email)
+	row := s.db.QueryRow(`SELECT id, email FROM public."users" WHERE email = $1`, email)
 	err := row.Scan(&userOptions.Id, &userOptions.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {

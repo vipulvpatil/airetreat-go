@@ -34,17 +34,24 @@ func (s *AiRetreatGoService) PlayerIdValidatingInterceptor(ctx context.Context,
 	requestWithPlayerId, ok := req.(RequestWithPlayerId)
 	if ok {
 		playerId := requestWithPlayerId.GetPlayerId()
+		if utilities.IsBlank(playerId) {
+			return handler(ctx, req)
+		}
 		user, err := getUserFromContext(ctx)
 		if err != nil {
 			if utilities.ErrorIsUnauthenticated(err) && s.config.AllowUnauthed {
-				if s.playerIdHasUser(playerId) {
+				player, err := s.storage.GetPlayer(playerId)
+				if err != nil {
+					return nil, &utilities.ResetPlayerError{}
+				}
+				if s.playerHasUser(player) {
 					return nil, &utilities.ResetPlayerError{}
 				}
 			} else {
 				return nil, err
 			}
 		} else {
-			if !s.userMatchesPlayerId(user, playerId) {
+			if !s.userPlayerIsNilOrSameAsPlayerId(user, playerId) {
 				return nil, &utilities.ResetPlayerError{}
 			}
 		}
@@ -56,20 +63,19 @@ type RequestWithPlayerId interface {
 	GetPlayerId() string
 }
 
-func (s *AiRetreatGoService) userMatchesPlayerId(user *model.User, playerId string) bool {
-	player, err := s.storage.GetPlayerForUserIfExists(user.GetId())
+func (s *AiRetreatGoService) userPlayerIsNilOrSameAsPlayerId(user *model.User, playerId string) bool {
+	player, err := s.storage.GetPlayerForUserOrNil(user.GetId())
 	if err != nil {
 		return false
+	}
+
+	if player == nil {
+		return true
 	}
 
 	return player.Id() == playerId
 }
 
-func (s *AiRetreatGoService) playerIdHasUser(playerId string) bool {
-	player, err := s.storage.GetPlayer(playerId)
-	if err != nil {
-		return false
-	}
-
+func (s *AiRetreatGoService) playerHasUser(player *model.Player) bool {
 	return player.UserId() != nil
 }

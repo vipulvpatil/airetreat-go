@@ -39,7 +39,7 @@ func (p *PlayerAccessorMockSuccess) UpdatePlayerWithUserIdUsingTransaction(playe
 	})
 }
 
-func (p *PlayerAccessorMockSuccess) GetPlayerForUserIfExists(userId string) (*model.Player, error) {
+func (p *PlayerAccessorMockSuccess) GetPlayerForUserOrNil(userId string) (*model.Player, error) {
 	return model.NewPlayer(model.PlayerOptions{
 		Id:     p.PlayerId,
 		UserId: p.UserId,
@@ -72,7 +72,7 @@ func (p *PlayerAccessorMockFailure) UpdatePlayerWithUserIdUsingTransaction(playe
 	return nil, errors.New("unable to update player")
 }
 
-func (p *PlayerAccessorMockFailure) GetPlayerForUserIfExists(userId string) (*model.Player, error) {
+func (p *PlayerAccessorMockFailure) GetPlayerForUserOrNil(userId string) (*model.Player, error) {
 	return nil, errors.New("unable to get player")
 }
 
@@ -85,7 +85,7 @@ type PlayerAccessorMockConfigurable struct {
 	GetPlayerUsingTransactionInternal              func(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	CreatePlayerInternal                           func() (*model.Player, error)
 	UpdatePlayerWithUserIdUsingTransactionInternal func(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
-	GetPlayerForUserIfExistsInternal               func(userId string) (*model.Player, error)
+	GetPlayerForUserOrNilInternal                  func(userId string) (*model.Player, error)
 	CreatePlayerForUserInternal                    func(userId string) (*model.Player, error)
 }
 
@@ -105,8 +105,8 @@ func (p *PlayerAccessorMockConfigurable) UpdatePlayerWithUserIdUsingTransaction(
 	return p.UpdatePlayerWithUserIdUsingTransactionInternal(playerId, userId, transaction)
 }
 
-func (p *PlayerAccessorMockConfigurable) GetPlayerForUserIfExists(userId string) (*model.Player, error) {
-	return p.GetPlayerForUserIfExistsInternal(userId)
+func (p *PlayerAccessorMockConfigurable) GetPlayerForUserOrNil(userId string) (*model.Player, error) {
+	return p.GetPlayerForUserOrNilInternal(userId)
 }
 
 func (p *PlayerAccessorMockConfigurable) CreatePlayerForUser(userId string) (*model.Player, error) {

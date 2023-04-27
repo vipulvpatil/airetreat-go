@@ -376,7 +376,7 @@ func Test_UpdatePlayerWithUserIdUsingTransaction(t *testing.T) {
 	}
 }
 
-func Test_GetPlayerForUserIfExists(t *testing.T) {
+func Test_GetPlayerForUserOrNil(t *testing.T) {
 	userId := "user_id1"
 	player, _ := model.NewPlayer(model.PlayerOptions{Id: "player_id1", UserId: &userId})
 	tests := []struct {
@@ -433,7 +433,7 @@ func Test_GetPlayerForUserIfExists(t *testing.T) {
 			runSqlOnDb(t, s.db, tt.setupSqlStmts)
 			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
 
-			playerId, err := s.GetPlayerForUserIfExists(tt.input)
+			playerId, err := s.GetPlayerForUserOrNil(tt.input)
 
 			if !tt.errorExpected {
 				assert.NoError(t, err)

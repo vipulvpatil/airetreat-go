@@ -62,7 +62,7 @@ func (s *AiRetreatGoService) getNewOrExistingPlayerForUser(userId string, player
 		return nil, errors.New("userId cannot be blank")
 	}
 
-	player, err := s.storage.GetPlayerForUserIfExists(userId)
+	player, err := s.storage.GetPlayerForUserOrNil(userId)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type PlayerAccessor interface {
 	GetPlayer(playerId string) (*model.Player, error)
 	GetPlayerUsingTransaction(playerId string, transaction DatabaseTransaction) (*model.Player, error)
 	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
-	GetPlayerForUserIfExists(userId string) (*model.Player, error)
+	GetPlayerForUserOrNil(userId string) (*model.Player, error)
 	CreatePlayerForUser(userId string) (*model.Player, error)
 }
 
@@ -126,7 +126,7 @@ func (s *Storage) UpdatePlayerWithUserIdUsingTransaction(playerId, userId string
 	return model.NewPlayer(model.PlayerOptions{Id: playerId, UserId: &userId})
 }
 
-func (s *Storage) GetPlayerForUserIfExists(userId string) (*model.Player, error) {
+func (s *Storage) GetPlayerForUserOrNil(userId string) (*model.Player, error) {
 	if utilities.IsBlank(userId) {
 		return nil, errors.New("userId cannot be blank")
 	}
