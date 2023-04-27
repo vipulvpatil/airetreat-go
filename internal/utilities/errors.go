@@ -28,8 +28,8 @@ func WrapBadError(err error, message string) error {
 	return errors.Wrap(err, badError.Error())
 }
 
-func (b *BadError) Error() string {
-	return fmt.Sprintf("THIS IS BAD: %s", b.message)
+func (e *BadError) Error() string {
+	return fmt.Sprintf("THIS IS BAD: %s", e.message)
 }
 
 func ErrorIsUnauthenticated(err error) bool {
@@ -37,4 +37,10 @@ func ErrorIsUnauthenticated(err error) bool {
 		return e.Code() == codes.Unauthenticated
 	}
 	return false
+}
+
+type ResetPlayerError struct{}
+
+func (e *ResetPlayerError) Error() string {
+	return fmt.Sprintln("reset player data")
 }

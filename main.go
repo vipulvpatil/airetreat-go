@@ -118,7 +118,13 @@ func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Ser
 	if tlsServerOpts != nil {
 		serverOpts = append(serverOpts, tlsServerOpts)
 	}
-	serverOpts = append(serverOpts, grpc.UnaryInterceptor(s.RequestingUserInterceptor))
+	serverOpts = append(
+		serverOpts,
+		grpc.ChainUnaryInterceptor(
+			s.RequestingUserInterceptor,
+			s.PlayerIdValidatingInterceptor,
+		),
+	)
 	grpcServer := grpc.NewServer(serverOpts...)
 	pb.RegisterAiRetreatGoServer(grpcServer, s)
 	return grpcServer

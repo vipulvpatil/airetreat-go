@@ -29,7 +29,7 @@ func (s *AiRetreatGoService) SyncPlayerData(ctx context.Context, req *pb.SyncPla
 		}
 
 		if player.UserId() != nil {
-			return nil, errors.New("reset player id")
+			return nil, &utilities.ResetPlayerError{}
 		}
 	} else {
 		player, err = s.storage.CreatePlayer()
