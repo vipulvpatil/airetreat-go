@@ -2,10 +2,10 @@ package openai
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pkg/errors"
 	openaigo "github.com/sashabaranov/go-openai"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
 )
 
 type client struct {
@@ -27,7 +27,7 @@ func NewClient(opts OpenAiClientOptions) Client {
 }
 
 func (c *client) CallCompletionApi(prompt string) (string, error) {
-	fmt.Println(prompt)
+	logger.LogMessageln(prompt)
 	openAiGoClient := openaigo.NewClient(c.apiKey)
 	ctx := context.Background()
 
@@ -38,7 +38,7 @@ func (c *client) CallCompletionApi(prompt string) (string, error) {
 	}
 	resp, err := openAiGoClient.CreateCompletion(ctx, req)
 	if err != nil {
-		fmt.Printf("Completion error: %v\n", err)
+		logger.LogMessagef("Completion error: %v\n", err)
 		return "", errors.Wrap(err, "Open Ai error")
 	}
 	return resp.Choices[0].Text, nil

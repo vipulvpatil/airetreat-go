@@ -2,10 +2,10 @@ package storage
 
 import (
 	"database/sql"
-	"fmt"
 
 	_ "github.com/lib/pq"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
 )
 
 // This function will make a connection to the database only once.
@@ -24,6 +24,6 @@ func InitDb(cfg *config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 	// this will be printed in the terminal, confirming the connection to the database
-	fmt.Println("The database is connected")
+	logger.LogMessageln("The database is connected")
 	return db, nil
 }

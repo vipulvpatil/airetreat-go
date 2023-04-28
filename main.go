@@ -21,6 +21,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/server"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	"github.com/vipulvpatil/airetreat-go/internal/tls"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
 	"github.com/vipulvpatil/airetreat-go/internal/workers"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc"
@@ -29,13 +30,13 @@ import (
 const WORKER_NAMESPACE = "airetreat_go"
 
 func main() {
-	fmt.Println("Starting Service")
+	logger.LogMessageln("Starting Service")
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	cfg, errs := config.NewConfigFromEnvVars()
 	if len(errs) > 0 {
 		for _, err := range errs {
-			fmt.Println(err)
+			logger.LogMessageln(err)
 		}
 		log.Fatal("Unable to load config. Required Env vars are missing")
 	}
@@ -116,7 +117,7 @@ func main() {
 	grpcServer.GracefulStop()
 	workerPool.Stop()
 	wg.Wait()
-	fmt.Println("Stopping Service")
+	logger.LogMessageln("Stopping Service")
 }
 
 func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Server {
@@ -144,12 +145,12 @@ func startHTTPHealthServer(wg *sync.WaitGroup) *http.Server {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		fmt.Println("Starting HTTP Health Check")
+		logger.LogMessageln("Starting HTTP Health Check")
 		err := srv.ListenAndServe()
 		if err != http.ErrServerClosed {
 			log.Fatalf("HTTP Health Check failed with: %v", err)
 		}
-		fmt.Println("Stopping HTTP Health Check")
+		logger.LogMessageln("Stopping HTTP Health Check")
 	}()
 	return srv
 }
@@ -161,12 +162,12 @@ func startGrpcServerAsync(name string, wg *sync.WaitGroup, grpcServer *grpc.Serv
 		log.Fatalf("failed to listen: %v", err)
 	}
 	go func() {
-		fmt.Printf("Starting GRPC Server: %s\n", name)
+		logger.LogMessagef("Starting GRPC Server: %s\n", name)
 		err := grpcServer.Serve(lis)
 		if err != nil {
 			log.Fatalf("GrpcServer %s failed to start: %v", name, err)
 		}
-		fmt.Printf("Stopping GRPC Server: %s\n", name)
+		logger.LogMessagef("Stopping GRPC Server: %s\n", name)
 		wg.Done()
 	}()
 }
@@ -177,7 +178,7 @@ func tlsGrpcServerOptions(cfg *config.Config) grpc.ServerOption {
 		if err != nil {
 			log.Fatal("cannot load TLS credentials: ", err)
 		}
-		fmt.Println("using TLS")
+		logger.LogMessageln("using TLS")
 		return grpc.Creds(tlsCredentials)
 	}
 	return nil
