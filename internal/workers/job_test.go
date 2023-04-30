@@ -12,6 +12,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 func Test_startGameOncePlayersHaveJoined(t *testing.T) {
@@ -220,6 +221,7 @@ func Test_startGameOncePlayersHaveJoined(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		logger = &utilities.NullLogger{}
 		workerStorage = storage.NewStorageAccessorMock(
 			storage.WithGameAccessorMock(tt.gameAccessorMock),
 		)
@@ -613,6 +615,7 @@ func Test_askQuestionOnBehalfOfBot(t *testing.T) {
 		openAiClient = tt.openAiClientMock
 		minDelayAfterAIResponse = 0
 		maxDelayAfterAIResponse = 1
+		logger = &utilities.NullLogger{}
 		workerStorage = storage.NewStorageAccessorMock(
 			storage.WithDatabaseTransactionProviderMock(&storage.DatabaseTransactionProviderMock{
 				Transaction: tt.transactionMock,
@@ -975,6 +978,7 @@ func Test_answerQuestionOnBehalfOfBot(t *testing.T) {
 		openAiClient = tt.openAiClientMock
 		minDelayAfterAIResponse = 0
 		maxDelayAfterAIResponse = 1
+		logger = &utilities.NullLogger{}
 		workerStorage = storage.NewStorageAccessorMock(
 			storage.WithDatabaseTransactionProviderMock(&storage.DatabaseTransactionProviderMock{
 				Transaction: tt.transactionMock,
@@ -1115,6 +1119,7 @@ func Test_deleteExpiredGames(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		logger = &utilities.NullLogger{}
 		workerStorage = storage.NewStorageAccessorMock(
 			storage.WithGameAccessorMock(tt.gameAccessorMock),
 		)

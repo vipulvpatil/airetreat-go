@@ -12,6 +12,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
 
@@ -398,6 +399,7 @@ func Test_Help(t *testing.T) {
 					storage.WithBotAccessorMock(tt.botAccessorMock),
 				),
 				OpenAiClient: &openai.MockClientSuccess{Text: tt.openAiResponse},
+				Logger:       &utilities.NullLogger{},
 			})
 
 			rand.Seed(0)

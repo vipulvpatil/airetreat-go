@@ -1,7 +1,6 @@
 package utilities
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -27,8 +26,9 @@ func InitLogger(params LoggerParams) (Logger, func(time.Duration) bool, error) {
 			Environment:      params.SentryParams.Environment,
 		})
 		return &sentryLogger{}, sentry.Flush, err
+	default:
+		return &NullLogger{}, nil, nil
 	}
-	return nil, nil, errors.New("incorrect logger mode")
 }
 
 type Logger interface {
@@ -36,6 +36,14 @@ type Logger interface {
 	LogMessagef(format string, a ...any)
 	LogError(err error)
 }
+
+type NullLogger struct{}
+
+func (l *NullLogger) LogMessageln(a ...any) {}
+
+func (l *NullLogger) LogMessagef(format string, a ...any) {}
+
+func (l *NullLogger) LogError(err error) {}
 
 type stdoutLogger struct{}
 
@@ -48,7 +56,7 @@ func (l *stdoutLogger) LogMessagef(format string, a ...any) {
 }
 
 func (l *stdoutLogger) LogError(err error) {
-	//do nothing on stdout
+	fmt.Println(err)
 }
 
 type sentryLogger struct{}

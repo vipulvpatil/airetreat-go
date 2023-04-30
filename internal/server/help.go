@@ -11,34 +11,43 @@ import (
 func (s *AiRetreatGoService) Help(ctx context.Context, req *pb.HelpRequest) (*pb.HelpResponse, error) {
 	game, err := s.storage.GetGame(req.GetGameId())
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 
 	sourceBot := game.BotWithPlayerId(req.GetPlayerId())
 	if sourceBot == nil {
-		return nil, errors.New("incorrect game")
+		err := errors.New("incorrect game")
+		s.logger.LogError(err)
+		return nil, err
 	}
 
 	if !sourceBot.CanGetHelp() {
-		return nil, errors.New("no more help possible")
+		err := errors.New("no more help possible")
+		s.logger.LogError(err)
+		return nil, err
 	}
 
 	currentTurnBot := game.GetBotThatGameIsWaitingOn()
 
 	if sourceBot != currentTurnBot {
-		return nil, errors.New("please wait for your turn")
+		err := errors.New("please wait for your turn")
+		s.logger.LogError(err)
+		return nil, err
 	}
 
 	responseText := "unable to help"
 
 	tx, err := s.storage.BeginTransaction()
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 	defer tx.Rollback()
 
 	err = s.storage.UpdateBotDecrementHelpCountUsingTransaction(sourceBot.Id(), tx)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 

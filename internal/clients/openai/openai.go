@@ -40,7 +40,7 @@ func (c *client) CallCompletionApi(prompt string) (string, error) {
 	}
 	resp, err := openAiGoClient.CreateCompletion(ctx, req)
 	if err != nil {
-		c.logger.LogMessagef("Completion error: %v\n", err)
+		c.logger.LogError(err)
 		return "", errors.Wrap(err, "Open Ai error")
 	}
 	return resp.Choices[0].Text, nil

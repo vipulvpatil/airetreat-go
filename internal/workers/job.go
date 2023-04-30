@@ -17,19 +17,26 @@ func (j *jobContext) startGameOncePlayersHaveJoined(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
 	if utilities.IsBlank(gameId) {
-		return errors.New("gameId is required")
+		err := errors.New("gameId is required")
+		logger.LogError(err)
+		return err
 	}
 	game, err := workerStorage.GetGame(gameId)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	if game.StateHasBeenHandled() {
-		return errors.Errorf("game has already been handled: %s", gameId)
+		err := errors.Errorf("game has already been handled: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	if !game.IsInStatePlayersJoined() {
-		return errors.Errorf("game should be in PlayersJoined state: %s", gameId)
+		err := errors.Errorf("game should be in PlayersJoined state: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	randomizedTurnOrder := game.RandomizedTurnOrder()
@@ -59,31 +66,40 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
 	if utilities.IsBlank(gameId) {
-		return errors.New("gameId is required")
+		err := errors.New("gameId is required")
+		logger.LogError(err)
+		return err
 	}
 
 	tx, err := workerStorage.BeginTransaction()
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 	defer tx.Rollback()
 
 	game, err := workerStorage.GetGameUsingTransaction(gameId, tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	if game.StateHasBeenHandled() {
-		return errors.Errorf("game has already been handled: %s", gameId)
+		err := errors.Errorf("game has already been handled: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	if !game.IsInStateWaitingForAiQuestion() {
-		return errors.Errorf("game should be in WaitingForAiQuestion state: %s", gameId)
+		err := errors.Errorf("game should be in WaitingForAiQuestion state: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()
 	targetBotId, err := game.GetTargetBotIdForNextQuestion()
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 	aiBot := aibot.NewAiQuestionGenerator(
@@ -100,6 +116,7 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), targetBotId, question)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
@@ -114,15 +131,18 @@ func (j *jobContext) askQuestionOnBehalfOfBot(job *work.Job) error {
 
 	err = workerStorage.UpdateGameStateUsingTransaction(gameId, updateOptions, tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), targetBotId, question, "question", tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	err = tx.Commit()
+	logger.LogError(err)
 	return err
 }
 
@@ -130,26 +150,34 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
 	if utilities.IsBlank(gameId) {
-		return errors.New("gameId is required")
+		err := errors.New("gameId is required")
+		logger.LogError(err)
+		return err
 	}
 
 	tx, err := workerStorage.BeginTransaction()
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 	defer tx.Rollback()
 
 	game, err := workerStorage.GetGameUsingTransaction(gameId, tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	if game.StateHasBeenHandled() {
-		return errors.Errorf("game has already been handled: %s", gameId)
+		err := errors.Errorf("game has already been handled: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	if !game.IsInStateWaitingForAiAnswer() {
-		return errors.Errorf("game should be in WaitingForAiAnswer state: %s", gameId)
+		err := errors.Errorf("game should be in WaitingForAiAnswer state: %s", gameId)
+		logger.LogError(err)
+		return err
 	}
 
 	sourceBot := game.GetBotThatGameIsWaitingOn()
@@ -168,6 +196,7 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), sourceBot.Id(), answer)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
@@ -182,15 +211,18 @@ func (j *jobContext) answerQuestionOnBehalfOfBot(job *work.Job) error {
 
 	err = workerStorage.UpdateGameStateUsingTransaction(gameId, updateOptions, tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	err = workerStorage.CreateMessageUsingTransaction(sourceBot.Id(), sourceBot.Id(), answer, "answer", tx)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 
 	err = tx.Commit()
+	logger.LogError(err)
 	return err
 }
 
@@ -198,10 +230,13 @@ func (j *jobContext) deleteExpiredGames(job *work.Job) error {
 	gameId := job.ArgString("gameId")
 
 	if utilities.IsBlank(gameId) {
-		return errors.New("gameId is required")
+		err := errors.New("gameId is required")
+		logger.LogError(err)
+		return err
 	}
 	game, err := workerStorage.GetGame(gameId)
 	if err != nil {
+		logger.LogError(err)
 		return err
 	}
 

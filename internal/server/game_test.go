@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -47,6 +48,7 @@ func Test_CreateGame(t *testing.T) {
 						tt.gameCreatorMock,
 					),
 				),
+				Logger: &utilities.NullLogger{},
 			})
 
 			response, err := server.CreateGame(
@@ -402,6 +404,7 @@ func Test_JoinGame(t *testing.T) {
 					storage.WithGameAccessorMock(tt.gameAccessorMock),
 					storage.WithBotAccessorMock(tt.botAccessorMock),
 				),
+				Logger: &utilities.NullLogger{},
 			})
 
 			rand.Seed(0)
@@ -674,6 +677,7 @@ func Test_GetGameForPlayer(t *testing.T) {
 						tt.gameGetterMock,
 					),
 				),
+				Logger: &utilities.NullLogger{},
 			})
 
 			response, err := server.GetGameForPlayer(
@@ -726,6 +730,7 @@ func Test_GetGamesForPlayer(t *testing.T) {
 						tt.gameAccessorMock,
 					),
 				),
+				Logger: &utilities.NullLogger{},
 			})
 
 			response, err := server.GetGamesForPlayer(

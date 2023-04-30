@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 )
 
@@ -285,6 +286,7 @@ func Test_Tag(t *testing.T) {
 					}),
 					storage.WithGameAccessorMock(tt.gameAccessorMock),
 				),
+				Logger: &utilities.NullLogger{},
 			})
 
 			response, err := server.Tag(

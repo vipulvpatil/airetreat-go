@@ -20,6 +20,7 @@ func (s *AiRetreatGoService) RequestingUserInterceptor(ctx context.Context,
 		if utilities.ErrorIsUnauthenticated(err) && s.config.AllowUnauthed {
 			return handler(ctx, req)
 		} else {
+			s.logger.LogError(err)
 			return nil, err
 		}
 	} else {
@@ -48,6 +49,7 @@ func (s *AiRetreatGoService) PlayerIdValidatingInterceptor(ctx context.Context,
 					return nil, &utilities.ResetPlayerError{}
 				}
 			} else {
+				s.logger.LogError(err)
 				return nil, err
 			}
 		} else {

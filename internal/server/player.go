@@ -13,6 +13,7 @@ import (
 func (s *AiRetreatGoService) SyncPlayerData(ctx context.Context, req *pb.SyncPlayerDataRequest) (*pb.SyncPlayerDataResponse, error) {
 	user, err := s.getUserFromContextIfPresent(ctx)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 	playerId := req.GetPlayerId()
@@ -20,11 +21,13 @@ func (s *AiRetreatGoService) SyncPlayerData(ctx context.Context, req *pb.SyncPla
 	if user != nil {
 		player, err = s.getNewOrExistingPlayerForUser(user.GetId(), playerId)
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 	} else if !utilities.IsBlank(playerId) {
 		player, err = s.storage.GetPlayer(playerId)
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 
@@ -34,6 +37,7 @@ func (s *AiRetreatGoService) SyncPlayerData(ctx context.Context, req *pb.SyncPla
 	} else {
 		player, err = s.storage.CreatePlayer()
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 	}
@@ -52,6 +56,7 @@ func (s *AiRetreatGoService) getUserFromContextIfPresent(ctx context.Context) (*
 		if utilities.ErrorIsUnauthenticated(err) && s.config.AllowUnauthed {
 			return nil, nil
 		}
+		s.logger.LogError(err)
 		return nil, err
 	}
 	return user, nil
@@ -59,11 +64,14 @@ func (s *AiRetreatGoService) getUserFromContextIfPresent(ctx context.Context) (*
 
 func (s *AiRetreatGoService) getNewOrExistingPlayerForUser(userId string, playerId string) (*model.Player, error) {
 	if utilities.IsBlank(userId) {
-		return nil, errors.New("userId cannot be blank")
+		err := errors.New("userId cannot be blank")
+		s.logger.LogError(err)
+		return nil, err
 	}
 
 	player, err := s.storage.GetPlayerForUserOrNil(userId)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 	if player != nil {
@@ -74,27 +82,32 @@ func (s *AiRetreatGoService) getNewOrExistingPlayerForUser(userId string, player
 	if !utilities.IsBlank(playerId) {
 		tx, err := s.storage.BeginTransaction()
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 		defer tx.Rollback()
 		player, err = s.storage.GetPlayerUsingTransaction(playerId, tx)
 		// TODO: Rethink this. This can be used to find playerIds that are connected to some user in our system. Not sure if that is a security risk. Sending unknown error for now.
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, utilities.NewBadError("unknown error")
 		}
 
 		// TODO: Rethink this. This can be used to find playerIds that are connected to some user in our system. Not sure if that is a security risk. Sending unknown error for now.
 		if player.UserId() != nil {
+			s.logger.LogError(utilities.NewBadError("unknown error"))
 			return nil, utilities.NewBadError("unknown error")
 		}
 
 		player, err = s.storage.UpdatePlayerWithUserIdUsingTransaction(player.Id(), userId, tx)
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 
 		err = tx.Commit()
 		if err != nil {
+			s.logger.LogError(err)
 			return nil, err
 		}
 

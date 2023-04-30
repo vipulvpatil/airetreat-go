@@ -13,6 +13,7 @@ import (
 func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
 	tx, err := s.storage.BeginTransaction()
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 	defer tx.Rollback()
@@ -21,21 +22,26 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 
 	err = validateMessageText(messageText)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 
 	game, err := s.storage.GetGameUsingTransaction(req.GetGameId(), tx)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 
 	sourceBot := game.BotWithPlayerId(req.GetPlayerId())
 	if sourceBot == nil {
-		return nil, errors.New("incorrect game")
+		err := errors.New("incorrect game")
+		s.logger.LogError(err)
+		return nil, err
 	}
 
 	gameUpdate, err := game.GetGameUpdateAfterIncomingMessage(sourceBot.Id(), req.GetBotId(), messageText)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 
@@ -50,11 +56,13 @@ func (s *AiRetreatGoService) SendMessage(ctx context.Context, req *pb.SendMessag
 
 	err = s.storage.UpdateGameStateUsingTransaction(req.GetGameId(), updateOptions, tx)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 
 	err = s.storage.CreateMessageUsingTransaction(sourceBot.Id(), req.GetBotId(), req.GetText(), req.GetType(), tx)
 	if err != nil {
+		s.logger.LogError(err)
 		return nil, err
 	}
 

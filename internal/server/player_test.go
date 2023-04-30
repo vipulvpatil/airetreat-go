@@ -9,6 +9,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/config"
 	"github.com/vipulvpatil/airetreat-go/internal/model"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc/metadata"
 )
@@ -361,6 +362,7 @@ func Test_SyncPlayerData(t *testing.T) {
 				Config: &config.Config{
 					AllowUnauthed: tt.allowUnauthedConfig,
 				},
+				Logger: &utilities.NullLogger{},
 			})
 
 			ctx := context.Background()
