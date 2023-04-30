@@ -41,11 +41,15 @@ func main() {
 		log.Fatal("Unable to load config. Required Env vars are missing")
 	}
 
-	err := initializeErrorLogging(cfg.SentryDsn, cfg.Environment)
-	if err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+	if cfg.LogToStdout {
+		logger.LogToStdout()
+	} else {
+		err := logger.LogUsingSentry(cfg.SentryDsn, cfg.Environment)
+		if err != nil {
+			log.Fatalf("sentry.Init: %s", err)
+		}
+		defer sentry.Flush(2 * time.Second)
 	}
-	defer sentry.Flush(2 * time.Second)
 
 	db, err := storage.InitDb(cfg)
 	if err != nil {
@@ -103,7 +107,7 @@ func main() {
 	osTermSig := make(chan os.Signal, 1)
 	signal.Notify(osTermSig, syscall.SIGINT, syscall.SIGTERM)
 
-	sentry.CaptureMessage("Everything started correctly")
+	logger.LogMessageln("Everything started correctly")
 
 	<-osTermSig
 
@@ -182,12 +186,4 @@ func tlsGrpcServerOptions(cfg *config.Config) grpc.ServerOption {
 		return grpc.Creds(tlsCredentials)
 	}
 	return nil
-}
-
-func initializeErrorLogging(sentryDsn, environment string) error {
-	return sentry.Init(sentry.ClientOptions{
-		Dsn:              sentryDsn,
-		TracesSampleRate: 1.0,
-		Environment:      environment,
-	})
 }
