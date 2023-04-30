@@ -286,7 +286,7 @@ func Test_SyncPlayerData(t *testing.T) {
 			transactionMock:     nil,
 			playerAccessorMock:  &storage.PlayerAccessorMockSuccess{PlayerId: "player_id1", UserId: &anotherUserId},
 			errorExpected:       true,
-			errorString:         "reset player id",
+			errorString:         "reset player data",
 		},
 		{
 			name: "when no user in context and request playerId is non blank, returns the player from storage",

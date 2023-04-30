@@ -19,7 +19,7 @@ type Config struct {
 	OpenAiApiKey     string
 	SentryDsn        string
 	Environment      string
-	LogToStdout      bool
+	LoggerMode       string
 }
 
 func envVarLoaderBool(envVarName string, required bool, errorCollector *[]error) bool {
@@ -58,9 +58,9 @@ func NewConfigFromEnvVars() (*Config, []error) {
 	c.ServerCertBase64 = envVarLoaderString("SERVER_CERT_BASE64", true, &errs)
 	c.ServerKeyBase64 = envVarLoaderString("SERVER_KEY_BASE64", true, &errs)
 	c.AllowUnauthed = envVarLoaderBool("ALLOW_UNAUTHED", true, &errs)
-	c.SentryDsn = envVarLoaderString("SENTRY_DSN", true, &errs)
+	c.SentryDsn = envVarLoaderString("SENTRY_DSN", false, &errs)
 	c.Environment = envVarLoaderString("ENVIRONMENT", true, &errs)
-	c.LogToStdout = envVarLoaderBool("LOG_TO_STDOUT", true, &errs)
+	c.LoggerMode = envVarLoaderString("LOGGER_MODE", true, &errs)
 
 	return &c, errs
 }

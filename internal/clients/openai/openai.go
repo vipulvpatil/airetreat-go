@@ -5,11 +5,12 @@ import (
 
 	"github.com/pkg/errors"
 	openaigo "github.com/sashabaranov/go-openai"
-	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 type client struct {
 	apiKey string
+	logger utilities.Logger
 }
 
 type Client interface {
@@ -20,14 +21,15 @@ type OpenAiClientOptions struct {
 	ApiKey string
 }
 
-func NewClient(opts OpenAiClientOptions) Client {
+func NewClient(opts OpenAiClientOptions, logger utilities.Logger) Client {
 	return &client{
 		apiKey: opts.ApiKey,
+		logger: logger,
 	}
 }
 
 func (c *client) CallCompletionApi(prompt string) (string, error) {
-	logger.LogMessageln(prompt)
+	c.logger.LogMessageln(prompt)
 	openAiGoClient := openaigo.NewClient(c.apiKey)
 	ctx := context.Background()
 
@@ -38,7 +40,7 @@ func (c *client) CallCompletionApi(prompt string) (string, error) {
 	}
 	resp, err := openAiGoClient.CreateCompletion(ctx, req)
 	if err != nil {
-		logger.LogMessagef("Completion error: %v\n", err)
+		c.logger.LogMessagef("Completion error: %v\n", err)
 		return "", errors.Wrap(err, "Open Ai error")
 	}
 	return resp.Choices[0].Text, nil

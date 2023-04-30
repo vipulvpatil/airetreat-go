@@ -5,6 +5,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 const START_GAME_ONCE_PLAYERS_HAVE_JOINED = "start_game_once_players_have_joined"
@@ -16,12 +17,14 @@ var workerStorage storage.StorageAccessor
 var openAiClient openai.Client
 var minDelayAfterAIResponse int
 var maxDelayAfterAIResponse int
+var logger utilities.Logger
 
 type PoolDependencies struct {
 	Namespace    string
 	RedisPool    *redis.Pool
 	Storage      storage.StorageAccessor
 	OpenAiApiKey string
+	Logger       utilities.Logger
 }
 
 func NewPool(deps PoolDependencies) *work.WorkerPool {
@@ -34,7 +37,8 @@ func NewPool(deps PoolDependencies) *work.WorkerPool {
 
 	// TODO: Not sure if this is the best way to do this. But using Package variables for all dependencies required inside any of the jobs.
 	workerStorage = deps.Storage
-	openAiClient = openai.NewClient(openai.OpenAiClientOptions{ApiKey: deps.OpenAiApiKey})
+	logger = deps.Logger
+	openAiClient = openai.NewClient(openai.OpenAiClientOptions{ApiKey: deps.OpenAiApiKey}, logger)
 	minDelayAfterAIResponse = 8
 	maxDelayAfterAIResponse = 15
 	return pool

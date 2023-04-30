@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 var testDb *sql.DB
@@ -88,7 +89,9 @@ func closeTestDatabaseConnection(db *sql.DB) {
 func Test_InitDb(t *testing.T) {
 	t.Run("Test that DB connectivity works", func(t *testing.T) {
 		cfg, _ := config.NewConfigFromEnvVars()
-		storage, err := InitDb(cfg)
+		stdLogger, _, err := utilities.InitLogger(utilities.LoggerParams{Mode: "stdout"})
+		assert.NoError(t, err)
+		storage, err := InitDb(cfg, stdLogger)
 		assert.NoError(t, err)
 		assert.NotNil(t, storage)
 	})

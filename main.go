@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vipulvpatil/airetreat-go/internal/clients/openai"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
@@ -21,7 +20,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/server"
 	"github.com/vipulvpatil/airetreat-go/internal/storage"
 	"github.com/vipulvpatil/airetreat-go/internal/tls"
-	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 	"github.com/vipulvpatil/airetreat-go/internal/workers"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
 	"google.golang.org/grpc"
@@ -30,28 +29,35 @@ import (
 const WORKER_NAMESPACE = "airetreat_go"
 
 func main() {
-	logger.LogMessageln("Starting Service")
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	cfg, errs := config.NewConfigFromEnvVars()
 	if len(errs) > 0 {
 		for _, err := range errs {
-			logger.LogMessageln(err)
+			fmt.Println(err)
 		}
 		log.Fatal("Unable to load config. Required Env vars are missing")
 	}
 
-	if cfg.LogToStdout {
-		logger.LogToStdout()
-	} else {
-		err := logger.LogUsingSentry(cfg.SentryDsn, cfg.Environment)
-		if err != nil {
-			log.Fatalf("sentry.Init: %s", err)
-		}
-		defer sentry.Flush(2 * time.Second)
+	logger, deferFunc, err := utilities.InitLogger(utilities.LoggerParams{
+		Mode: cfg.LoggerMode,
+		SentryParams: struct {
+			Dsn         string
+			Environment string
+		}{
+			Dsn:         cfg.SentryDsn,
+			Environment: cfg.Environment,
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+	if deferFunc != nil {
+		defer deferFunc(2 * time.Second)
 	}
 
-	db, err := storage.InitDb(cfg)
+	db, err := storage.InitDb(cfg, logger)
 	if err != nil {
 		log.Fatalf("Unable to initialize database: %v", err)
 	}
@@ -77,7 +83,7 @@ func main() {
 
 	serverDeps := server.ServerDependencies{
 		Storage:      dbStorage,
-		OpenAiClient: openai.NewClient(openai.OpenAiClientOptions{ApiKey: cfg.OpenAiApiKey}),
+		OpenAiClient: openai.NewClient(openai.OpenAiClientOptions{ApiKey: cfg.OpenAiApiKey}, logger),
 		Config:       cfg,
 	}
 
@@ -85,20 +91,21 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to initialize new server: %v", err)
 	}
-	grpcServer := setupGrpcServer(s, cfg)
+	grpcServer := setupGrpcServer(s, cfg, logger)
 
 	workerPooldeps := workers.PoolDependencies{
 		RedisPool:    redisPool,
 		Namespace:    WORKER_NAMESPACE,
 		Storage:      dbStorage,
 		OpenAiApiKey: cfg.OpenAiApiKey,
+		Logger:       logger,
 	}
 	workerPool := workers.NewPool(workerPooldeps)
 	workerPool.Start()
 
 	var wg sync.WaitGroup
-	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000")
-	httpHealthServer := startHTTPHealthServer(&wg)
+	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000", logger)
+	httpHealthServer := startHTTPHealthServer(&wg, logger)
 
 	gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())
 	loopTickerDuration := 1 * time.Second
@@ -124,9 +131,9 @@ func main() {
 	logger.LogMessageln("Stopping Service")
 }
 
-func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Server {
+func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config, logger utilities.Logger) *grpc.Server {
 	serverOpts := make([]grpc.ServerOption, 0)
-	tlsServerOpts := tlsGrpcServerOptions(cfg)
+	tlsServerOpts := tlsGrpcServerOptions(cfg, logger)
 	if tlsServerOpts != nil {
 		serverOpts = append(serverOpts, tlsServerOpts)
 	}
@@ -142,7 +149,7 @@ func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config) *grpc.Ser
 	return grpcServer
 }
 
-func startHTTPHealthServer(wg *sync.WaitGroup) *http.Server {
+func startHTTPHealthServer(wg *sync.WaitGroup, logger utilities.Logger) *http.Server {
 	srv := &http.Server{Addr: ":8080"}
 	http.HandleFunc("/", health.HealthCheckHandler)
 
@@ -159,7 +166,7 @@ func startHTTPHealthServer(wg *sync.WaitGroup) *http.Server {
 	return srv
 }
 
-func startGrpcServerAsync(name string, wg *sync.WaitGroup, grpcServer *grpc.Server, port string) {
+func startGrpcServerAsync(name string, wg *sync.WaitGroup, grpcServer *grpc.Server, port string, logger utilities.Logger) {
 	wg.Add(1)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
@@ -176,7 +183,7 @@ func startGrpcServerAsync(name string, wg *sync.WaitGroup, grpcServer *grpc.Serv
 	}()
 }
 
-func tlsGrpcServerOptions(cfg *config.Config) grpc.ServerOption {
+func tlsGrpcServerOptions(cfg *config.Config, logger utilities.Logger) grpc.ServerOption {
 	if cfg.EnableTls {
 		tlsCredentials, err := tls.LoadTLSCredentials(cfg)
 		if err != nil {

@@ -5,11 +5,11 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/vipulvpatil/airetreat-go/internal/config"
-	"github.com/vipulvpatil/airetreat-go/internal/utilities/logger"
+	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
 // This function will make a connection to the database only once.
-func InitDb(cfg *config.Config) (*sql.DB, error) {
+func InitDb(cfg *config.Config, logger utilities.Logger) (*sql.DB, error) {
 	var err error
 
 	connStr := cfg.DbUrl
