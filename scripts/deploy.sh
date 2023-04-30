@@ -7,7 +7,7 @@ wait_for_service_to_become_healthy() {
   while [[ try_count -lt max_try_count && "$health_check_passed" = false ]];
   do
     try_count=$(($try_count+1));
-    echo "waiting for " $1 " to become z." $try_count
+    echo "waiting for " $1 " to become healthy." $try_count
 
     http_response=$(curl -I http://$1:8080 2>/dev/null | head -n 1 | cut -d$' ' -f2);
     if [[ http_response -eq 200 ]] ; then
@@ -24,6 +24,8 @@ wait_for_service_to_become_healthy() {
 }
 
 deploy_service() {
+  echo "deploying to: $1"
+
   # var definitions
   SSH_ADDR="root@$1"
 
@@ -43,6 +45,13 @@ deploy_service() {
 # build docker image locally
 docker build -t airetreat:latest .
 
-deploy_service $1
+# deploy to primary
+deploy_service $AI_RETREAT_GO_INTERNAL_IP_PRIMARY
+
+# wait to allow LB to find healthy primary
+sleep 120;
+
+# deploy to secondary
+deploy_service $AI_RETREAT_GO_INTERNAL_IP_SECONDARY
 
 echo "deployment successful"
