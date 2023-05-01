@@ -118,9 +118,6 @@ func main() {
 
 	<-osTermSig
 
-	// TODO: Remove as this is test code.
-	fmt.Println("received sigint")
-
 	cancelGameHandlerLoop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -132,10 +129,6 @@ func main() {
 	workerPool.Stop()
 	wg.Wait()
 	logger.LogMessageln("Stopping Service")
-
-	// TODO: Remove as this is test code.
-	time.Sleep(30 * time.Second)
-	logger.LogMessageln("waited 30 seconds before stopping fully")
 }
 
 func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config, logger utilities.Logger) *grpc.Server {
