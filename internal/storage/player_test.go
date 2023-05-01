@@ -525,3 +525,84 @@ func Test_CreatePlayerForUser(t *testing.T) {
 		})
 	}
 }
+
+func Test_DeletePlayer(t *testing.T) {
+	tests := []struct {
+		name            string
+		input           string
+		setupSqlStmts   []TestSqlStmts
+		cleanupSqlStmts []TestSqlStmts
+		dbUpdateCheck   func(*sql.DB) bool
+		errorExpected   bool
+		errorString     string
+	}{
+		{
+			name:            "errors if playerId is blank",
+			input:           "",
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			dbUpdateCheck:   nil,
+			errorExpected:   true,
+			errorString:     "playerId cannot be blank",
+		},
+		{
+			name:            "errors if db delete errors",
+			input:           "player_id1",
+			setupSqlStmts:   nil,
+			cleanupSqlStmts: nil,
+			dbUpdateCheck:   nil,
+			errorExpected:   true,
+			errorString:     "THIS IS BAD: Very few or too many rows were affected when deleting player in db. This is highly unexpected. rowsAffected: 0",
+		},
+		{
+			name:  "deletes player successfully",
+			input: "player_id1",
+			setupSqlStmts: []TestSqlStmts{
+				{Query: `INSERT INTO public."users" ("id") VALUES ('user_id1')`},
+				{Query: `INSERT INTO public."players" ("id") VALUES ('player_id1')`},
+			},
+			cleanupSqlStmts: []TestSqlStmts{
+				{Query: `DELETE FROM public."users" WHERE id = 'user_id1'`},
+			},
+			dbUpdateCheck: func(db *sql.DB) bool {
+				var (
+					playerId string
+				)
+				err := db.QueryRow(
+					`SELECT "id" FROM public."players" WHERE "id" = 'player_id1'`,
+				).Scan(&playerId)
+				assert.Error(t, err, "sql: no rows in result set")
+				return true
+			},
+			errorExpected: false,
+			errorString:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s, _ := NewDbStorage(
+				StorageOptions{
+					Db: testDb,
+				},
+			)
+
+			runSqlOnDb(t, s.db, tt.setupSqlStmts)
+			defer runSqlOnDb(t, s.db, tt.cleanupSqlStmts)
+
+			tx, err := s.BeginTransaction()
+			assert.NoError(t, err)
+			err = s.DeletePlayer(tt.input)
+			tx.Commit()
+			if !tt.errorExpected {
+				assert.NoError(t, err)
+			} else {
+				assert.NotEmpty(t, tt.errorString)
+				assert.EqualError(t, err, tt.errorString)
+			}
+			if tt.dbUpdateCheck != nil {
+				assert.True(t, tt.dbUpdateCheck(s.db))
+			}
+		})
+	}
+}

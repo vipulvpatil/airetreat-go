@@ -53,6 +53,10 @@ func (p *PlayerAccessorMockSuccess) CreatePlayerForUser(userId string) (*model.P
 	})
 }
 
+func (p *PlayerAccessorMockSuccess) DeletePlayer(playerId string) error {
+	return nil
+}
+
 type PlayerAccessorMockFailure struct {
 }
 
@@ -80,6 +84,10 @@ func (p *PlayerAccessorMockFailure) CreatePlayerForUser(userId string) (*model.P
 	return nil, errors.New("unable to create player")
 }
 
+func (p *PlayerAccessorMockFailure) DeletePlayer(playerId string) error {
+	return errors.New("unable to delete player")
+}
+
 type PlayerAccessorMockConfigurable struct {
 	GetPlayerInternal                              func(playerId string) (*model.Player, error)
 	GetPlayerUsingTransactionInternal              func(playerId string, transaction DatabaseTransaction) (*model.Player, error)
@@ -87,6 +95,7 @@ type PlayerAccessorMockConfigurable struct {
 	UpdatePlayerWithUserIdUsingTransactionInternal func(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
 	GetPlayerForUserOrNilInternal                  func(userId string) (*model.Player, error)
 	CreatePlayerForUserInternal                    func(userId string) (*model.Player, error)
+	DeletePlayerInternal                           func(playerId string) error
 }
 
 func (p *PlayerAccessorMockConfigurable) GetPlayer(playerId string) (*model.Player, error) {
@@ -111,4 +120,8 @@ func (p *PlayerAccessorMockConfigurable) GetPlayerForUserOrNil(userId string) (*
 
 func (p *PlayerAccessorMockConfigurable) CreatePlayerForUser(userId string) (*model.Player, error) {
 	return p.CreatePlayerForUserInternal(userId)
+}
+
+func (p *PlayerAccessorMockConfigurable) DeletePlayer(playerId string) error {
+	return p.DeletePlayerInternal(playerId)
 }

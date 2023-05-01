@@ -16,6 +16,7 @@ type PlayerAccessor interface {
 	UpdatePlayerWithUserIdUsingTransaction(playerId, userId string, transaction DatabaseTransaction) (*model.Player, error)
 	GetPlayerForUserOrNil(userId string) (*model.Player, error)
 	CreatePlayerForUser(userId string) (*model.Player, error)
+	DeletePlayer(playerId string) error
 }
 
 func (s *Storage) CreatePlayer() (*model.Player, error) {
@@ -184,4 +185,28 @@ func (s *Storage) CreatePlayerForUser(userId string) (*model.Player, error) {
 	}
 
 	return player, nil
+}
+
+func (s *Storage) DeletePlayer(playerId string) error {
+	if utilities.IsBlank(playerId) {
+		return errors.New("playerId cannot be blank")
+	}
+
+	result, err := s.db.Exec(
+		`DELETE FROM public."players" WHERE id = $1`, playerId,
+	)
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while attempting player deletion")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return utilities.WrapBadError(err, "dbError while deleting player and changing db")
+	}
+
+	if rowsAffected != 1 {
+		return utilities.NewBadError(fmt.Sprintf("Very few or too many rows were affected when deleting player in db. This is highly unexpected. rowsAffected: %d", rowsAffected))
+	}
+
+	return nil
 }
