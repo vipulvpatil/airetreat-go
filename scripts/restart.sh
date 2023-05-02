@@ -23,14 +23,11 @@ wait_for_service_to_become_healthy() {
   fi
 }
 
-deploy_service() {
-  echo "deploying to: $1"
+restart_service() {
+  echo "restarting: $1"
 
   # var definitions
   SSH_ADDR="root@$1"
-
-  # send docker image to server and load it.
-  docker save airetreat:latest | bzip2 | pv | ssh $SSH_ADDR docker load
 
   # stop all existing docker containers
   ssh $SSH_ADDR "docker ps -aq | xargs docker stop --time=60 | xargs docker rm"
@@ -42,17 +39,14 @@ deploy_service() {
   wait_for_service_to_become_healthy $1
 }
 
-# build docker image locally
-docker build -t airetreat:latest .
-
-# deploy to primary
-deploy_service $AI_RETREAT_GO_INTERNAL_IP_PRIMARY
+# restart to primary
+restart_service $AI_RETREAT_GO_INTERNAL_IP_PRIMARY
 
 # wait to allow LB to find healthy primary
 echo 'forced sleep for 120s'
 sleep 120;
 
-# deploy to secondary
-deploy_service $AI_RETREAT_GO_INTERNAL_IP_SECONDARY
+# restart to secondary
+restart_service $AI_RETREAT_GO_INTERNAL_IP_SECONDARY
 
-echo "deployment successful"
+echo "restart successful"
