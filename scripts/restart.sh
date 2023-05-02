@@ -33,10 +33,16 @@ restart_service() {
   ssh $SSH_ADDR "docker ps -aq | xargs docker stop --time=60 | xargs docker rm"
 
   # run newly uploaded docker image
-  ssh $SSH_ADDR "docker run -i -t --rm -d -p 9000:9000 -p 8080:8080 --env-file .env airetreat"
+  ssh $SSH_ADDR "docker run -i -t -d -p 9000:9000 -p 8080:8080 --restart unless-stopped --env-file .env airetreat"
 
   # verify service is properly started
   wait_for_service_to_become_healthy $1
+}
+
+cleanup() {
+  echo "performing cleanup on $1"
+  SSH_ADDR="root@$1"
+  ssh $SSH_ADDR "docker rmi $(docker images -f 'dangling=true' -q)"
 }
 
 # restart to primary
@@ -50,3 +56,6 @@ sleep 120;
 restart_service $AI_RETREAT_GO_INTERNAL_IP_SECONDARY
 
 echo "restart successful"
+
+cleanup $AI_RETREAT_GO_INTERNAL_IP_PRIMARY
+cleanup $AI_RETREAT_GO_INTERNAL_IP_SECONDARY
