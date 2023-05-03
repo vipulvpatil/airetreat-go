@@ -11,7 +11,7 @@ import (
 )
 
 func (s *AiRetreatGoService) CreateGame(ctx context.Context, req *pb.CreateGameRequest) (*pb.CreateGameResponse, error) {
-	gameId, err := s.storage.CreateGame(false)
+	gameId, err := s.storage.CreateGame(req.GetPublic())
 	if err != nil {
 		s.logger.LogError(err)
 		return nil, err
