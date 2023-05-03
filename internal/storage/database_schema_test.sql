@@ -44,6 +44,7 @@ CREATE TABLE "games" (
     "state_total_time" INTEGER NOT NULL DEFAULT 0,
     "result" TEXT,
     "winning_bot_id" TEXT,
+    "public" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "games_pkey" PRIMARY KEY ("id")
 );

@@ -70,7 +70,7 @@ func (s *AiRetreatGoService) answerQuestionsUsingAi(jobStarter workers.JobStarte
 }
 
 func (s *AiRetreatGoService) deleteExpiredGames(jobStarter workers.JobStarter) {
-	gameIds, err := s.storage.GetOldGames(-1 * time.Hour)
+	gameIds, err := s.storage.GetOldGames(-2 * time.Hour)
 	if err != nil {
 		s.logger.LogError(err)
 		return
