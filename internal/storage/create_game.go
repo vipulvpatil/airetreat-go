@@ -8,7 +8,7 @@ import (
 	"github.com/vipulvpatil/airetreat-go/internal/utilities"
 )
 
-func (s *Storage) CreateGame() (string, error) {
+func (s *Storage) CreateGame(public bool) (string, error) {
 	id := s.IdGenerator.Generate()
 
 	botNames := model.RandomBotNames()
@@ -38,6 +38,7 @@ func (s *Storage) CreateGame() (string, error) {
 		TurnOrder:        nonRandomTurnOrder,
 		StateHandled:     false,
 		Bots:             bots,
+		Public:           public,
 	}
 
 	_, err := model.NewGame(gameOption)
@@ -53,13 +54,15 @@ func (s *Storage) CreateGame() (string, error) {
 
 	result, err := tx.Exec(
 		`INSERT INTO public."games" (
-			"id", "state", "current_turn_index", "turn_order", "state_handled"
+			"id", "state", "current_turn_index", "turn_order", "state_handled", "public"
 		)
 		VALUES (
-			$1, $2, $3, $4, $5
+			$1, $2, $3, $4, $5, $6
 		)
 		`,
-		gameOption.Id, gameOption.State, gameOption.CurrentTurnIndex, pq.Array(gameOption.TurnOrder), gameOption.StateHandled,
+		gameOption.Id, gameOption.State,
+		gameOption.CurrentTurnIndex, pq.Array(gameOption.TurnOrder),
+		gameOption.StateHandled, gameOption.Public,
 	)
 	if err != nil {
 		return "", err

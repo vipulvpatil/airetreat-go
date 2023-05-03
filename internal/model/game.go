@@ -27,6 +27,7 @@ type Game struct {
 	messages                []*Message
 	result                  string
 	winningBotId            string
+	public                  bool
 }
 
 type GameOptions struct {
@@ -45,6 +46,7 @@ type GameOptions struct {
 	Messages                []*Message
 	Result                  string
 	WinningBotId            string
+	Public                  bool
 }
 
 func NewGame(opts GameOptions) (*Game, error) {
@@ -93,6 +95,7 @@ func NewGame(opts GameOptions) (*Game, error) {
 		messages:                opts.Messages,
 		result:                  opts.Result,
 		winningBotId:            opts.WinningBotId,
+		public:                  opts.Public,
 	}, nil
 }
 

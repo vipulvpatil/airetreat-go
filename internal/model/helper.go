@@ -12,7 +12,8 @@ const DELTA = 5 * time.Second
 // These function helps in testing Game and Bot Objects
 func AssertEqualGame(t *testing.T, expected, actual *Game) {
 	assert.Equal(t, expected.id, actual.id, "game id is not equal")
-	assert.Equal(t, expected.state, actual.state, "gam state is not equal")
+	assert.Equal(t, expected.state, actual.state, "game state is not equal")
+	assert.Equal(t, expected.public, actual.public, "game public is not equal")
 	assert.Equal(t, expected.currentTurnIndex, actual.currentTurnIndex, "game currentTurnIndex is not equal")
 	assert.Equal(t, expected.turnOrder, actual.turnOrder, "game turnOrder is not equal")
 	assert.Equal(t, expected.stateHandled, actual.stateHandled, "game stateHandled is not equal")

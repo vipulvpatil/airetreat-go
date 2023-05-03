@@ -31,7 +31,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.id, g.state, g.current_turn_index, g.turn_order,
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
-	g.result, g.winning_bot_id,
+	g.result, g.winning_bot_id, g.public,
 	g.created_at, g.updated_at,
 	b.id, b.name, b.type, b.player_id, b.help_count,
 	m.source_bot_id, m.target_bot_id, m.text, m.created_at, m.type
@@ -45,7 +45,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 	g.id, g.state, g.current_turn_index, g.turn_order,
 	g.state_handled, g.state_handled_at, g.state_total_time,
 	g.last_question, g.last_question_target_bot_id,
-	g.result, g.winning_bot_id,
+	g.result, g.winning_bot_id, g.public,
 	g.created_at, g.updated_at,
 	b.id, b.name, b.type, b.player_id, b.help_count,
 	m.source_bot_id, m.target_bot_id, m.text, m.created_at, m.type
@@ -97,6 +97,7 @@ func getGameUsingCustomDbHandler(customDb customDbHandler, gameId string, exclus
 			&lastQuestionTargetBotId,
 			&result,
 			&winningBotId,
+			&opts.Public,
 			&opts.CreatedAt,
 			&opts.UpdatedAt,
 			&botOpts.Id,

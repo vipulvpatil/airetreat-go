@@ -66,7 +66,7 @@ func Test_GetGame(t *testing.T) {
 				},
 			},
 			errorExpected: true,
-			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 13, name \"id\": converting NULL to string is unsupported",
+			errorString:   "THIS IS BAD: failed while scanning rows: sql: Scan error on column index 14, name \"id\": converting NULL to string is unsupported",
 		},
 		{
 			name:  "error when found bot with bad data",

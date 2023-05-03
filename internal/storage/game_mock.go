@@ -12,7 +12,7 @@ type GameCreatorMockSuccess struct {
 	GameId string
 }
 
-func (g *GameCreatorMockSuccess) CreateGame() (string, error) {
+func (g *GameCreatorMockSuccess) CreateGame(public bool) (string, error) {
 	return g.GameId, nil
 }
 
@@ -20,7 +20,7 @@ type GameCreatorMockFailure struct {
 	GameAccessor
 }
 
-func (g *GameCreatorMockFailure) CreateGame() (string, error) {
+func (g *GameCreatorMockFailure) CreateGame(public bool) (string, error) {
 	return "", errors.New("unable to create game")
 }
 
@@ -87,7 +87,7 @@ type GameAccessorConfigurableMock struct {
 	UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal func(gameId string, transaction DatabaseTransaction) error
 }
 
-func (g *GameAccessorConfigurableMock) CreateGame() (string, error) {
+func (g *GameAccessorConfigurableMock) CreateGame(public bool) (string, error) {
 	return g.CreateGameInternal()
 }
 func (g *GameAccessorConfigurableMock) GetGame(gameId string) (*model.Game, error) {
