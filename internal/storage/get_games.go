@@ -130,3 +130,48 @@ func (s *Storage) GetPublicJoinableGames() ([]string, error) {
 	}
 	return gameIds, nil
 }
+
+func (s *Storage) GetAutoJoinableGames() ([]string, error) {
+	fiveMinutesAgo := time.Now().Add(-5 * time.Minute)
+
+	rows, err := s.db.Query(
+		`SELECT g.id, count(b.id)
+		FROM public."games" AS g
+		INNER JOIN public."bots" AS b ON b.game_id = g.id
+		WHERE g.created_at > $1
+		AND g.state = 'STARTED'
+		AND b.type = 'HUMAN'
+		GROUP BY g.id
+		ORDER BY g.created_at DESC, g.id DESC`,
+		fiveMinutesAgo,
+	)
+	if err != nil {
+		return nil, utilities.WrapBadError(err, "failed to select games")
+	}
+	defer rows.Close()
+
+	gameIds := []string{}
+
+	for rows.Next() {
+		var gameId string
+		var humanBotCount int
+		err := rows.Scan(
+			&gameId,
+			&humanBotCount,
+		)
+
+		if err != nil {
+			return nil, utilities.WrapBadError(err, "failed while scanning rows")
+		}
+
+		if humanBotCount == 1 {
+			gameIds = append(gameIds, gameId)
+		}
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, utilities.WrapBadError(err, "failed to correctly go through bot rows")
+	}
+	return gameIds, nil
+}

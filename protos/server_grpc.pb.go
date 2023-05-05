@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AiRetreatGoClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
 	JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error)
+	AutoJoinGame(ctx context.Context, in *AutoJoinGameRequest, opts ...grpc.CallOption) (*AutoJoinGameResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*SendMessageResponse, error)
 	Tag(ctx context.Context, in *TagRequest, opts ...grpc.CallOption) (*TagResponse, error)
 	Help(ctx context.Context, in *HelpRequest, opts ...grpc.CallOption) (*HelpResponse, error)
@@ -52,6 +53,15 @@ func (c *aiRetreatGoClient) CreateGame(ctx context.Context, in *CreateGameReques
 func (c *aiRetreatGoClient) JoinGame(ctx context.Context, in *JoinGameRequest, opts ...grpc.CallOption) (*JoinGameResponse, error) {
 	out := new(JoinGameResponse)
 	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/JoinGame", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aiRetreatGoClient) AutoJoinGame(ctx context.Context, in *AutoJoinGameRequest, opts ...grpc.CallOption) (*AutoJoinGameResponse, error) {
+	out := new(AutoJoinGameResponse)
+	err := c.cc.Invoke(ctx, "/protos.AiRetreatGo/AutoJoinGame", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,6 +128,7 @@ func (c *aiRetreatGoClient) SyncPlayerData(ctx context.Context, in *SyncPlayerDa
 type AiRetreatGoServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
 	JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error)
+	AutoJoinGame(context.Context, *AutoJoinGameRequest) (*AutoJoinGameResponse, error)
 	SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error)
 	Tag(context.Context, *TagRequest) (*TagResponse, error)
 	Help(context.Context, *HelpRequest) (*HelpResponse, error)
@@ -136,6 +147,9 @@ func (UnimplementedAiRetreatGoServer) CreateGame(context.Context, *CreateGameReq
 }
 func (UnimplementedAiRetreatGoServer) JoinGame(context.Context, *JoinGameRequest) (*JoinGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinGame not implemented")
+}
+func (UnimplementedAiRetreatGoServer) AutoJoinGame(context.Context, *AutoJoinGameRequest) (*AutoJoinGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AutoJoinGame not implemented")
 }
 func (UnimplementedAiRetreatGoServer) SendMessage(context.Context, *SendMessageRequest) (*SendMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
@@ -200,6 +214,24 @@ func _AiRetreatGo_JoinGame_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AiRetreatGoServer).JoinGame(ctx, req.(*JoinGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AiRetreatGo_AutoJoinGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AutoJoinGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiRetreatGoServer).AutoJoinGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.AiRetreatGo/AutoJoinGame",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiRetreatGoServer).AutoJoinGame(ctx, req.(*AutoJoinGameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -326,6 +358,10 @@ var AiRetreatGo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "JoinGame",
 			Handler:    _AiRetreatGo_JoinGame_Handler,
+		},
+		{
+			MethodName: "AutoJoinGame",
+			Handler:    _AiRetreatGo_AutoJoinGame_Handler,
 		},
 		{
 			MethodName: "SendMessage",

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"math/rand"
 
 	"github.com/pkg/errors"
 	pb "github.com/vipulvpatil/airetreat-go/protos"
@@ -120,4 +121,72 @@ func (s *AiRetreatGoService) GetGamesForPlayer(ctx context.Context, req *pb.GetG
 	}
 
 	return &pb.GetGamesForPlayerResponse{GameIds: gameIds}, nil
+}
+
+func (s *AiRetreatGoService) AutoJoinGame(ctx context.Context, req *pb.AutoJoinGameRequest) (*pb.AutoJoinGameResponse, error) {
+	gameIds, err := s.storage.GetAutoJoinableGames()
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	randomlySelectedGameId, err := getRandomGameId(gameIds)
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	tx, err := s.storage.BeginTransaction()
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	game, err := s.storage.GetGameUsingTransaction(randomlySelectedGameId, tx)
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	if game.HasPlayer(req.GetPlayerId()) {
+		return &pb.AutoJoinGameResponse{}, nil
+	}
+
+	if !game.HasJustStarted() {
+		s.logger.LogError(err)
+		return nil, errors.New("cannot join this game")
+	}
+
+	aiBot, err := game.GetOneRandomAiBot()
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	err = s.storage.UpdateBotWithPlayerIdUsingTransaction(aiBot.Id(), req.GetPlayerId(), tx)
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	err = s.storage.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(randomlySelectedGameId, tx)
+	if err != nil {
+		s.logger.LogError(err)
+		return nil, err
+	}
+
+	err = tx.Commit()
+	return &pb.AutoJoinGameResponse{}, err
+}
+
+func getRandomGameId(gameIds []string) (string, error) {
+	if len(gameIds) == 0 {
+		return "", errors.New("no auto joinable games")
+	}
+
+	rand.Shuffle(len(gameIds), func(i, j int) {
+		gameIds[i], gameIds[j] = gameIds[j], gameIds[i]
+	})
+	return gameIds[0], nil
 }

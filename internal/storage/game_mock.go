@@ -85,6 +85,7 @@ type GameAccessorConfigurableMock struct {
 	DeleteGameInternal                                               func(gameId string) error
 	GetOldGamesInternal                                              func(gameExpiryDuration time.Duration) ([]string, error)
 	UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal func(gameId string, transaction DatabaseTransaction) error
+	GetAutoJoinableGamesInternal                                     func() ([]string, error)
 }
 
 func (g *GameAccessorConfigurableMock) CreateGame(public bool) (string, error) {
@@ -116,4 +117,7 @@ func (g *GameAccessorConfigurableMock) GetOldGames(gameExpiryDuration time.Durat
 }
 func (g *GameAccessorConfigurableMock) UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, transaction DatabaseTransaction) error {
 	return g.UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransactionInternal(gameId, transaction)
+}
+func (g *GameAccessorConfigurableMock) GetAutoJoinableGames() ([]string, error) {
+	return g.GetAutoJoinableGamesInternal()
 }

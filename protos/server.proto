@@ -21,6 +21,12 @@ message JoinGameRequest {
 
 message JoinGameResponse {}
 
+message AutoJoinGameRequest {
+  string playerId = 1;
+}
+
+message AutoJoinGameResponse {}
+
 message SendMessageRequest {
   string gameId = 1;
   string playerId = 2;
@@ -99,6 +105,7 @@ message SyncPlayerDataResponse {
 service AiRetreatGo {
   rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {}
   rpc JoinGame(JoinGameRequest) returns (JoinGameResponse) {}
+  rpc AutoJoinGame(AutoJoinGameRequest) returns (AutoJoinGameResponse) {}
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
   rpc Tag(TagRequest) returns (TagResponse) {}
   rpc Help(HelpRequest) returns (HelpResponse) {}

@@ -17,4 +17,5 @@ type GameAccessor interface {
 	DeleteGame(gameId string) error
 	GetOldGames(gameExpiryDuration time.Duration) ([]string, error)
 	UpdateGameStateIfEnoughPlayersHaveJoinedUsingTransaction(gameId string, transaction DatabaseTransaction) error
+	GetAutoJoinableGames() ([]string, error)
 }
