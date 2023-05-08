@@ -1079,7 +1079,7 @@ func Test_AutoJoinGame(t *testing.T) {
 			input: &pb.AutoJoinGameRequest{
 				PlayerId: "player_id2",
 			},
-			output:          &pb.AutoJoinGameResponse{},
+			output:          &pb.AutoJoinGameResponse{GameId: "game_id1"},
 			transactionMock: &storage.DatabaseTransactionMock{},
 			txShouldCommit:  true,
 			gameAccessorMock: &storage.GameAccessorConfigurableMock{

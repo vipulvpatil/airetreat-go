@@ -25,7 +25,9 @@ message AutoJoinGameRequest {
   string playerId = 1;
 }
 
-message AutoJoinGameResponse {}
+message AutoJoinGameResponse {
+  string gameId = 1;
+}
 
 message SendMessageRequest {
   string gameId = 1;

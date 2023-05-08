@@ -177,7 +177,9 @@ func (s *AiRetreatGoService) AutoJoinGame(ctx context.Context, req *pb.AutoJoinG
 	}
 
 	err = tx.Commit()
-	return &pb.AutoJoinGameResponse{}, err
+	return &pb.AutoJoinGameResponse{
+		GameId: randomlySelectedGameId,
+	}, err
 }
 
 func getRandomGameId(gameIds []string) (string, error) {
