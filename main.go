@@ -85,6 +85,7 @@ func main() {
 		Storage:      dbStorage,
 		OpenAiClient: openai.NewClient(openai.OpenAiClientOptions{ApiKey: cfg.OpenAiApiKey}, logger),
 		Config:       cfg,
+		Logger:       logger,
 	}
 
 	s, err := server.NewServer(serverDeps)
