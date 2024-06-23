@@ -9,7 +9,7 @@ wait_for_service_to_become_healthy() {
     try_count=$(($try_count+1));
     echo "waiting for " $1 " to become healthy." $try_count
 
-    http_response=$(curl -I http://$1:8080 2>/dev/null | head -n 1 | cut -d$' ' -f2);
+    http_response=$(curl -I http://$1:8180 2>/dev/null | head -n 1 | cut -d$' ' -f2);
     if [[ http_response -eq 200 ]] ; then
         health_check_passed=true
     fi
@@ -33,7 +33,7 @@ restart_service() {
   ssh $SSH_ADDR "docker ps -aq | xargs docker stop --time=60 | xargs docker rm"
 
   # run newly uploaded docker image
-  ssh $SSH_ADDR "docker run -i -t -d -p 9100:9100 -p 8080:8080 --restart unless-stopped --env-file .env airetreat"
+  ssh $SSH_ADDR "docker run -i -t -d -p 9100:9100 -p 8180:8180 --restart unless-stopped --env-file .env airetreat"
 
   # verify service is properly started
   wait_for_service_to_become_healthy $1

@@ -151,7 +151,7 @@ func setupGrpcServer(s *server.AiRetreatGoService, cfg *config.Config, logger ut
 }
 
 func startHTTPHealthServer(wg *sync.WaitGroup, logger utilities.Logger) *http.Server {
-	srv := &http.Server{Addr: ":8080"}
+	srv := &http.Server{Addr: ":8180"}
 	http.HandleFunc("/", health.HealthCheckHandler)
 
 	wg.Add(1)

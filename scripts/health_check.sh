@@ -27,8 +27,8 @@ trap "trap_ctrlc" 2
 
 while [[ true ]];
 do
-  http_response_primary=$(curl -I $AI_RETREAT_GO_INTERNAL_IP_PRIMARY:8080 2>/dev/null | head -n 1 | cut -d$' ' -f2);
-  http_response_secondary=$(curl -I $AI_RETREAT_GO_INTERNAL_IP_SECONDARY:8080 2>/dev/null | head -n 1 | cut -d$' ' -f2);
+  http_response_primary=$(curl -I $AI_RETREAT_GO_INTERNAL_IP_PRIMARY:8180 2>/dev/null | head -n 1 | cut -d$' ' -f2);
+  http_response_secondary=$(curl -I $AI_RETREAT_GO_INTERNAL_IP_SECONDARY:8180 2>/dev/null | head -n 1 | cut -d$' ' -f2);
 
   echo $http_response_primary "|" $http_response_secondary
 

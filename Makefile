@@ -11,7 +11,7 @@ coverage:
 	go test -cover ./...
 
 run:
-	docker run -i -t --rm -p 9100:9100 -p 8080:8080 --env-file .env.docker airetreatgo
+	docker run -i -t --rm -p 9100:9100 -p 8180:8180 --env-file .env.docker airetreatgo
 
 build:
 	docker build -t airetreatgo:latest .
