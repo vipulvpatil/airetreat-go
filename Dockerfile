@@ -10,6 +10,6 @@ RUN go mod download
 
 RUN go build -o ./bin/airetreatgo
 
-EXPOSE 9000
+EXPOSE 9100
 
 CMD [ "./bin/airetreatgo" ]

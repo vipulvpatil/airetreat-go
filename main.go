@@ -105,7 +105,7 @@ func main() {
 	workerPool.Start()
 
 	var wg sync.WaitGroup
-	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9000", logger)
+	startGrpcServerAsync("ai retreat go", &wg, grpcServer, "9100", logger)
 	httpHealthServer := startHTTPHealthServer(&wg, logger)
 
 	gameHandlerLoopCtx, cancelGameHandlerLoop := context.WithCancel(context.Background())

@@ -10,7 +10,7 @@ echo $target
 sum=0
 while [[ sum -lt $target ]];
 do
-grpcurl -import-path protos -proto server.proto -H 'requesting_user_email: '$TEST_USER_EMAIL -d '{"test": "data"}' -cert certs/remote/client.crt -key certs/remote/client.key -cacert certs/remote/AiRetreatCA.crt api.airetreat.co:9000 protos.AiRetreatGo/Test;
+grpcurl -import-path protos -proto server.proto -H 'requesting_user_email: '$TEST_USER_EMAIL -d '{"test": "data"}' -cert certs/remote/client.crt -key certs/remote/client.key -cacert certs/remote/AiRetreatCA.crt api.airetreat.co:9100 protos.AiRetreatGo/Test;
 
 sum=$(($sum+1));
 echo $sum
