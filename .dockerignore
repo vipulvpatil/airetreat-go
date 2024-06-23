@@ -4,6 +4,6 @@ scripts/*
 tmp/*
 **/out/*
 .envrc
-.env
 .env.downloaded
 .env.docker
+.env_airetreat

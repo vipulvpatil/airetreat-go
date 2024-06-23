@@ -36,7 +36,7 @@ deploy_service() {
   ssh $SSH_ADDR "docker ps -aq | xargs docker stop --time=60 | xargs docker rm"
 
   # run newly uploaded docker image
-  ssh $SSH_ADDR "docker run -i -t -d -p 9100:9100 -p 8180:8180 --restart unless-stopped --env-file .env airetreat"
+  ssh $SSH_ADDR "docker run -i -t -d -p 9100:9100 -p 8180:8180 --restart unless-stopped --env-file .env_airetreat airetreat"
 
   # verify service is properly started
   wait_for_service_to_become_healthy $1

@@ -11,11 +11,11 @@
 ### Env vars
 
 ```
-export ENABLE_TLS=true                               # .env and .envrc 
-export CA_CERT_BASE64=LS0tLS1CRUdJTiBDRVJ...         # .env and .envrc 
-export SERVER_CERT_BASE64=LS0tLS1CRUdJTiB...         # .env and .envrc 
-export SERVER_KEY_BASE64=LS0tLS1CRUdJTiBS...         # .env and .envrc
-export REDIS_URL=redis://user....                    # .env and .envrc
+export ENABLE_TLS=true                               # .env_airetreat and .envrc
+export CA_CERT_BASE64=LS0tLS1CRUdJTiBDRVJ...         # .env_airetreat and .envrc
+export SERVER_CERT_BASE64=LS0tLS1CRUdJTiB...         # .env_airetreat and .envrc
+export SERVER_KEY_BASE64=LS0tLS1CRUdJTiBS...         # .env_airetreat and .envrc
+export REDIS_URL=redis://user....                    # .env_airetreat and .envrc
 export AI_RETREAT_GO_RESERVED_IP=""                 # .envrc       # This is the public IP of the Server that the client will hit.
 export AI_RETREAT_GOINTERNAL_IP_1=""                # .envrc # This is an instance IP which may be serving the traffic currently
 export AI_RETREAT_GOINTERNAL_IP_2=""                # .envrc # Same as above.
